@@ -1,11 +1,11 @@
-const deleteElement = (id = String()) => {
+const deleteElement = (userId = String()) => {
     const elements = document.querySelectorAll(".l7cibp-2.mHtZd");
-    console.log(elements);
+    //console.log(elements);
     Array.prototype.map.call(elements, (element) => {
-        const target = element.querySelector(`[href="/artworks/${id}"]`);
-        console.log(target);
+        const target = element.querySelector(`[href="/users/${userId}"]`);
+        //console.log(target);
         if (target) {
-            console.log(target);
+            //console.log(target);
             element.remove();
         }
     })
@@ -24,46 +24,54 @@ const createAddElement = async (elements = []) => {
 
 const addToStorage = () => {
     const targets = document.querySelectorAll('.addButton');
-    let userIds = [];
+    //let userIds = [];
     Array.prototype.map.call((targets), (target) => {
-        target.addEventListener('click', (e) => {
+        target.addEventListener('click', async (e) => {
             const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
+            console.log(userId);
             //if (checkLocalStorage('userId')[0] === undefined) { }
             //userIds = ;
-            checkLocalStorage('userId')
+            let userIds = await checkLocalStorage('userId');
+            console.log(userIds);
             userIds.push(userId)
             //console.log(userId);
             chrome.storage.sync.set({ userId: userIds }, () => { return })
+            deleteElement(userId);
             //console.log(e);
 
         });
     })
 }
 
-const checkLocalStorage = (query = String()) => {
+const checkLocalStorage = (query = String()) => new Promise((resolve) => {
     chrome.storage.sync.get([query], (dic) => {
         const results = dic.userId;
         console.log(results);
-        if (results.length) {
-            results.map((result) => {
+        if (results) {
+            results.map((result = []) => {
                 console.log(result);
                 deleteElement(result);
             })
-        }
+            resolve(results);
+        } else { resolve }
     });
-}
+});
 
-
-(async () => {
+const main = () => {
     const interval = setInterval(async () => {
         const elements = document.querySelectorAll(".l7cibp-2.mHtZd");
+        console.log(elements)
         if (elements.length) {
             clearInterval(interval);
-            checkLocalStorage("userId")
-            //deleteElement("89795682");
-            //deleteElement("89732041");
             await createAddElement(elements);
-            //addToStorage();
+            await checkLocalStorage("userId")
+            //deleteElement("89795682");
+            //deleteElement("68475181");
+            //chrome.storage.sync.clear()
+
+            addToStorage();
         }
     }, 1000);
-})();
+}
+
+document.addEventListener('load', main());
