@@ -13,14 +13,13 @@ const deleteElement = (userId = String()) => {
 }
 
 //ユーザー名の隣にNG登録するボタンを設置
-const createAddElement = async (elements = []) => new Promise(async (resolve) => {
+const createAddElement = async (elements = []) => new Promise(async (resolve, reject) => {
     Array.prototype.map.call((elements), (element, index) => {
         const interval = setInterval(() => {
-            const target = element.getElementsByClassName('sc-1rx6dmq-0 jMjLmW');
-            if (target[0]) {
+            if (element) {
                 console.log("ループ確認用", index)
                 clearInterval(interval);
-                target[0].insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
+                element.parentElement.insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
                 //すべての要素に追加してからresolveする
                 if (elements.length - 1 === index) { resolve(); }
             };
@@ -39,19 +38,7 @@ const clickEvent = async () => {
             const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
-            //console.log(userId);
-            //if (checkLocalStorage('userId')[0] === undefined) { }
-            //userIds = ;
-            //let userIds = await checkLocalStorage('userId');
-            //console.log(userIds);
-            //userIds.push(userId)
-            //console.log(userId);
-            //chrome.storage.sync.set({ userInfo: [userInfo] }, () => { return })
-            //chrome.storage.sync.get(["userInfo"], (result) => { console.log(result); })
-            //deleteElement(userId);
-            //console.log(e);
-
-        }, false);
+        });
     });
 };
 
@@ -70,16 +57,21 @@ const addChoromeStorage = async (userInfo = {}) => {
 
 //ChromeストレージにNGユーザーが登録されているかを確認
 const checkLocalStorage = (query = String()) => new Promise((resolve) => {
-    chrome.storage.sync.get([query], (dic = {}) => {
-        const results = dic;
-        console.log(results.userInfo);
-        resolve(results.userInfo)
+    chrome.storage.sync.get([query], (results = {}) => {
+        const user = results.userInfo;
+        if (user) {
+            user.map((item) => { console.log(item.userId); });
+        }
+
+        //console.log(user);
+        resolve(user)
     });
 });
 
 const main = async () => {
     const interval = setInterval(async () => {
-        const elements = document.getElementsByClassName("l7cibp-2 mHtZd");
+        //要素が読み込まれるまで待機
+        const elements = document.getElementsByClassName("sc-1rx6dmq-2 cjMwiA");
         if (elements[0]) {
             console.log(elements);
             clearInterval(interval);
