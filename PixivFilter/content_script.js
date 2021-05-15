@@ -38,34 +38,48 @@ const clickEvent = async () => {
             const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
+            deleteElement(userId);
         });
     });
 };
 
 //NG登録ボタンを押したらChromeストレージに保存する
-const addChoromeStorage = async (userInfo = {}) => {
+const addChoromeStorage = async (userDic = {}) => {
     let users = [];
-    users = await checkLocalStorage("userInfo");
+    users = await checkGoogleStorage({ key: "userKey", isAdd: true });
     if (!users) {
-        chrome.storage.sync.set({ userInfo: [userInfo] }, () => { return });
+        chrome.storage.sync.set({ userKey: [userDic] }, () => { return });
     } else {
-        users.push(userInfo);
+        users.push(userDic);
         console.log(users)
-        chrome.storage.sync.set({ userInfo: users }, () => { return });
+        chrome.storage.sync.set({ userKey: users }, () => { return });
     };
 };
 
 //ChromeストレージにNGユーザーが登録されているかを確認
-const checkLocalStorage = (query = String()) => new Promise((resolve) => {
-    chrome.storage.sync.get([query], (results = {}) => {
-        const user = results.userInfo;
-        if (user) {
-            user.map((item) => { console.log(item.userId); });
-        }
-
-        //console.log(user);
-        resolve(user)
-    });
+const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => new Promise((resolve) => {
+    if (parameter.isAdd) {
+        chrome.storage.sync.get([parameter.key], (results = {}) => {
+            if (results === {}) {
+                resolve([]);
+            } else {
+                const user = results.userKey;
+                console.log(user)
+                resolve(user)
+            };
+        });
+    } else if (!parameter.isAdd) {
+        chrome.storage.sync.get([parameter.key], (results = {}) => {
+            const user = results.userKey;
+            if (user) {
+                user.map((info) => {
+                    console.log(info);
+                    deleteElement(info.userId)
+                });
+            };
+            resolve();
+        });
+    };
 });
 
 const main = async () => {
@@ -77,6 +91,7 @@ const main = async () => {
             clearInterval(interval);
             console.log("test");
             await createAddElement(elements);
+            await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
             await clickEvent();
             //await checkLocalStorage("userId")
