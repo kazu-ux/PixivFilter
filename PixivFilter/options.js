@@ -5,17 +5,20 @@ const createHtml = () => new Promise(async (resolve) => {
 
     const selectElement = document.createElement('select');
     selectElement.setAttribute('multiple', '');
-    selectElement.name = "userName";
+    selectElement.name = "userNames";
     selectElement.size = 10;
 
     const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
-
-    users.map((userDic) => {
-        const userName = userDic.userName;
-        const optionElement = document.createElement('option');
-        optionElement.textContent = userName;
-        selectElement.appendChild(optionElement);
-    });
+    if (users) {
+        users.map((userDic) => {
+            const userName = userDic.userName;
+            const userId = userDic.userId;
+            const optionElement = document.createElement('option');
+            optionElement.textContent = userName;
+            optionElement.value = userId;
+            selectElement.appendChild(optionElement);
+        });
+    }
 
     const buttonElement = document.createElement('button');
     buttonElement.textContent = "消去";
@@ -60,15 +63,38 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
 });
 
 //クリックイベント
-const clickEvent = () => {
+const clickEvent = async () => {
     const targetButton = document.getElementsByName("remove")[0];
     targetButton.addEventListener('click', () => {
-
+        let userList = []
+        const options = document.getElementsByName("userNames")[0].options;
+        Array.prototype.map.call((options), (option) => {
+            if (option.selected) {
+                userList.push(option.value)
+            };
+        });
+        removeChromeStorage(userList);
+        return;
     });
-}
+};
+
+const removeChromeStorage = async (userList = []) => {
+    const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
+    let newUserList = [];
+    users.map((user) => {
+        if (!userList.includes(user.userId)) {
+            console.log(user);
+            newUserList.push(user)
+        };
+    });
+    console.log(newUserList);
+    chrome.storage.sync.set({ userKey: newUserList }, () => { return });
+    location.reload();
+};
 
 const main = async () => {
     await createHtml();
+    await clickEvent()
 
 };
 
