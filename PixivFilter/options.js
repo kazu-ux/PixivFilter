@@ -8,6 +8,8 @@ const createHtml = () => new Promise(async (resolve) => {
     selectElement.name = "userNames";
     selectElement.size = 10;
 
+    selectElement.style.width = "20vw"
+
     const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
     if (users) {
         users.map((userDic) => {
