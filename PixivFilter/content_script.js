@@ -17,7 +17,7 @@ const createAddElement = async (elements = []) => new Promise(async (resolve) =>
     Array.prototype.map.call((elements), (element, index) => {
         const interval = setInterval(() => {
             const target = element.getElementsByClassName('sc-1rx6dmq-0 jMjLmW');
-            if (target) {
+            if (target[0]) {
                 console.log("ループ確認用", index)
                 clearInterval(interval);
                 target[0].insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
@@ -28,8 +28,8 @@ const createAddElement = async (elements = []) => new Promise(async (resolve) =>
     });
 });
 
-//NG登録ボタンを押したらChromeストレージに保存する
-const addToStorage = async () => {
+//追加ボタンにクリックイベントを設置
+const clickEvent = async () => {
     const targets = document.querySelectorAll('.addButton');
     Array.prototype.map.call((targets), (target) => {
         console.log(target);
@@ -38,7 +38,7 @@ const addToStorage = async () => {
             const userName = e.path[1].querySelector('[title]').getAttribute("title");
             const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
             console.log(userName, userId);
-            const userInfo = { userName: userName, userId: userId };
+            addChoromeStorage({ userName: userName, userId: userId });
             //console.log(userId);
             //if (checkLocalStorage('userId')[0] === undefined) { }
             //userIds = ;
@@ -48,7 +48,6 @@ const addToStorage = async () => {
             //console.log(userId);
             //chrome.storage.sync.set({ userInfo: [userInfo] }, () => { return })
             //chrome.storage.sync.get(["userInfo"], (result) => { console.log(result); })
-            return
             //deleteElement(userId);
             //console.log(e);
 
@@ -56,18 +55,25 @@ const addToStorage = async () => {
     });
 };
 
+//NG登録ボタンを押したらChromeストレージに保存する
+const addChoromeStorage = async (userInfo = {}) => {
+    let users = [];
+    users = await checkLocalStorage("userInfo");
+    if (!users) {
+        chrome.storage.sync.set({ userInfo: [userInfo] }, () => { return });
+    } else {
+        users.push(userInfo);
+        console.log(users)
+        chrome.storage.sync.set({ userInfo: users }, () => { return });
+    };
+};
+
 //ChromeストレージにNGユーザーが登録されているかを確認
 const checkLocalStorage = (query = String()) => new Promise((resolve) => {
-    chrome.storage.sync.get([query], (dic) => {
-        const results = dic.userId;
-        console.log(results);
-        if (results) {
-            results.map((result = []) => {
-                console.log(result);
-                deleteElement(result);
-            })
-            resolve(results);
-        } else { resolve }
+    chrome.storage.sync.get([query], (dic = {}) => {
+        const results = dic;
+        console.log(results.userInfo);
+        resolve(results.userInfo)
     });
 });
 
@@ -80,11 +86,11 @@ const main = async () => {
             console.log("test");
             await createAddElement(elements);
             console.log("test");
-            await addToStorage();
+            await clickEvent();
             //await checkLocalStorage("userId")
             //deleteElement("89795682");
             //deleteElement("68475181");
-            //chrome.storage.sync.clear()
+            chrome.storage.sync.clear()
         }
     }, 1000);
 };
