@@ -97,7 +97,7 @@ const main = async () => {
             //await checkLocalStorage("userId")
             //deleteElement("89795682");
             //deleteElement("68475181");
-            chrome.storage.sync.clear()
+            //chrome.storage.sync.clear()
         }
     }, 1000);
 };
