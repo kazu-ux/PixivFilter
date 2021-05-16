@@ -23,7 +23,7 @@ const createAddElement = async (elements = []) => new Promise(async (resolve, re
                 //すべての要素に追加してからresolveする
                 if (elements.length - 1 === index) { resolve(); }
             };
-        }, 500);
+        }, 100);
     });
 });
 
@@ -73,7 +73,6 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
             const user = results.userKey;
             if (user) {
                 user.map((info) => {
-                    console.log(info);
                     deleteElement(info.userId)
                 });
             };
@@ -94,17 +93,10 @@ const main = async () => {
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
             await clickEvent();
-            //await checkLocalStorage("userId")
-            //deleteElement("89795682");
-            //deleteElement("68475181");
-            //chrome.storage.sync.clear()
         }
-    }, 1000);
+    }, 100);
 };
 
-chrome.runtime.onMessage.addListener(async (message) => {
-    await main();
-    return true
+chrome.runtime.onMessage.addListener((message) => {
+    main();
 });
-
-//document.addEventListener('load', );
