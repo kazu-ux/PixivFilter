@@ -102,4 +102,9 @@ const main = async () => {
     }, 1000);
 };
 
-document.addEventListener('load', main());
+chrome.runtime.onMessage.addListener(async (message) => {
+    await main();
+    return true
+});
+
+//document.addEventListener('load', );
