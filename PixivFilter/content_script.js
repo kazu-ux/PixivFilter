@@ -1,16 +1,13 @@
 //NG登録したユーザーのイラストを非表示
 const deleteElement = (userId = String()) => {
     const elements = document.querySelectorAll(".l7cibp-2.mHtZd");
-    //console.log(elements);
     Array.prototype.map.call(elements, (element) => {
         const target = element.querySelector(`[href="/users/${userId}"]`);
-        //console.log(target);
         if (target) {
-            //console.log(target);
             element.remove();
-        }
-    })
-}
+        };
+    });
+};
 
 //ユーザー名の隣にNG登録するボタンを設置
 const createAddElement = async (elements = []) => new Promise(async (resolve, reject) => {
@@ -86,17 +83,16 @@ const main = async () => {
         //要素が読み込まれるまで待機
         const elements = document.getElementsByClassName("sc-1rx6dmq-2 cjMwiA");
         if (elements[0]) {
-            console.log(elements);
             clearInterval(interval);
             console.log("test");
             await createAddElement(elements);
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
             await clickEvent();
-        }
+        };
     }, 100);
 };
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener(() => {
     main();
 });
