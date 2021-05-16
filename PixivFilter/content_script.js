@@ -14,11 +14,14 @@ const createAddElement = async (elements = []) => new Promise(async (resolve, re
     Array.prototype.map.call((elements), (element, index) => {
         const interval = setInterval(() => {
             if (element) {
-                console.log("ループ確認用", index)
-                clearInterval(interval);
-                element.parentElement.insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
-                //すべての要素に追加してからresolveする
-                if (elements.length - 1 === index) { resolve(); }
+                if (!element.parentElement.nextElementSibling) {
+                    console.log(element, index)
+                    clearInterval(interval);
+                    element.parentElement.insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
+                    console.log(elements.length);
+                    //すべての要素に追加してからresolveする
+                    if (elements.length - 1 === index) { resolve(); }
+                };
             };
         }, 100);
     });
@@ -78,6 +81,18 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
     };
 });
 
+const scrollEvent = async (elements) => {
+    let timer = null;
+    const func = (e) => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+            await createAddElement(elements)
+            console.log(e);
+        }, 500);
+    };
+    document.addEventListener("scroll", func, { passive: true });
+};
+
 const main = async () => {
     const interval = setInterval(async () => {
         //要素が読み込まれるまで待機
@@ -85,7 +100,9 @@ const main = async () => {
         if (elements[0]) {
             clearInterval(interval);
             console.log("test");
+            scrollEvent(elements);
             await createAddElement(elements);
+            console.log("test");
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
             await clickEvent();

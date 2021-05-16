@@ -10,6 +10,10 @@ let count = 0;
 chrome.webRequest.onBeforeRequest.addListener(
     async (e) => {
         const url = e.url;
+        if (url.includes('https://www.pixiv.net/ajax/top/')) {
+            console.log(url);
+            chrome.tabs.sendMessage(await getTabId(), "");
+        }
 
         if (url.includes('https://www.pixiv.net/ajax/search/artworks/') && count === 0) {
             count += 1;
