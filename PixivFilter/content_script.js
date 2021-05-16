@@ -11,32 +11,30 @@ const deleteElement = (userId = String()) => {
 
 //ユーザー名の隣にNG登録するボタンを設置
 const createAddElement = async (elements = []) => new Promise(async (resolve, reject) => {
-    Array.prototype.map.call((elements), (element, index) => {
-        const interval = setInterval(() => {
-            if (element) {
-                console.log("ループ確認用", index)
-                clearInterval(interval);
+    await Promise.all(Array.prototype.map.call((elements), async (element, index) => {
+        if (element) {
+            if (!element.parentElement.nextElementSibling) {
+                console.log(element, index)
                 element.parentElement.insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
-                //すべての要素に追加してからresolveする
-                if (elements.length - 1 === index) { resolve(); }
+                return;
             };
-        }, 100);
-    });
+        };
+    }));
+    resolve();
 });
 
 //追加ボタンにクリックイベントを設置
 const clickEvent = async () => {
-    const targets = document.querySelectorAll('.addButton');
-    Array.prototype.map.call((targets), (target) => {
-        console.log(target);
-        target.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const userName = e.path[1].querySelector('[title]').getAttribute("title");
-            const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
-            console.log(userName, userId);
-            addChoromeStorage({ userName: userName, userId: userId });
-            deleteElement(userId);
-        });
+    document.addEventListener('click', async (e) => {
+        console.log(e);
+        /*
+        e.stopPropagation();
+        const userName = e.path[1].querySelector('[title]').getAttribute("title");
+        const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
+        console.log(userName, userId);
+        addChoromeStorage({ userName: userName, userId: userId });
+        deleteElement(userId);
+        */
     });
 };
 
@@ -78,6 +76,18 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
     };
 });
 
+const scrollEvent = async (elements) => {
+    let timer = null;
+    const func = (e) => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+            await createAddElement(elements)
+            console.log(e);
+        }, 500);
+    };
+    document.addEventListener("scroll", func, { passive: true });
+};
+
 const main = async () => {
     const interval = setInterval(async () => {
         //要素が読み込まれるまで待機
@@ -85,10 +95,12 @@ const main = async () => {
         if (elements[0]) {
             clearInterval(interval);
             console.log("test");
+            //scrollEvent(elements);
             await createAddElement(elements);
-            await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
-            await clickEvent();
+            //await checkGoogleStorage({ key: "userKey", isAdd: false });
+            //console.log("test");
+            //await clickEvent();
         };
     }, 100);
 };
