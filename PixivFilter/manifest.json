@@ -9,7 +9,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://www.pixiv.net/tags/*/artworks?s_mode=s_tag"
+                "https://www.pixiv.net/*"
             ],
             "js": [
                 "content_script.js"
