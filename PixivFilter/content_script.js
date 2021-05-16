@@ -1,12 +1,13 @@
 //NG登録したユーザーのイラストを非表示
-const deleteElement = (userId = String()) => {
-    const elements = document.querySelectorAll(".l7cibp-2.mHtZd");
-    Array.prototype.map.call(elements, (element) => {
-        const target = element.querySelector(`[href="/users/${userId}"]`);
-        if (target) {
-            element.remove();
-        };
-    });
+const removeElement = (userId = String()) => {
+    console.log(userId);
+    const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
+    if (targets) {
+        Array.prototype.map.call((targets), (target) => {
+            target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
+            console.log(target);
+        });
+    };
 };
 
 //ユーザー名の隣にNG登録するボタンを設置
@@ -23,18 +24,18 @@ const createAddElement = async (elements = []) => new Promise(async (resolve, re
     resolve();
 });
 
-//追加ボタンにクリックイベントを設置
+//クリックイベント処理
 const clickEvent = async () => {
     document.addEventListener('click', async (e) => {
-        console.log(e);
-        /*
         e.stopPropagation();
-        const userName = e.path[1].querySelector('[title]').getAttribute("title");
-        const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
-        console.log(userName, userId);
-        addChoromeStorage({ userName: userName, userId: userId });
-        deleteElement(userId);
-        */
+        console.log(e.target);
+        if (e.target.getAttribute('class') === 'addButton') {
+            const userName = e.path[1].querySelector('[title]').getAttribute("title");
+            const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
+            console.log(userName, userId);
+            addChoromeStorage({ userName: userName, userId: userId });
+            removeElement(userId);
+        };
     });
 };
 
@@ -68,7 +69,7 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
             const user = results.userKey;
             if (user) {
                 user.map((info) => {
-                    deleteElement(info.userId)
+                    removeElement(info.userId)
                 });
             };
             resolve();
@@ -95,12 +96,12 @@ const main = async () => {
         if (elements[0]) {
             clearInterval(interval);
             console.log("test");
-            //scrollEvent(elements);
+            scrollEvent(elements);
             await createAddElement(elements);
             console.log("test");
-            //await checkGoogleStorage({ key: "userKey", isAdd: false });
-            //console.log("test");
-            //await clickEvent();
+            await checkGoogleStorage({ key: "userKey", isAdd: false });
+            console.log("test");
+            await clickEvent();
         };
     }, 100);
 };
