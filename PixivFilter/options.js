@@ -80,6 +80,7 @@ const clickEvent = async () => {
     });
 };
 
+//削除処理
 const removeChromeStorage = async (userList = []) => {
     const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
     let newUserList = [];

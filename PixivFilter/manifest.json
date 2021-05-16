@@ -21,7 +21,7 @@
         "storage",
         "webRequest",
         "webRequestBlocking",
-        "*://*/*"
+        "*://www.pixiv.net/"
     ],
     "background": {
         "scripts": [
