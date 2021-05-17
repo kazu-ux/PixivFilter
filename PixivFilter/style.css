@@ -1,10 +1,8 @@
 summary{
     display: block !important;
 }
-.pf-illust-info-container{
-    position: absolute;
-    margin-top: 2%;
-
+.iasfms-0.iubowd.pf-illust-info-container{
+    display: none;
 }
 .pf-illust-info-toggle{
     position: absolute;

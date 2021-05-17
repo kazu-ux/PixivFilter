@@ -25,25 +25,35 @@ const createAddButton = async (elements = []) => new Promise(async (resolve, rej
 });
 
 //タグを表示する
-const createTagElement = (illustDatas = []) => new Promise(async (resolve) => {
+const createTagElement = async (illustDatas = []) => new Promise(async (resolve) => {
     console.log(illustDatas);
 
-    const target = document.getElementsByClassName('addButton')[0];
+    const targets = document.getElementsByClassName('addButton');
 
+    await Promise.all(Array.prototype.map.call((targets), async (target, index) => {
+        //矢印を追加
+        const toggleElement = document.createElement('span');
+        toggleElement.className = 'pf-illust-info-toggle';
+        toggleElement.textContent = '▼';
+        target.parentElement.appendChild(toggleElement);
+
+        //タグコンテナを追加
+        const tags = illustDatas[index].tags;
+        target.parentElement.parentElement.appendChild(await createTagContainer(tags));
+        return;
+    }));
+
+    resolve();
+})
+
+const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
     const pElement = document.createElement('p');
     pElement.className = 'pf-tag-container';
-
-    //矢印を追加
-    const toggleElement = document.createElement('span');
-    toggleElement.className = 'pf-illust-info-toggle';
-    toggleElement.textContent = '▼';
-
-
-    const illustTagElements = await Promise.all(illustDatas.map((illust_tag) => {
+    const illustTagcontainers = await Promise.all(illustTags.map((illust_tag) => {
         const divElement = document.createElement('div');
-        divElement.className = 'pf-illust-info-container';
+        divElement.className = 'iasfms-0 iubowd pf-illust-info-container';
 
-        const spanElementIllustTag = document.createElement('span');
+        const spanElementIllustTag = document.createElement('p');
         spanElementIllustTag.className = 'pf-illust-tag';
 
         const aElement = document.createElement('a');
@@ -67,10 +77,9 @@ const createTagElement = (illustDatas = []) => new Promise(async (resolve) => {
 
         return divElement;
     }));
-    target.parentElement.appendChild(illustTagElements[1]);
-    target.parentElement.appendChild(toggleElement);
-    console.log(illustTagElements);
 
+    console.log(illustTagcontainers);
+    resolve(illustTagcontainers[illustTagcontainers.length - 1]);
 })
 
 //外部cssを読み込む
@@ -94,6 +103,8 @@ const clickEvent = async () => {
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
             removeElement(userId);
+        } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
+            //console.log(e.target.parentElement.parentElement.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
         };
     });
 };
