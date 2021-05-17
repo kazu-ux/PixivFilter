@@ -1,0 +1,13 @@
+summary{
+    display: block !important;
+}
+.pf-illust-info-container{
+    position: absolute;
+    margin-top: 2%;
+
+}
+.pf-illust-info-toggle{
+    position: absolute;
+    margin-left: 10.5rem;
+
+}

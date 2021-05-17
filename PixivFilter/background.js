@@ -9,6 +9,7 @@ const getTabId = () => new Promise((resolve, reject) => {
 let count = 0;
 chrome.webRequest.onBeforeRequest.addListener(
     async (e) => {
+        //console.log(e);
         const url = e.url;
         if (url.includes('https://www.pixiv.net/ajax/top/')) {
             console.log(url);
@@ -17,11 +18,21 @@ chrome.webRequest.onBeforeRequest.addListener(
 
         if (url.includes('https://www.pixiv.net/ajax/search/artworks/') && count === 0) {
             count += 1;
-            console.log(count)
+            console.log(count);
 
-            const json = fetch(url).then((res) => { return (res.json()); });
-            console.log(await json);
-            chrome.tabs.sendMessage(await getTabId(), "");
+            const json = await fetch(url).then((res) => { return (res.json()); });
+            console.log(json);
+
+            let illustDatas = json.body.illustManga.data;
+
+            illustDatas = await Promise.all(illustDatas.map((illustData) => {
+                const illustId = illustData.id;
+                const tags = illustData.tags;
+                return { illustId: illustId, tags: tags };
+            }));
+            console.log(illustDatas);
+            //{illustId:"",tags:[]}
+            chrome.tabs.sendMessage(await getTabId(), illustDatas);
         } else { count = 0; };
     },
     { urls: ['*://www.pixiv.net/*'] },
