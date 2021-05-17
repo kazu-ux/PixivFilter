@@ -1,8 +1,5 @@
-summary{
-    display: block !important;
-}
-.iasfms-0.iubowd.pf-illust-info-container{
-    display: none;
+.pf-illust-info-container{
+    display: none !important;
 }
 .pf-illust-info-toggle{
     position: absolute;

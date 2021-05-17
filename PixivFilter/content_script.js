@@ -51,7 +51,7 @@ const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
     pElement.className = 'pf-tag-container';
     const illustTagcontainers = await Promise.all(illustTags.map((illust_tag) => {
         const divElement = document.createElement('div');
-        divElement.className = 'iasfms-0 iubowd pf-illust-info-container';
+        divElement.className = 'pf-illust-info-container';
 
         const spanElementIllustTag = document.createElement('p');
         spanElementIllustTag.className = 'pf-illust-tag';
@@ -97,6 +97,7 @@ const clickEvent = async () => {
     document.addEventListener('click', async (e) => {
         e.stopPropagation();
         console.log(e.target);
+        const target = e.target.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
         if (e.target.getAttribute('class') === 'addButton') {
             const userName = e.path[1].querySelector('[title]').getAttribute("title");
             const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
@@ -104,7 +105,16 @@ const clickEvent = async () => {
             addChoromeStorage({ userName: userName, userId: userId });
             removeElement(userId);
         } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
-            //console.log(e.target.parentElement.parentElement.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
+
+
+            if (target.parentElement.classList.toggle('pf-illust-info-container')) {
+                e.target.textContent = '▼';
+            } else {
+                e.target.textContent = '▲';
+            }
+
+            console.log(target.parentElement);
+            //console.log(.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
         };
     });
 };
