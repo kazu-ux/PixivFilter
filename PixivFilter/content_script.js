@@ -11,7 +11,7 @@ const removeElement = (userId = String()) => {
 };
 
 //ユーザー名の隣にNG登録するボタンを設置
-const createAddElement = async (elements = []) => new Promise(async (resolve, reject) => {
+const createAddButton = async (elements = []) => new Promise(async (resolve, reject) => {
     await Promise.all(Array.prototype.map.call((elements), async (element, index) => {
         if (element) {
             if (!element.parentElement.nextElementSibling) {
@@ -24,17 +24,97 @@ const createAddElement = async (elements = []) => new Promise(async (resolve, re
     resolve();
 });
 
+//タグを表示する
+const createTagElement = async (illustDatas = []) => new Promise(async (resolve) => {
+    console.log(illustDatas);
+
+    const targets = document.getElementsByClassName('addButton');
+
+    await Promise.all(Array.prototype.map.call((targets), async (target, index) => {
+        //矢印を追加
+        const toggleElement = document.createElement('span');
+        toggleElement.className = 'pf-illust-info-toggle';
+        toggleElement.textContent = '▼';
+        target.parentElement.appendChild(toggleElement);
+
+        //タグコンテナを追加
+        const tags = illustDatas[index].tags;
+        target.parentElement.parentElement.appendChild(await createTagContainer(tags));
+        return;
+    }));
+
+    resolve();
+})
+
+const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
+    const pElement = document.createElement('p');
+    pElement.className = 'pf-tag-container';
+    const illustTagcontainers = await Promise.all(illustTags.map((illust_tag) => {
+        const divElement = document.createElement('div');
+        divElement.className = 'pf-illust-info-container';
+
+        const spanElementIllustTag = document.createElement('p');
+        spanElementIllustTag.className = 'pf-illust-tag';
+
+        const aElement = document.createElement('a');
+        aElement.className = 'pf-illust-tag-link';
+        aElement.target = '-blank';
+        aElement.href = `https://www.pixiv.net/tags/${illust_tag}`;
+        aElement.textContent = illust_tag;
+
+        const spanElementTagNgButton = document.createElement('span');
+        spanElementTagNgButton.className = "pf-tag-ng-button";
+        spanElementTagNgButton.setAttribute('data-type', 'add');
+        spanElementTagNgButton.setAttribute('data-tag-name', illust_tag);
+        spanElementTagNgButton.textContent = "[+]"
+
+        spanElementIllustTag.appendChild(aElement);
+        spanElementIllustTag.appendChild(spanElementTagNgButton);
+
+        pElement.appendChild(spanElementIllustTag);
+
+        divElement.appendChild(pElement);
+
+        return divElement;
+    }));
+
+    console.log(illustTagcontainers);
+    resolve(illustTagcontainers[illustTagcontainers.length - 1]);
+})
+
+//外部cssを読み込む
+const loadCss = () => new Promise((resolve) => {
+    const linkElement = document.createElement('link');
+    linkElement.href = './style.css';
+    linkElement.rel = 'stylesheet';
+    linkElement.type = 'text/css';
+
+    document.getElementsByTagName('head')[0].appendChild(linkElement);
+})
+
 //クリックイベント処理
 const clickEvent = async () => {
     document.addEventListener('click', async (e) => {
         e.stopPropagation();
         console.log(e.target);
+        const target = e.target.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
         if (e.target.getAttribute('class') === 'addButton') {
             const userName = e.path[1].querySelector('[title]').getAttribute("title");
             const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
             removeElement(userId);
+        } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
+
+
+            if (target.parentElement.classList.toggle('pf-illust-info-container')) {
+                e.target.textContent = '▼';
+            } else {
+                e.target.textContent = '▲';
+            }
+
+            console.log(target.parentElement);
+            //console.log(.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
         };
     });
 };
@@ -82,14 +162,14 @@ const scrollEvent = async (elements) => {
     const func = (e) => {
         clearTimeout(timer);
         timer = setTimeout(async () => {
-            await createAddElement(elements)
+            await createAddButton(elements)
             console.log(e);
         }, 500);
     };
     document.addEventListener("scroll", func, { passive: true });
 };
 
-const main = async () => {
+const main = async (illustDatas) => {
     const interval = setInterval(async () => {
         //要素が読み込まれるまで待機
         const elements = document.getElementsByClassName("sc-1rx6dmq-2 cjMwiA");
@@ -97,7 +177,11 @@ const main = async () => {
             clearInterval(interval);
             console.log("test");
             scrollEvent(elements);
-            await createAddElement(elements);
+            await createAddButton(elements);
+            console.log("test");
+            await createTagElement(illustDatas);
+            console.log("test");
+            //await loadCss();
             console.log("test");
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
@@ -106,6 +190,6 @@ const main = async () => {
     }, 100);
 };
 
-chrome.runtime.onMessage.addListener(() => {
-    main();
+chrome.runtime.onMessage.addListener((illustDatas = []) => {
+    main(illustDatas);
 });
