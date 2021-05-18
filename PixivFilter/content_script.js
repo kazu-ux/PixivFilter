@@ -154,6 +154,7 @@ const addChoromeStorage = async (illustDataDic = {}) => {
         chrome.storage.sync.get(null, (results) => { console.log(results); });
 
     } else if (illustDataDic.tagName) {
+        //保存してあるタグを取得
         const tags = await new Promise((resolve) => {
             chrome.storage.sync.get(['tagName'], (results) => {
                 if (results.tagName) { resolve(results.tagName); } else { resolve([]); };
