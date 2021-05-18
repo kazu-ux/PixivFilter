@@ -1,15 +1,5 @@
 //HTMLを生成
 const createHtml = () => new Promise(async (resolve) => {
-    const divElement = document.createElement('div');
-    divElement.textContent = 'ブロックするユーザー';
-
-    const selectElement = document.createElement('select');
-    selectElement.setAttribute('multiple', '');
-    selectElement.name = "userNames";
-    selectElement.size = 10;
-
-    selectElement.style.width = "20vw"
-
     const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
     if (users) {
         users.map((userDic) => {
@@ -18,21 +8,33 @@ const createHtml = () => new Promise(async (resolve) => {
             const optionElement = document.createElement('option');
             optionElement.textContent = userName;
             optionElement.value = userId;
-            selectElement.appendChild(optionElement);
+            document.querySelector('.user-select').appendChild(optionElement);
         });
-    }
+    };
 
-    const buttonElement = document.createElement('button');
-    buttonElement.textContent = "消去";
-    buttonElement.name = 'remove';
+    const fragment = document.createDocumentFragment();
+
+    const tagList = await new Promise((resolve) => {
+        chrome.storage.sync.get(['tagName'], (results) => {
+            if (results.tagName) { resolve(results.tagName); } else { resolve([]); };
+        });
+    });
+    console.log(tagList);
+
+    await Promise.all(tagList.map((tag) => {
+        const optionElement = document.createElement('option');
+        optionElement.textContent = tag;
+        optionElement.value = tag;
+        fragment.appendChild(optionElement);
+        return fragment;
+    }));
+    console.log(fragment);
+    document.querySelector('.tag-select').appendChild(fragment);
 
     const interval = setInterval(() => {
         const target = document.getElementsByTagName('body')[0];
         if (target) {
             clearInterval(interval);
-            target.appendChild(divElement);
-            target.appendChild(selectElement);
-            target.appendChild(buttonElement);
             resolve();
         };
     }, 100);
@@ -66,32 +68,51 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
 
 //クリックイベント
 const clickEvent = async () => {
-    const targetButton = document.getElementsByName("remove")[0];
-    targetButton.addEventListener('click', () => {
-        let userList = []
-        const options = document.getElementsByName("userNames")[0].options;
-        Array.prototype.map.call((options), (option) => {
-            if (option.selected) {
-                userList.push(option.value)
+    const removeButton = document.querySelectorAll("[name='remove']");
+    await Promise.all(Array.prototype.map.call((removeButton), (element) => {
+        element.addEventListener('click', async (e) => {
+            const className = e.target.getAttribute('class');
+            if (className === 'user-remove-button') {
+                const options = document.querySelector('.user-select').options;
+                const selectedUsers = (Array.prototype.map.call((options), (option) => {
+                    if (!option.selected) {
+                        const userName = option.textContent;
+                        const userId = option.getAttribute('value')
+                        console.log(option.getAttribute('value'));
+                        return { userName: userName, userId: userId };
+                    };
+                })).filter((n) => { return n != undefined });
+
+                const usersObj = { userDatas: selectedUsers };
+                console.log(usersObj);
+                removeChromeStorage(usersObj);
+
+            } else if (className === 'tag-remove-button') {
+                const options = document.querySelector('.tag-select').options;
+                const selectedTags = (Array.prototype.map.call((options), (option) => {
+                    if (!option.selected) {
+                        return option.getAttribute('value');
+                    };
+                })).filter((n) => { return n != undefined });
+                const tagsObj = { tagNames: selectedTags };
+                console.log(tagsObj);
+                removeChromeStorage(tagsObj);
             };
-        });
-        removeChromeStorage(userList);
+            //console.log(className);
+        })
         return;
-    });
+    }))
+    //console.log(removeButton);
 };
 
-//削除処理
-const removeChromeStorage = async (userList = []) => {
-    const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
-    let newUserList = [];
-    users.map((user) => {
-        if (!userList.includes(user.userId)) {
-            console.log(user);
-            newUserList.push(user)
-        };
-    });
-    console.log(newUserList);
-    chrome.storage.sync.set({ userKey: newUserList }, () => { return });
+//Chromeストレージから削除
+const removeChromeStorage = async (userOrTagObj = {}) => {
+    console.log(userOrTagObj);
+    if (userOrTagObj.userDatas) {
+        chrome.storage.sync.set({ userKey: userOrTagObj.userDatas });
+    } else if (userOrTagObj.tagNames) {
+        chrome.storage.sync.set({ tagName: userOrTagObj.tagNames });
+    }
     location.reload();
 };
 
