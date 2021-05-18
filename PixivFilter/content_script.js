@@ -10,13 +10,32 @@ const removeElement = (userId = String()) => {
     };
 };
 
-//ユーザー名の隣にNG登録するボタンを設置
+//ユーザー名の隣にNG登録するボタンとタグ表示ボタンを設置
 const createAddButton = async (elements = []) => new Promise(async (resolve, reject) => {
+
     await Promise.all(Array.prototype.map.call((elements), async (element, index) => {
         if (element) {
             if (!element.parentElement.nextElementSibling) {
+                const divElement = document.createElement('div');
+                divElement.className = 'pf-add-button-and-toggle';
+
                 console.log(element, index)
-                element.parentElement.insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
+
+                //ユーザー登録ボタンを設置
+                const spanElementAddButton = document.createElement('span');
+                spanElementAddButton.className = 'pf-add-button';
+                spanElementAddButton.textContent = '[+]';
+
+                //矢印を設置
+                const toggleElement = document.createElement('span');
+                toggleElement.className = 'pf-illust-info-toggle';
+                toggleElement.textContent = '▼';
+
+                divElement.appendChild(spanElementAddButton);
+                divElement.appendChild(toggleElement);
+
+                element.parentElement.parentElement.appendChild(divElement);
+                //element.parentElement.insertAdjacentHTML("afterend", '<div class="addButton"> [+]</div>');
                 return;
             };
         };
@@ -28,18 +47,13 @@ const createAddButton = async (elements = []) => new Promise(async (resolve, rej
 const createTagElement = async (illustDatas = []) => new Promise(async (resolve) => {
     console.log(illustDatas);
 
-    const targets = document.getElementsByClassName('addButton');
+    const targets = document.getElementsByClassName('pf-add-button');
 
     await Promise.all(Array.prototype.map.call((targets), async (target, index) => {
-        //矢印を追加
-        const toggleElement = document.createElement('span');
-        toggleElement.className = 'pf-illust-info-toggle';
-        toggleElement.textContent = '▼';
-        target.parentElement.appendChild(toggleElement);
 
         //タグコンテナを追加
         const tags = illustDatas[index].tags;
-        target.parentElement.parentElement.appendChild(await createTagContainer(tags));
+        target.parentElement.parentElement.parentElement.appendChild(await createTagContainer(tags));
         return;
     }));
 
@@ -97,15 +111,16 @@ const clickEvent = async () => {
     document.addEventListener('click', async (e) => {
         e.stopPropagation();
         console.log(e.target);
-        const target = e.target.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
-        if (e.target.getAttribute('class') === 'addButton') {
-            const userName = e.path[1].querySelector('[title]').getAttribute("title");
-            const userId = e.path[1].querySelector('[href]').getAttribute("href").slice(7);
+        const target = e.target.parentElement.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
+        if (e.target.getAttribute('class') === 'pf-add-button') {
+            console.log(e.path);
+            const userName = e.path[2].querySelector('[title]').getAttribute("title");
+            const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
             removeElement(userId);
         } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
-
+            console.log(target)
 
             if (target.parentElement.classList.toggle('pf-illust-info-container')) {
                 e.target.textContent = '▼';
