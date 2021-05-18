@@ -1,8 +1,15 @@
 .pf-illust-info-container{
-    display: none !important;
+    display: none;
 }
+.iasfms-0.iubowd{
+    position: relative;
+}
+
 .pf-illust-info-toggle{
     position: absolute;
-    margin-left: 10.5rem;
+    right: 0px;
+}
 
+.pf-add-button{
+    margin-right: 1rem;
 }
