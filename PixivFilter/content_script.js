@@ -96,31 +96,20 @@ const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
     resolve(illustTagcontainers[illustTagcontainers.length - 1]);
 })
 
-//外部cssを読み込む
-const loadCss = () => new Promise((resolve) => {
-    const linkElement = document.createElement('link');
-    linkElement.href = './style.css';
-    linkElement.rel = 'stylesheet';
-    linkElement.type = 'text/css';
-
-    document.getElementsByTagName('head')[0].appendChild(linkElement);
-})
-
 //クリックイベント処理
 const clickEvent = async () => {
     document.addEventListener('click', async (e) => {
         e.stopPropagation();
         console.log(e.target);
         const target = e.target.parentElement.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
+
         if (e.target.getAttribute('class') === 'pf-add-button') {
-            console.log(e.path);
             const userName = e.path[2].querySelector('[title]').getAttribute("title");
             const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
-            console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
-            removeElement(userId);
+            //removeElement(userId);
+
         } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
-            console.log(target)
 
             if (target.parentElement.classList.toggle('pf-illust-info-container')) {
                 e.target.textContent = '▼';
@@ -130,20 +119,54 @@ const clickEvent = async () => {
 
             console.log(target.parentElement);
             //console.log(.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
+        } else if (e.target.getAttribute('class') === 'pf-tag-ng-button') {
+            const tagName = e.target.getAttribute('data-tag-name');
+            addChoromeStorage({ tagName: tagName });
+
         };
     });
 };
 
 //NG登録ボタンを押したらChromeストレージに保存する
-const addChoromeStorage = async (userDic = {}) => {
-    let users = [];
-    users = await checkGoogleStorage({ key: "userKey", isAdd: true });
-    if (!users) {
-        chrome.storage.sync.set({ userKey: [userDic] }, () => { return });
-    } else {
-        users.push(userDic);
-        console.log(users)
-        chrome.storage.sync.set({ userKey: users }, () => { return });
+const addChoromeStorage = async (illustDataDic = {}) => {
+
+    if (illustDataDic.userName) {
+        const userDatas = await new Promise((resolve) => {
+            chrome.storage.sync.get(['userKey'], (results) => {
+                if (results.userKey) {
+                    resolve(results.userKey);
+                } else {
+                    resolve([]);
+                };
+            });
+        });
+        //重複している場合は保存しない
+        //userIdのみの配列を作成
+        const userIds = userDatas.map((result) => {
+            return (result.userId);
+        })
+        //クリックしたユーザーが保存されているかを確認
+        if (!userIds.includes(illustDataDic.userId)) {
+            userDatas.push(illustDataDic);
+        };
+
+        chrome.storage.sync.set({ userKey: userDatas });
+        chrome.storage.sync.get(null, (results) => { console.log(results); });
+
+    } else if (illustDataDic.tagName) {
+        const tags = await new Promise((resolve) => {
+            chrome.storage.sync.get(['tagName'], (results) => {
+                if (results.tagName) { resolve(results.tagName); } else { resolve([]); };
+            });
+        });
+        tags.push(illustDataDic.tagName);
+
+        //重複を削除
+        const newTags = Array.from(new Set(tags));
+
+        chrome.storage.sync.set({ tagName: newTags });
+        chrome.storage.sync.get(null, (results) => { console.log(results); });
+        console.log(newTags);
     };
 };
 
@@ -195,8 +218,6 @@ const main = async (illustDatas) => {
             await createAddButton(elements);
             console.log("test");
             await createTagElement(illustDatas);
-            console.log("test");
-            //await loadCss();
             console.log("test");
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
