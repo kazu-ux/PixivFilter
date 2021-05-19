@@ -13,3 +13,7 @@
 .pf-add-button{
     margin-right: 1rem;
 }
+
+.pf-illust-info-toggle,.pf-add-button,.pf-tag-ng-button{
+    cursor: pointer;
+}
