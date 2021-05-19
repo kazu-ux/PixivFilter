@@ -9,7 +9,6 @@ const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
             if (targets) {
                 Array.prototype.map.call((targets), (target) => {
                     target.closest('.iasfms-0.iubowd').parentElement.parentElement.style.display = 'none';
-                    //console.log(target);
                 });
             };
         });
@@ -79,6 +78,7 @@ const createTagElement = async (illustDatas = []) => new Promise(async (resolve)
     resolve();
 })
 
+//タグコンテナ
 const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
     const pElement = document.createElement('p');
     pElement.className = 'pf-tag-container';
@@ -116,36 +116,36 @@ const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
 })
 
 //クリックイベント処理
-const clickEvent = async () => {
-    document.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        console.log(e.target);
-        const target = e.target.parentElement.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
+const clickEvent = (e) => {
+    e.stopPropagation();
+    console.log(e.target);
+    const target = e.target.parentElement.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
 
-        if (e.target.getAttribute('class') === 'pf-add-button') {
-            const userName = e.path[2].querySelector('[title]').getAttribute("title");
-            const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
-            addChoromeStorage({ userName: userName, userId: userId });
-            removeElement({ userKey: [{ userName: userName, userId: userId }] });
+    if (e.target.getAttribute('class') === 'pf-add-button') {
+        const userName = e.path[2].querySelector('[title]').getAttribute("title");
+        const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
+        addChoromeStorage({ userName: userName, userId: userId });
+        removeElement({ userKey: [{ userName: userName, userId: userId }] });
 
-        } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
+    } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
 
-            if (target.parentElement.classList.toggle('pf-illust-info-container')) {
-                e.target.textContent = '▼';
-            } else {
-                e.target.textContent = '▲';
-            };
-
-            console.log(target.parentElement);
-
-        } else if (e.target.getAttribute('class') === 'pf-tag-ng-button') {
-            const tagName = e.target.getAttribute('data-tag-name');
-            addChoromeStorage({ tagName: tagName });
-            removeElement({ tagName: [tagName] });
-
+        if (target.parentElement.classList.toggle('pf-illust-info-container')) {
+            e.target.textContent = '▼';
+        } else {
+            e.target.textContent = '▲';
         };
-    });
+
+        console.log(target.parentElement);
+
+    } else if (e.target.getAttribute('class') === 'pf-tag-ng-button') {
+        const tagName = e.target.getAttribute('data-tag-name');
+        addChoromeStorage({ tagName: tagName });
+        removeElement({ tagName: [tagName] });
+
+    }
 };
+
+document.addEventListener('click', clickEvent);
 
 //NG登録ボタンを押したらChromeストレージに保存する
 const addChoromeStorage = async (illustDataDic = {}) => {
@@ -199,27 +199,6 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
         console.log(results);
         resolve();
     });
-    /*if (parameter.isAdd) {
-        chrome.storage.sync.get([parameter.key], (results = {}) => {
-            if (results === {}) {
-                resolve([]);
-            } else {
-                const user = results.userKey;
-                console.log(user)
-                resolve(user)
-            };
-        });
-    } else if (!parameter.isAdd) {
-        chrome.storage.sync.get([parameter.key], (results = {}) => {
-            const user = results.userKey;
-            if (user) {
-                user.map((info) => {
-                    removeElement(info.userId)
-                });
-            };
-            resolve();
-        });
-    };*/
 });
 
 const scrollEvent = async (elements) => {
@@ -241,14 +220,13 @@ const main = async (illustDatas) => {
         if (elements[0]) {
             clearInterval(interval);
             console.log("test");
-            scrollEvent(elements);
+            //scrollEvent(elements);
             await createAddButton(elements);
             console.log("test");
             await createTagElement(illustDatas);
             console.log("test");
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
-            await clickEvent();
         };
     }, 100);
 };
