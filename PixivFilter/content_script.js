@@ -1,14 +1,33 @@
 //NG登録したユーザーのイラストを非表示
-const removeElement = (userId = String()) => {
-    console.log(userId);
-    const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
-    if (targets) {
-        Array.prototype.map.call((targets), (target) => {
-            target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
-            console.log(target);
+const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
+    console.log(userOrTagObj);
+    if (userOrTagObj.userKey) {
+        const userDatas = userOrTagObj.userKey;
+        userDatas.map((userData) => {
+            const userId = userData.userId;
+            const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
+            if (targets) {
+                Array.prototype.map.call((targets), (target) => {
+                    target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
+                    //console.log(target);
+                });
+            };
+        });
+
+    } else if (userOrTagObj.tagName) {
+        const tags = userOrTagObj.tagName;
+        tags.map((tag) => {
+            const targets = document.querySelectorAll(`[data-tag-name="${tag}"]`);
+            if (targets) {
+                Array.prototype.map.call((targets), (target) => {
+                    //target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
+                    console.log(target.closest('.l7cibp-2').remove());
+                });
+            };
         });
     };
-};
+    resolve();
+});
 
 //ユーザー名の隣にNG登録するボタンとタグ表示ボタンを設置
 const createAddButton = async (elements = []) => new Promise(async (resolve, reject) => {
@@ -19,7 +38,7 @@ const createAddButton = async (elements = []) => new Promise(async (resolve, rej
                 const divElement = document.createElement('div');
                 divElement.className = 'pf-add-button-and-toggle';
 
-                console.log(element, index)
+                //console.log(element, index)
 
                 //ユーザー登録ボタンを設置
                 const spanElementAddButton = document.createElement('span');
@@ -92,7 +111,7 @@ const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
         return divElement;
     }));
 
-    console.log(illustTagcontainers);
+    //console.log(illustTagcontainers);
     resolve(illustTagcontainers[illustTagcontainers.length - 1]);
 })
 
@@ -107,7 +126,7 @@ const clickEvent = async () => {
             const userName = e.path[2].querySelector('[title]').getAttribute("title");
             const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
             addChoromeStorage({ userName: userName, userId: userId });
-            //removeElement(userId);
+            removeElement({ userKey: [{ userName: userName, userId: userId }] });
 
         } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
 
@@ -115,13 +134,14 @@ const clickEvent = async () => {
                 e.target.textContent = '▼';
             } else {
                 e.target.textContent = '▲';
-            }
+            };
 
             console.log(target.parentElement);
-            //console.log(.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
+
         } else if (e.target.getAttribute('class') === 'pf-tag-ng-button') {
             const tagName = e.target.getAttribute('data-tag-name');
             addChoromeStorage({ tagName: tagName });
+            removeElement({ tagName: [tagName] });
 
         };
     });
@@ -173,7 +193,13 @@ const addChoromeStorage = async (illustDataDic = {}) => {
 
 //ChromeストレージにNGユーザーが登録されているかを確認
 const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => new Promise((resolve) => {
-    if (parameter.isAdd) {
+    chrome.storage.sync.get(null, async (results) => {
+        await removeElement({ userKey: results.userKey });
+        await removeElement({ tagName: results.tagName });
+        console.log(results);
+        resolve();
+    });
+    /*if (parameter.isAdd) {
         chrome.storage.sync.get([parameter.key], (results = {}) => {
             if (results === {}) {
                 resolve([]);
@@ -193,7 +219,7 @@ const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => ne
             };
             resolve();
         });
-    };
+    };*/
 });
 
 const scrollEvent = async (elements) => {
