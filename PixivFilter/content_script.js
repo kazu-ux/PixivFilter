@@ -8,7 +8,7 @@ const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
             const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
             if (targets) {
                 Array.prototype.map.call((targets), (target) => {
-                    target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
+                    target.closest('.iasfms-0.iubowd').parentElement.parentElement.style.display = 'none';
                     //console.log(target);
                 });
             };
@@ -21,7 +21,7 @@ const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
             if (targets) {
                 Array.prototype.map.call((targets), (target) => {
                     //target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
-                    console.log(target.closest('.l7cibp-2').remove());
+                    console.log(target.closest('.l7cibp-2').style.display = 'none');
                 });
             };
         });
