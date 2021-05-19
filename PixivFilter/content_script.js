@@ -68,7 +68,6 @@ const createTagElement = async (illustDatas = []) => new Promise(async (resolve)
     const targets = document.getElementsByClassName('pf-add-button');
 
     await Promise.all(Array.prototype.map.call((targets), async (target, index) => {
-
         //タグコンテナを追加
         const tags = illustDatas[index].tags;
         target.parentElement.parentElement.parentElement.appendChild(await createTagContainer(tags));
@@ -230,6 +229,11 @@ const main = async (illustDatas) => {
         };
     }, 100);
 };
+/*
+chrome.storage.local.get(["illustDatas"], (illustDatas) => {
+       
+});
+*/
 
 chrome.runtime.onMessage.addListener((illustDatas = []) => {
     main(illustDatas);
