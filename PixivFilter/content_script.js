@@ -1,14 +1,32 @@
 //NG登録したユーザーのイラストを非表示
-const removeElement = (userId = String()) => {
-    console.log(userId);
-    const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
-    if (targets) {
-        Array.prototype.map.call((targets), (target) => {
-            target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
-            console.log(target);
+const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
+    console.log(userOrTagObj);
+    if (userOrTagObj.userKey) {
+        const userDatas = userOrTagObj.userKey;
+        userDatas.map((userData) => {
+            const userId = userData.userId;
+            const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
+            if (targets) {
+                Array.prototype.map.call((targets), (target) => {
+                    target.closest('.iasfms-0.iubowd').parentElement.parentElement.style.display = 'none';
+                });
+            };
+        });
+
+    } else if (userOrTagObj.tagName) {
+        const tags = userOrTagObj.tagName;
+        tags.map((tag) => {
+            const targets = document.querySelectorAll(`[data-tag-name="${tag}"]`);
+            if (targets) {
+                Array.prototype.map.call((targets), (target) => {
+                    //target.closest('.iasfms-0.iubowd').parentElement.parentElement.remove();
+                    console.log(target.closest('.l7cibp-2').style.display = 'none');
+                });
+            };
         });
     };
-};
+    resolve();
+});
 
 //ユーザー名の隣にNG登録するボタンとタグ表示ボタンを設置
 const createAddButton = async (elements = []) => new Promise(async (resolve, reject) => {
@@ -19,7 +37,7 @@ const createAddButton = async (elements = []) => new Promise(async (resolve, rej
                 const divElement = document.createElement('div');
                 divElement.className = 'pf-add-button-and-toggle';
 
-                console.log(element, index)
+                //console.log(element, index)
 
                 //ユーザー登録ボタンを設置
                 const spanElementAddButton = document.createElement('span');
@@ -60,6 +78,7 @@ const createTagElement = async (illustDatas = []) => new Promise(async (resolve)
     resolve();
 })
 
+//タグコンテナ
 const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
     const pElement = document.createElement('p');
     pElement.className = 'pf-tag-container';
@@ -92,40 +111,41 @@ const createTagContainer = (illustTags = []) => new Promise(async (resolve) => {
         return divElement;
     }));
 
-    console.log(illustTagcontainers);
+    //console.log(illustTagcontainers);
     resolve(illustTagcontainers[illustTagcontainers.length - 1]);
 })
 
 //クリックイベント処理
-const clickEvent = async () => {
-    document.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        console.log(e.target);
-        const target = e.target.parentElement.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
+const clickEvent = (e) => {
+    e.stopPropagation();
+    console.log(e.target);
+    const target = e.target.parentElement.parentElement.parentElement.getElementsByClassName("pf-tag-container")[0];
 
-        if (e.target.getAttribute('class') === 'pf-add-button') {
-            const userName = e.path[2].querySelector('[title]').getAttribute("title");
-            const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
-            addChoromeStorage({ userName: userName, userId: userId });
-            //removeElement(userId);
+    if (e.target.getAttribute('class') === 'pf-add-button') {
+        const userName = e.path[2].querySelector('[title]').getAttribute("title");
+        const userId = e.path[2].querySelector('[href]').getAttribute("href").slice(7);
+        addChoromeStorage({ userName: userName, userId: userId });
+        removeElement({ userKey: [{ userName: userName, userId: userId }] });
 
-        } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
+    } else if (e.target.getAttribute('class') === 'pf-illust-info-toggle') {
 
-            if (target.parentElement.classList.toggle('pf-illust-info-container')) {
-                e.target.textContent = '▼';
-            } else {
-                e.target.textContent = '▲';
-            }
-
-            console.log(target.parentElement);
-            //console.log(.getElementsByClassName("iasfms-0 iubowd pf-illust-info-container")[0].style.display = "flex");
-        } else if (e.target.getAttribute('class') === 'pf-tag-ng-button') {
-            const tagName = e.target.getAttribute('data-tag-name');
-            addChoromeStorage({ tagName: tagName });
-
+        if (target.parentElement.classList.toggle('pf-illust-info-container')) {
+            e.target.textContent = '▼';
+        } else {
+            e.target.textContent = '▲';
         };
-    });
+
+        console.log(target.parentElement);
+
+    } else if (e.target.getAttribute('class') === 'pf-tag-ng-button') {
+        const tagName = e.target.getAttribute('data-tag-name');
+        addChoromeStorage({ tagName: tagName });
+        removeElement({ tagName: [tagName] });
+
+    }
 };
+
+document.addEventListener('click', clickEvent);
 
 //NG登録ボタンを押したらChromeストレージに保存する
 const addChoromeStorage = async (illustDataDic = {}) => {
@@ -173,27 +193,12 @@ const addChoromeStorage = async (illustDataDic = {}) => {
 
 //ChromeストレージにNGユーザーが登録されているかを確認
 const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => new Promise((resolve) => {
-    if (parameter.isAdd) {
-        chrome.storage.sync.get([parameter.key], (results = {}) => {
-            if (results === {}) {
-                resolve([]);
-            } else {
-                const user = results.userKey;
-                console.log(user)
-                resolve(user)
-            };
-        });
-    } else if (!parameter.isAdd) {
-        chrome.storage.sync.get([parameter.key], (results = {}) => {
-            const user = results.userKey;
-            if (user) {
-                user.map((info) => {
-                    removeElement(info.userId)
-                });
-            };
-            resolve();
-        });
-    };
+    chrome.storage.sync.get(null, async (results) => {
+        await removeElement({ userKey: results.userKey });
+        await removeElement({ tagName: results.tagName });
+        console.log(results);
+        resolve();
+    });
 });
 
 const scrollEvent = async (elements) => {
@@ -215,14 +220,13 @@ const main = async (illustDatas) => {
         if (elements[0]) {
             clearInterval(interval);
             console.log("test");
-            scrollEvent(elements);
+            //scrollEvent(elements);
             await createAddButton(elements);
             console.log("test");
             await createTagElement(illustDatas);
             console.log("test");
             await checkGoogleStorage({ key: "userKey", isAdd: false });
             console.log("test");
-            await clickEvent();
         };
     }, 100);
 };

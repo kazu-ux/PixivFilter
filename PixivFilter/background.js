@@ -28,8 +28,11 @@ chrome.webRequest.onBeforeRequest.addListener(
             illustDatas = await Promise.all(illustDatas.map((illustData) => {
                 const illustId = illustData.id;
                 const tags = illustData.tags;
-                return { illustId: illustId, tags: tags };
+                if (illustId) {
+                    return { illustId: illustId, tags: tags };
+                };
             }));
+            illustDatas = illustDatas.filter((n) => { return n != undefined });
             console.log(illustDatas);
             //{illustId:"",tags:[]}
             chrome.tabs.sendMessage(await getTabId(), illustDatas);
