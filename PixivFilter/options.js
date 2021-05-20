@@ -1,25 +1,20 @@
 //HTMLを生成
 const createHtml = () => new Promise(async (resolve) => {
-    const users = await checkGoogleStorage({ key: "userKey", isAdd: true });
-    if (users) {
-        users.map((userDic) => {
-            const userName = userDic.userName;
-            const userId = userDic.userId;
-            const optionElement = document.createElement('option');
-            optionElement.textContent = userName;
-            optionElement.value = userId;
-            document.querySelector('.user-select').appendChild(optionElement);
-        });
-    };
+    const users = await getUserForGoogleStorage();
+
+    users.map((userDic) => {
+        const userName = userDic.userName;
+        const userId = userDic.userId;
+        const optionElement = document.createElement('option');
+        optionElement.textContent = userName;
+        optionElement.value = userId;
+        document.querySelector('.user-select').appendChild(optionElement);
+    });
+
 
     const fragment = document.createDocumentFragment();
 
-    const tagList = await new Promise((resolve) => {
-        chrome.storage.sync.get(['tagName'], (results) => {
-            if (results.tagName) { resolve(results.tagName); } else { resolve([]); };
-        });
-    });
-    console.log(tagList);
+    const tagList = await getTagFromChromeStorage();
 
     await Promise.all(tagList.map((tag) => {
         const optionElement = document.createElement('option');
@@ -30,40 +25,27 @@ const createHtml = () => new Promise(async (resolve) => {
     }));
     console.log(fragment);
     document.querySelector('.tag-select').appendChild(fragment);
-
-    const interval = setInterval(() => {
-        const target = document.getElementsByTagName('body')[0];
-        if (target) {
-            clearInterval(interval);
-            resolve();
-        };
-    }, 100);
+    resolve();
 });
 
 //Chromeストレージからユーザー情報を取得
-const checkGoogleStorage = (parameter = { key: String(), isAdd: Boolean }) => new Promise((resolve) => {
-    if (parameter.isAdd) {
-        chrome.storage.sync.get([parameter.key], (results = {}) => {
-            if (results === {}) {
-                resolve([]);
-            } else {
-                const user = results.userKey;
-                console.log(user)
-                resolve(user)
-            };
-        });
-    } else if (!parameter.isAdd) {
-        chrome.storage.sync.get([parameter.key], (results = {}) => {
+const getUserForGoogleStorage = () => new Promise((resolve) => {
+    chrome.storage.sync.get(["userKey"], (results = {}) => {
+        if (results === {}) {
+            resolve([]);
+        } else {
             const user = results.userKey;
-            if (user) {
-                user.map((info) => {
-                    console.log(info);
-                    deleteElement(info.userId)
-                });
-            };
-            resolve();
-        });
-    };
+            console.log(user)
+            resolve(user)
+        };
+    });
+});
+
+//Chromeストレージから保存してあるタグを取得
+const getTagFromChromeStorage = () => new Promise((resolve) => {
+    chrome.storage.sync.get(['tagName'], (results) => {
+        if (results.tagName) { resolve(results.tagName); } else { resolve([]); };
+    });
 });
 
 //クリックイベント
@@ -98,11 +80,9 @@ const clickEvent = async () => {
                 console.log(tagsObj);
                 removeChromeStorage(tagsObj);
             };
-            //console.log(className);
-        })
+        });
         return;
-    }))
-    //console.log(removeButton);
+    }));
 };
 
 //Chromeストレージから削除
@@ -118,7 +98,7 @@ const removeChromeStorage = async (userOrTagObj = {}) => {
 
 const main = async () => {
     await createHtml();
-    await clickEvent()
+    clickEvent()
 
 };
 
