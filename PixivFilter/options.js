@@ -23,7 +23,7 @@ const createHtml = () => new Promise(async (resolve) => {
         fragment.appendChild(optionElement);
         return fragment;
     }));
-    console.log(fragment);
+
     document.querySelector('.tag-select').appendChild(fragment);
     resolve();
 });
@@ -31,11 +31,12 @@ const createHtml = () => new Promise(async (resolve) => {
 //Chromeストレージからユーザー情報を取得
 const getUserForGoogleStorage = () => new Promise((resolve) => {
     chrome.storage.sync.get(["userKey"], (results = {}) => {
-        if (results === {}) {
+
+        if (Object.keys(results).length === 0) {
             resolve([]);
         } else {
             const user = results.userKey;
-            console.log(user)
+
             resolve(user)
         };
     });

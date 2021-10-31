@@ -7,7 +7,8 @@ const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
             const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
             if (targets) {
                 Array.prototype.map.call((targets), (target) => {
-                    target.closest('.iasfms-0.iubowd').parentElement.parentElement.style.display = 'none';
+
+                    target.closest('li').style.display = 'none';
                 });
             };
         });
@@ -18,7 +19,8 @@ const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
             const targets = document.querySelectorAll(`[data-tag-name="${tag}"]`);
             if (targets) {
                 Array.prototype.map.call((targets), (target) => {
-                    target.closest('.l7cibp-2').style.display = 'none';
+
+                    target.closest('li').style.display = 'none';
                 });
             };
         });
@@ -30,6 +32,7 @@ const removeElement = (userOrTagObj = {}) => new Promise((resolve) => {
 const createAddButton = async (elements = []) => new Promise(async (resolve, reject) => {
 
     await Promise.all(Array.prototype.map.call((elements), async (element, index) => {
+
         if (element) {
             if (!element.parentElement.nextElementSibling) {
                 const divElement = document.createElement('div');
@@ -48,7 +51,11 @@ const createAddButton = async (elements = []) => new Promise(async (resolve, rej
                 divElement.appendChild(spanElementAddButton);
                 divElement.appendChild(toggleElement);
 
-                element.parentElement.parentElement.appendChild(divElement);
+                const userContainerElement = element.parentElement.parentElement;
+
+                // トグルボタンをユーザーごとの右端に配置するため
+                userContainerElement.style.position = 'relative';
+                userContainerElement.appendChild(divElement);
                 return;
             };
         };
@@ -188,7 +195,7 @@ document.addEventListener('click', clickEvent);
 const main = async (illustDatas) => {
     const interval = setInterval(async () => {
         //要素が読み込まれるまで待機
-        const elements = document.getElementsByClassName("sc-1rx6dmq-2 cjMwiA");
+        const elements = document.getElementsByClassName("sc-1rx6dmq-2");
         if (elements[0]) {
             clearInterval(interval);
             await createAddButton(elements);
