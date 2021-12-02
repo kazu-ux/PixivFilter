@@ -1,0 +1,16 @@
+{
+  "name": "pixivfilter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/chrome": "0.0.166",
+    "typescript": "^4.5.2"
+  }
+}
