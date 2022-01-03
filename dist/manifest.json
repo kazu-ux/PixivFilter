@@ -20,7 +20,7 @@
     "*://www.pixiv.net/"
   ],
   "background": {
-    "scripts": ["background.js", "hot-reload.js"],
+    "scripts": ["background.js"],
     "persistent": true
   },
   "options_page": "./options/options.html"
