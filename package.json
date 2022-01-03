@@ -1,0 +1,24 @@
+{
+  "name": "pixiv-filter-v2",
+  "version": "1.0.0",
+  "description": "PixivでNG登録したタグやユーザー名のイラストを非表示にします。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kazu-ux/PixivFilter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kazu-ux/PixivFilter/issues"
+  },
+  "homepage": "https://github.com/kazu-ux/PixivFilter#readme",
+  "dependencies": {
+    "@types/chrome": "^0.0.174"
+  }
+}
