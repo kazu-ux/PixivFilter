@@ -117,6 +117,7 @@ const clickEvent = (e) => {
             .querySelector('[href]')
             .getAttribute('href')
             .slice(7);
+        console.log(userName, userId);
         addChoromeStorage({ userName: userName, userId: userId });
         removeElement({ userKey: [{ userName: userName, userId: userId }] });
     }
@@ -138,7 +139,7 @@ const clickEvent = (e) => {
 const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, function* () {
     if (illustDataDic.userName) {
         const userDatas = yield new Promise((resolve) => {
-            chrome.storage.sync.get(['userKey'], (results) => {
+            chrome.storage.local.get(['userKey'], (results) => {
                 if (results.userKey) {
                     resolve(results.userKey);
                 }
@@ -148,9 +149,6 @@ const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, f
             });
         });
         //重複している場合は保存しない
-        if (!userDatas.length) {
-            return;
-        }
         //userIdのみの配列を作成
         const userIds = userDatas.map((result) => {
             return result.userId;
@@ -159,15 +157,15 @@ const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, f
         if (!userIds.includes(illustDataDic.userId)) {
             userDatas.push(illustDataDic);
         }
-        chrome.storage.sync.set({ userKey: userDatas });
-        chrome.storage.sync.get(null, (results) => {
+        chrome.storage.local.set({ userKey: userDatas });
+        chrome.storage.local.get(null, (results) => {
             console.log(results);
         });
     }
     else if (illustDataDic.tagName) {
         //保存してあるタグを取得
         const tags = yield new Promise((resolve) => {
-            chrome.storage.sync.get(['tagName'], (results) => {
+            chrome.storage.local.get(['tagName'], (results) => {
                 if (results.tagName) {
                     resolve(results.tagName);
                 }
@@ -179,15 +177,15 @@ const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, f
         tags.push(illustDataDic.tagName);
         //重複を削除
         const newTags = Array.from(new Set(tags));
-        chrome.storage.sync.set({ tagName: newTags });
-        chrome.storage.sync.get(null, (results) => {
+        chrome.storage.local.set({ tagName: newTags });
+        chrome.storage.local.get(null, (results) => {
             console.log(results);
         });
     }
 });
 //ChromeストレージにNGユーザーが登録されているかを確認
 const checkGoogleStorage = () => new Promise((resolve) => {
-    chrome.storage.sync.get(null, (results) => __awaiter(void 0, void 0, void 0, function* () {
+    chrome.storage.local.get(null, (results) => __awaiter(void 0, void 0, void 0, function* () {
         yield removeElement({ userKey: results.userKey });
         yield removeElement({ tagName: results.tagName });
         resolve();
