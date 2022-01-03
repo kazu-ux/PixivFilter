@@ -12,6 +12,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     //HTMLを生成
     const createHtml = () => new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const users = yield getUserForGoogleStorage();
+        // NGユーザー数を表示する
+        const userCount = users.length;
+        document.querySelector('.user-count').textContent = `(${userCount})`;
         users.map((userDic) => {
             const userName = userDic.userName;
             const userId = userDic.userId;
@@ -22,6 +25,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         });
         const fragment = document.createDocumentFragment();
         const tagList = yield getTagFromChromeStorage();
+        // NGタグ数を表示する
+        const tagCount = tagList.length;
+        document.querySelector('.tag-count').textContent = `(${tagCount})`;
         yield Promise.all(tagList.map((tag) => {
             const optionElement = document.createElement('option');
             optionElement.textContent = tag;

@@ -4,6 +4,10 @@
     new Promise<void>(async (resolve) => {
       const users = await getUserForGoogleStorage();
 
+      // NGユーザー数を表示する
+      const userCount = users.length;
+      document.querySelector('.user-count')!.textContent = `(${userCount})`;
+
       users.map((userDic) => {
         const userName = userDic.userName;
         const userId = userDic.userId;
@@ -16,6 +20,10 @@
       const fragment = document.createDocumentFragment();
 
       const tagList = await getTagFromChromeStorage();
+
+      // NGタグ数を表示する
+      const tagCount = tagList.length;
+      document.querySelector('.tag-count')!.textContent = `(${tagCount})`;
 
       await Promise.all(
         tagList.map((tag) => {

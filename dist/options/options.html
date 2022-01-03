@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="options.js"></script>
-</head>
+    <link rel="stylesheet" href="options.css" />
+  </head>
 
-<body>
+  <body>
     <div class="ng-user-container">
-        <div class="ng-user-title">ブロックするユーザー</div>
-        <select class="user-select" multiple="" name="userNames" size="10" style="width: 20vw;"></select>
-        <button class="user-remove-button" name="remove">消去</button>
+      <div class="ng-user-title">
+        ブロックするユーザー
+        <div class="user-count"></div>
+      </div>
+
+      <select class="user-select" multiple="" name="userNames"></select>
+      <button class="user-remove-button" name="remove">消去</button>
     </div>
     <div class="ng-tag-container">
-        <div class="ng-tag-title">ブロックするタグ</div>
-        <select class="tag-select" multiple="" name="userNames" size="10" style="width: 20vw;"></select>
-        <button class="tag-remove-button" name="remove">消去</button>
-    </div>
-</body>
+      <div class="ng-tag-title">
+        ブロックするタグ
+        <div class="tag-count"></div>
+      </div>
 
+      <select class="tag-select" multiple="" name="userNames"></select>
+      <button class="tag-remove-button" name="remove">消去</button>
+    </div>
+  </body>
 </html>
