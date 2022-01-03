@@ -1,0 +1,25 @@
+.pf-illust-info-container {
+  display: none;
+}
+
+.pf-add-button {
+  margin-left: 0.5rem;
+  margin-right: 2rem;
+}
+
+.pf-illust-info-toggle {
+  position: absolute;
+  right: 0px;
+  margin-left: 1rem;
+}
+
+.pf-tag-ng-button {
+  margin-left: 0.5rem;
+}
+
+.pf-illust-info-toggle,
+.pf-add-button,
+.pf-tag-ng-button {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
