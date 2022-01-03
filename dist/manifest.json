@@ -23,5 +23,5 @@
     "scripts": ["background.js", "hot-reload.js"],
     "persistent": true
   },
-  "options_page": "options.html"
+  "options_page": "./options/options.html"
 }
