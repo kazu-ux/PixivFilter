@@ -9,7 +9,10 @@ module.exports = {
   // entry: './src/main.ts',
   entry: {
     background: path.join(__dirname, 'src/background.ts'),
+    content_script: path.join(__dirname, 'src/content_script.ts'),
   },
+
+  devtool: false,
 
   module: {
     rules: [
