@@ -1,3 +1,5 @@
+import { deepmerge } from 'deepmerge-ts';
+
 const getTabId = () =>
   new Promise<number>((resolve, reject) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
@@ -99,6 +101,9 @@ chrome.webRequest.onBeforeRequest.addListener(
       });
     });
   };
+
+  const merged = deepmerge(await getSyncStorage(), await getLocalStorage());
+  console.log(merged);
 
   const setLocalStorage = (syncObject: NGData) => {
     chrome.storage.local.set(syncObject);

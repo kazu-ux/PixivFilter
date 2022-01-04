@@ -2,7 +2,6 @@
   "name": "pixiv-filter-v2",
   "version": "1.0.0",
   "description": "PixivでNG登録したタグやユーザーのイラストを非表示にします。",
-  "main": "./dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc --watch"
