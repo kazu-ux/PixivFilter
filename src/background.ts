@@ -76,6 +76,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 );
 
 (async () => {
+  console.log('test');
   type NGData =
     | {}
     | {

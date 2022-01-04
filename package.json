@@ -2,7 +2,7 @@
   "name": "pixiv-filter-v2",
   "version": "1.0.0",
   "description": "PixivでNG登録したタグやユーザーのイラストを非表示にします。",
-  "main": "index.js",
+  "main": "./dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc --watch"
@@ -22,7 +22,6 @@
     "@types/chrome": "^0.0.174",
     "deepmerge-ts": "^2.0.1"
   },
-  "type": "module",
   "devDependencies": {
     "ts-loader": "^9.2.6",
     "webpack": "^5.65.0",
