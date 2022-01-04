@@ -94,6 +94,14 @@ chrome.webRequest.onBeforeRequest.addListener(
     });
   };
 
+  const setSyncStorage = () => {
+    chrome.storage.sync.set({
+      tagName: ['tag'],
+      userKey: [{ userId: '1111', userName: 'aaa' }],
+    });
+  };
+  // setSyncStorage();
+
   const getLocalStorage = () => {
     return new Promise<NGData>((resolve, reject) => {
       chrome.storage.local.get(null, (result: { [key: string]: NGData }) => {

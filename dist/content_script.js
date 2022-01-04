@@ -1,4 +1,10 @@
-"use strict";
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
+/*!*******************************!*\
+  !*** ./src/content_script.ts ***!
+  \*******************************/
+
 //NG登録したユーザーのイラストを非表示
 const removeElement = (userOrTagObj) => new Promise((resolve) => {
     if (userOrTagObj.userKey) {
@@ -194,3 +200,6 @@ const main = async (illustDatas) => {
 chrome.runtime.onMessage.addListener((illustDatas = []) => {
     main(illustDatas);
 });
+
+/******/ })()
+;
