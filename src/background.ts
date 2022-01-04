@@ -74,3 +74,39 @@ chrome.webRequest.onBeforeRequest.addListener(
   { urls: ['*://www.pixiv.net/*'] },
   ['requestBody', 'blocking']
 );
+
+(async () => {
+  type NGData =
+    | {}
+    | {
+        tagName: string[];
+        userKey: { userId: string; uerName: string }[];
+      };
+
+  const getSyncStorage = () => {
+    return new Promise<NGData>((resolve, reject) => {
+      chrome.storage.sync.get(null, (result: { [key: string]: NGData }) => {
+        resolve(result);
+      });
+    });
+  };
+
+  const getLocalStorage = () => {
+    return new Promise<NGData>((resolve, reject) => {
+      chrome.storage.local.get(null, (result: { [key: string]: NGData }) => {
+        resolve(result);
+      });
+    });
+  };
+
+  const setLocalStorage = (syncObject: NGData) => {
+    chrome.storage.local.set(syncObject);
+  };
+  const SyncObject = await getSyncStorage();
+
+  if (Object.keys(SyncObject).length) {
+    // setLocalStorage(SyncObject);
+  } else {
+    return;
+  }
+})();
