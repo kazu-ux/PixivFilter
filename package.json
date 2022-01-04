@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/kazu-ux/PixivFilter#readme",
   "dependencies": {
-    "@types/chrome": "^0.0.174"
-  }
+    "@types/chrome": "^0.0.174",
+    "deepmerge-ts": "^2.0.1"
+  },
+  "type": "module"
 }

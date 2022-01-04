@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 //NG登録したユーザーのイラストを非表示
 const removeElement = (userOrTagObj) => new Promise((resolve) => {
     if (userOrTagObj.userKey) {
@@ -36,52 +27,48 @@ const removeElement = (userOrTagObj) => new Promise((resolve) => {
     resolve();
 });
 //ユーザー名の隣にNG登録するボタンとタグ表示ボタンを設置
-const createAddButton = (elements) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        yield Promise.all(Array.prototype.map.call(elements, (element, index) => __awaiter(void 0, void 0, void 0, function* () {
-            if (element) {
-                if (!element.parentElement.nextElementSibling) {
-                    const divElement = document.createElement('div');
-                    divElement.className = 'pf-add-button-and-toggle';
-                    //ユーザー登録ボタンを設置
-                    const spanElementAddButton = document.createElement('span');
-                    spanElementAddButton.className = 'pf-add-button';
-                    spanElementAddButton.textContent = '[+]';
-                    //矢印を設置
-                    const toggleElement = document.createElement('span');
-                    toggleElement.className = 'pf-illust-info-toggle';
-                    toggleElement.textContent = '▼';
-                    divElement.appendChild(spanElementAddButton);
-                    divElement.appendChild(toggleElement);
-                    const userContainerElement = element.parentElement.parentElement;
-                    // トグルボタンをユーザーごとの右端に配置するため
-                    userContainerElement.style.position = 'relative';
-                    userContainerElement.appendChild(divElement);
-                    return;
-                }
+const createAddButton = async (elements) => new Promise(async (resolve, reject) => {
+    await Promise.all(Array.prototype.map.call(elements, async (element, index) => {
+        if (element) {
+            if (!element.parentElement.nextElementSibling) {
+                const divElement = document.createElement('div');
+                divElement.className = 'pf-add-button-and-toggle';
+                //ユーザー登録ボタンを設置
+                const spanElementAddButton = document.createElement('span');
+                spanElementAddButton.className = 'pf-add-button';
+                spanElementAddButton.textContent = '[+]';
+                //矢印を設置
+                const toggleElement = document.createElement('span');
+                toggleElement.className = 'pf-illust-info-toggle';
+                toggleElement.textContent = '▼';
+                divElement.appendChild(spanElementAddButton);
+                divElement.appendChild(toggleElement);
+                const userContainerElement = element.parentElement.parentElement;
+                // トグルボタンをユーザーごとの右端に配置するため
+                userContainerElement.style.position = 'relative';
+                userContainerElement.appendChild(divElement);
+                return;
             }
-        })));
-        resolve();
+        }
     }));
+    resolve();
 });
 //タグを表示する
-const createTagElement = (illustDatas) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        const targets = document.getElementsByClassName('pf-add-button');
-        yield Promise.all(Array.prototype.map.call(targets, (target, index) => __awaiter(void 0, void 0, void 0, function* () {
-            //タグコンテナを追加
-            const tags = illustDatas[index].tags;
-            target.parentElement.parentElement.parentElement.appendChild(yield createTagContainer(tags));
-            return;
-        })));
-        resolve();
+const createTagElement = async (illustDatas) => new Promise(async (resolve) => {
+    const targets = document.getElementsByClassName('pf-add-button');
+    await Promise.all(Array.prototype.map.call(targets, async (target, index) => {
+        //タグコンテナを追加
+        const tags = illustDatas[index].tags;
+        target.parentElement.parentElement.parentElement.appendChild(await createTagContainer(tags));
+        return;
     }));
+    resolve();
 });
 //タグコンテナ
-const createTagContainer = (illustTags) => new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
+const createTagContainer = (illustTags) => new Promise(async (resolve) => {
     const pElement = document.createElement('p');
     pElement.className = 'pf-tag-container';
-    const illustTagcontainers = yield Promise.all(illustTags.map((illust_tag) => {
+    const illustTagcontainers = await Promise.all(illustTags.map((illust_tag) => {
         const divElement = document.createElement('div');
         divElement.className = 'pf-illust-info-container';
         const spanElementIllustTag = document.createElement('p');
@@ -103,7 +90,7 @@ const createTagContainer = (illustTags) => new Promise((resolve) => __awaiter(vo
         return divElement;
     }));
     resolve(illustTagcontainers[illustTagcontainers.length - 1]);
-}));
+});
 //クリックイベント処理
 const clickEvent = (e) => {
     e.stopPropagation();
@@ -136,9 +123,9 @@ const clickEvent = (e) => {
     }
 };
 //NG登録ボタンを押したらChromeストレージに保存する
-const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, function* () {
+const addChoromeStorage = async (illustDataDic) => {
     if (illustDataDic.userName) {
-        const userDatas = yield new Promise((resolve) => {
+        const userDatas = await new Promise((resolve) => {
             chrome.storage.local.get(['userKey'], (results) => {
                 if (results.userKey) {
                     resolve(results.userKey);
@@ -164,7 +151,7 @@ const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, f
     }
     else if (illustDataDic.tagName) {
         //保存してあるタグを取得
-        const tags = yield new Promise((resolve) => {
+        const tags = await new Promise((resolve) => {
             chrome.storage.local.get(['tagName'], (results) => {
                 if (results.tagName) {
                     resolve(results.tagName);
@@ -182,28 +169,28 @@ const addChoromeStorage = (illustDataDic) => __awaiter(void 0, void 0, void 0, f
             console.log(results);
         });
     }
-});
+};
 //ChromeストレージにNGユーザーが登録されているかを確認
 const checkGoogleStorage = () => new Promise((resolve) => {
-    chrome.storage.local.get(null, (results) => __awaiter(void 0, void 0, void 0, function* () {
-        yield removeElement({ userKey: results.userKey });
-        yield removeElement({ tagName: results.tagName });
+    chrome.storage.local.get(null, async (results) => {
+        await removeElement({ userKey: results.userKey });
+        await removeElement({ tagName: results.tagName });
         resolve();
-    }));
+    });
 });
 document.addEventListener('click', clickEvent);
-const main = (illustDatas) => __awaiter(void 0, void 0, void 0, function* () {
-    const interval = setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+const main = async (illustDatas) => {
+    const interval = setInterval(async () => {
         //要素が読み込まれるまで待機
         const elements = document.getElementsByClassName('sc-1rx6dmq-2');
         if (elements[0]) {
             clearInterval(interval);
-            yield createAddButton(elements);
-            yield createTagElement(illustDatas);
-            yield checkGoogleStorage();
+            await createAddButton(elements);
+            await createTagElement(illustDatas);
+            await checkGoogleStorage();
         }
-    }), 100);
-});
+    }, 100);
+};
 chrome.runtime.onMessage.addListener((illustDatas = []) => {
     main(illustDatas);
 });

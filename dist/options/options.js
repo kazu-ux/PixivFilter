@@ -1,17 +1,8 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 (() => {
     //HTMLを生成
-    const createHtml = () => new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
-        const users = yield getUserForGoogleStorage();
+    const createHtml = () => new Promise(async (resolve) => {
+        const users = await getUserForGoogleStorage();
         // NGユーザー数を表示する
         const userCount = users.length;
         document.querySelector('.user-count').textContent = `(${userCount})`;
@@ -24,11 +15,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             document.querySelector('.user-select').appendChild(optionElement);
         });
         const fragment = document.createDocumentFragment();
-        const tagList = yield getTagFromChromeStorage();
+        const tagList = await getTagFromChromeStorage();
         // NGタグ数を表示する
         const tagCount = tagList.length;
         document.querySelector('.tag-count').textContent = `(${tagCount})`;
-        yield Promise.all(tagList.map((tag) => {
+        await Promise.all(tagList.map((tag) => {
             const optionElement = document.createElement('option');
             optionElement.textContent = tag;
             optionElement.value = tag;
@@ -37,7 +28,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         }));
         document.querySelector('.tag-select').appendChild(fragment);
         resolve();
-    }));
+    });
     //Chromeストレージからユーザー情報を取得
     const getUserForGoogleStorage = () => new Promise((resolve) => {
         chrome.storage.local.get(['userKey'], (results = {}) => {
@@ -62,10 +53,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         });
     });
     //クリックイベント
-    const clickEvent = () => __awaiter(void 0, void 0, void 0, function* () {
+    const clickEvent = async () => {
         const removeButton = document.querySelectorAll("[name='remove']");
-        yield Promise.all(Array.prototype.map.call(removeButton, (element) => {
-            element.addEventListener('click', (e) => __awaiter(void 0, void 0, void 0, function* () {
+        await Promise.all(Array.prototype.map.call(removeButton, (element) => {
+            element.addEventListener('click', async (e) => {
                 const className = e.target.getAttribute('class');
                 if (className === 'user-remove-button') {
                     const options = document.querySelector('.user-select').options;
@@ -100,12 +91,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                     console.log(tagsObj);
                     removeChromeStorage(tagsObj);
                 }
-            }));
+            });
             return;
         }));
-    });
+    };
     //Chromeストレージから削除
-    const removeChromeStorage = (userOrTagObj) => __awaiter(void 0, void 0, void 0, function* () {
+    const removeChromeStorage = async (userOrTagObj) => {
         console.log(userOrTagObj);
         if (userOrTagObj.userDatas) {
             chrome.storage.local.set({ userKey: userOrTagObj.userDatas });
@@ -114,10 +105,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             chrome.storage.local.set({ tagName: userOrTagObj.tagNames });
         }
         location.reload();
-    });
-    const main = () => __awaiter(void 0, void 0, void 0, function* () {
-        yield createHtml();
+    };
+    const main = async () => {
+        await createHtml();
         clickEvent();
-    });
+    };
     main();
 })();
