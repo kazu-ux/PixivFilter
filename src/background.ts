@@ -113,13 +113,13 @@ chrome.webRequest.onBeforeRequest.addListener(
   const merged = deepmerge(await getSyncStorage(), await getLocalStorage());
   console.log(merged);
 
-  const setLocalStorage = (syncObject: NGData) => {
-    chrome.storage.local.set(syncObject);
+  const setLocalStorage = (NGObject: NGData) => {
+    chrome.storage.local.set(NGObject);
   };
   const SyncObject = await getSyncStorage();
 
   if (Object.keys(SyncObject).length) {
-    // setLocalStorage(SyncObject);
+    setLocalStorage(merged);
   } else {
     return;
   }

@@ -428,12 +428,12 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
     };
     const merged = (0,deepmerge_ts__WEBPACK_IMPORTED_MODULE_0__.deepmerge)(await getSyncStorage(), await getLocalStorage());
     console.log(merged);
-    const setLocalStorage = (syncObject) => {
-        chrome.storage.local.set(syncObject);
+    const setLocalStorage = (NGObject) => {
+        chrome.storage.local.set(NGObject);
     };
     const SyncObject = await getSyncStorage();
     if (Object.keys(SyncObject).length) {
-        // setLocalStorage(SyncObject);
+        setLocalStorage(merged);
     }
     else {
         return;
