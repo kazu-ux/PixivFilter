@@ -7,9 +7,16 @@ module.exports = {
 
   // メインとなるJavaScriptファイル（エントリーポイント）
   // entry: './src/main.ts',
+
   entry: {
     background: path.join(__dirname, 'src/background.ts'),
     content_script: path.join(__dirname, 'src/content_script.ts'),
+    'options/options': path.join(__dirname, 'src/options/options.ts'),
+  },
+
+  output: {
+    filename: '[name].js',
+    path: __dirname + '/dist',
   },
 
   devtool: false,

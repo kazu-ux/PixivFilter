@@ -119,7 +119,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   const SyncObject = await getSyncStorage();
 
   if (Object.keys(SyncObject).length) {
-    setLocalStorage(merged);
+    // setLocalStorage(merged);
   } else {
     return;
   }

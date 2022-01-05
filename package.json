@@ -19,6 +19,7 @@
   "homepage": "https://github.com/kazu-ux/PixivFilter#readme",
   "dependencies": {
     "@types/chrome": "^0.0.174",
+    "@types/wicg-file-system-access": "^2020.9.4",
     "deepmerge-ts": "^2.0.1"
   },
   "devDependencies": {

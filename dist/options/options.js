@@ -1,5 +1,11 @@
-"use strict";
-(() => {
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
+/*!********************************!*\
+  !*** ./src/options/options.ts ***!
+  \********************************/
+
+(async () => {
     //HTMLを生成
     const createHtml = () => new Promise(async (resolve) => {
         const users = await getUserForGoogleStorage();
@@ -29,6 +35,38 @@
         document.querySelector('.tag-select').appendChild(fragment);
         resolve();
     });
+    const writeFIle = async (handle, content) => {
+        // writableを作成
+        const writable = await handle.createWritable();
+        // コンテントを書き込む
+        await writable.write(content);
+        // ファイルを閉じる
+        await writable.close();
+    };
+    // ダウンロードエレメントを作成する
+    const createDownloadElement = async () => {
+        const aTagElement = document.createElement('a');
+        aTagElement.href = URL.createObjectURL(new Blob(['test text'], { type: 'text/plain' }));
+        aTagElement.download = 'test.txt';
+        // 保存しているNGリストを取得する
+        const NGObject = await new Promise((resolve, reject) => {
+            chrome.storage.local.get(null, (items) => {
+                resolve(items);
+            });
+        });
+        const exportButtonElement = document.querySelector('.export-button');
+        exportButtonElement.onclick = async (event) => {
+            // aTagElement.click();
+            const handle = await window.showSaveFilePicker({
+                types: [
+                    {
+                        accept: { 'application/json': ['.json'] },
+                    },
+                ],
+            });
+            await writeFIle(handle, JSON.stringify(NGObject));
+        };
+    };
     //Chromeストレージからユーザー情報を取得
     const getUserForGoogleStorage = () => new Promise((resolve) => {
         chrome.storage.local.get(['userKey'], (results = {}) => {
@@ -108,7 +146,11 @@
     };
     const main = async () => {
         await createHtml();
+        await createDownloadElement();
         clickEvent();
     };
     main();
 })();
+
+/******/ })()
+;
