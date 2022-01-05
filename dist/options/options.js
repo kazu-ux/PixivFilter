@@ -96,6 +96,7 @@ var __webpack_exports__ = {};
         };
         const setNGObjectInStorage = (NGObject) => {
             chrome.storage.local.set(NGObject, () => {
+                location.reload();
                 console.log('書き込み完了');
             });
         };

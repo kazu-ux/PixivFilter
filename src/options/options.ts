@@ -122,6 +122,7 @@
           }
     ) => {
       chrome.storage.local.set(NGObject, () => {
+        location.reload();
         console.log('書き込み完了');
       });
     };
