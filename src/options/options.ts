@@ -39,28 +39,33 @@
       resolve();
     });
 
-  const writeFIle = async (
-    handle: FileSystemFileHandle,
-    content: FileSystemWriteChunkType
-  ) => {
-    // writableを作成
-    const writable = await handle.createWritable();
-
-    // コンテントを書き込む
-    await writable.write(content);
-
-    // ファイルを閉じる
-    await writable.close();
+  const filePickerOptions: SaveFilePickerOptions = {
+    suggestedName: 'pixiv_nglist',
+    types: [
+      {
+        accept: {
+          'application/json': ['.json'],
+        },
+      },
+    ],
   };
 
-  // ダウンロードエレメントを作成する
-  const createDownloadElement = async () => {
-    const aTagElement = document.createElement('a');
-    aTagElement.href = URL.createObjectURL(
-      new Blob(['test text'], { type: 'text/plain' })
-    );
+  // エクスポートエレメントを作成する
+  const createExportElement = async () => {
+    // 書き込む関数
+    const writeFIle = async (
+      handle: FileSystemFileHandle,
+      content: FileSystemWriteChunkType
+    ) => {
+      // writableを作成
+      const writable = await handle.createWritable();
 
-    aTagElement.download = 'test.txt';
+      // コンテントを書き込む
+      await writable.write(content);
+
+      // ファイルを閉じる
+      await writable.close();
+    };
 
     // 保存しているNGリストを取得する
     const NGObject = await new Promise<{ [key: string]: {}[] } | {}>(
@@ -75,16 +80,50 @@
       '.export-button'
     ) as HTMLElement;
     exportButtonElement.onclick = async (event) => {
-      // aTagElement.click();
+      try {
+        const handle = await window.showSaveFilePicker(filePickerOptions);
+        await writeFIle(handle, JSON.stringify(NGObject));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  };
 
-      const handle = await window.showSaveFilePicker({
-        types: [
-          {
-            accept: { 'application/json': ['.json'] },
-          },
-        ],
+  // インポートエレメントを作成する
+  const createImportElement = () => {
+    const importButtonElement = document.querySelector(
+      '.import-button'
+    ) as HTMLElement;
+
+    importButtonElement.onclick = async () => {
+      try {
+        const handle = (await window.showOpenFilePicker(filePickerOptions))[0];
+        const file = await handle.getFile();
+        const text = await file.text();
+        const NGObject = JSON.parse(text);
+        if (
+          Object.keys(NGObject).includes('tagName') &&
+          Object.keys(NGObject).includes('userKey')
+        ) {
+          setNGObjectInStorage(NGObject);
+        } else {
+          console.log('ファイルが違います');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const setNGObjectInStorage = (
+      NGObject:
+        | {}
+        | {
+            [key: string]: {}[];
+          }
+    ) => {
+      chrome.storage.local.set(NGObject, () => {
+        console.log('書き込み完了');
       });
-      await writeFIle(handle, JSON.stringify(NGObject));
     };
   };
 
@@ -184,7 +223,8 @@
 
   const main = async () => {
     await createHtml();
-    await createDownloadElement();
+    await createExportElement();
+    await createImportElement();
     clickEvent();
   };
 
