@@ -403,7 +403,7 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
         count = 0;
     })();
 }, { urls: ['*://www.pixiv.net/*'] }, ['requestBody', 'blocking']);
-(async () => {
+chrome.runtime.onInstalled.addListener(async () => {
     console.log('test');
     const getSyncStorage = () => {
         return new Promise((resolve, reject) => {
@@ -431,14 +431,15 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
     const setLocalStorage = (NGObject) => {
         chrome.storage.local.set(NGObject);
     };
-    const SyncObject = await getSyncStorage();
-    if (Object.keys(SyncObject).length) {
-        // setLocalStorage(merged);
+    const syncObject = await getSyncStorage();
+    const localObject = await getLocalStorage();
+    if (Object.keys(syncObject).length && !Object.keys(localObject).length) {
+        setLocalStorage(merged);
     }
     else {
         return;
     }
-})();
+});
 
 })();
 

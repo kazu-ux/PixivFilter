@@ -77,7 +77,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   ['requestBody', 'blocking']
 );
 
-(async () => {
+chrome.runtime.onInstalled.addListener(async () => {
   console.log('test');
   type NGData =
     | {}
@@ -116,11 +116,12 @@ chrome.webRequest.onBeforeRequest.addListener(
   const setLocalStorage = (NGObject: NGData) => {
     chrome.storage.local.set(NGObject);
   };
-  const SyncObject = await getSyncStorage();
+  const syncObject = await getSyncStorage();
+  const localObject = await getLocalStorage();
 
-  if (Object.keys(SyncObject).length) {
-    // setLocalStorage(merged);
+  if (Object.keys(syncObject).length && !Object.keys(localObject).length) {
+    setLocalStorage(merged);
   } else {
     return;
   }
-})();
+});
