@@ -346,20 +346,11 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var deepmerge_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! deepmerge-ts */ "./node_modules/deepmerge-ts/dist/node/index.mjs");
 
-const getTabId = () => new Promise((resolve, reject) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
-        const tabId = tab[0].id;
-        if (!tabId) {
-            return;
-        }
-        console.log(tabId);
-        resolve(tabId);
-    });
-});
 let count = 0;
 chrome.webRequest.onBeforeRequest.addListener((e) => {
     (async () => {
         const url = e.url;
+        const tabId = e.tabId;
         const searchTargets = [
             'https://www.pixiv.net/ajax/search/illustrations/',
             'https://www.pixiv.net/ajax/search/artworks/',
@@ -397,7 +388,7 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
                     return n != undefined;
                 });
                 console.log(illustDatas);
-                chrome.tabs.sendMessage(await getTabId(), illustDatas);
+                chrome.tabs.sendMessage(tabId, illustDatas);
             }
         }));
         count = 0;

@@ -1,23 +1,12 @@
 import { deepmerge } from 'deepmerge-ts';
 
-const getTabId = () =>
-  new Promise<number>((resolve, reject) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
-      const tabId = tab[0].id;
-      if (!tabId) {
-        return;
-      }
-      console.log(tabId);
-      resolve(tabId);
-    });
-  });
-
 let count = 0;
 
 chrome.webRequest.onBeforeRequest.addListener(
   (e) => {
     (async () => {
       const url = e.url;
+      const tabId = e.tabId;
       const searchTargets = [
         'https://www.pixiv.net/ajax/search/illustrations/',
         'https://www.pixiv.net/ajax/search/artworks/',
@@ -66,7 +55,7 @@ chrome.webRequest.onBeforeRequest.addListener(
             });
             console.log(illustDatas);
 
-            chrome.tabs.sendMessage(await getTabId(), illustDatas);
+            chrome.tabs.sendMessage(tabId, illustDatas);
           }
         })
       );
