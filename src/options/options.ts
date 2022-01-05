@@ -79,7 +79,7 @@
     const exportButtonElement = document.querySelector(
       '.export-button'
     ) as HTMLElement;
-    exportButtonElement.onclick = async (event) => {
+    exportButtonElement.onclick = async () => {
       try {
         const handle = await window.showSaveFilePicker(filePickerOptions);
         await writeFIle(handle, JSON.stringify(NGObject));
@@ -107,7 +107,7 @@
         ) {
           setNGObjectInStorage(NGObject);
         } else {
-          console.log('ファイルが違います');
+          alert('ファイルの書式が違います');
         }
       } catch (error) {
         console.log(error);
