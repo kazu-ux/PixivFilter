@@ -1,5 +1,3 @@
-import { deepmerge } from 'deepmerge-ts';
-
 let count = 0;
 
 chrome.webRequest.onBeforeRequest.addListener(
@@ -83,13 +81,13 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
   };
 
-  const setSyncStorage = () => {
+  /* const setSyncStorage = () => {
     chrome.storage.sync.set({
       tagName: ['tag'],
       userKey: [{ userId: '1111', userName: 'aaa' }],
     });
   };
-  // setSyncStorage();
+  // setSyncStorage(); */
 
   const getLocalStorage = () => {
     return new Promise<NGData>((resolve, reject) => {
@@ -99,9 +97,6 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
   };
 
-  const merged = deepmerge(await getSyncStorage(), await getLocalStorage());
-  console.log(merged);
-
   const setLocalStorage = (NGObject: NGData) => {
     chrome.storage.local.set(NGObject);
   };
@@ -109,7 +104,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   const localObject = await getLocalStorage();
 
   if (Object.keys(syncObject).length && !Object.keys(localObject).length) {
-    setLocalStorage(merged);
+    setLocalStorage(syncObject);
   } else {
     return;
   }
