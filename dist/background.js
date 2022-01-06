@@ -1,18 +1,15 @@
-"use strict";
-const getTabId = () => new Promise((resolve, reject) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
-        const tabId = tab[0].id;
-        if (!tabId) {
-            return;
-        }
-        console.log(tabId);
-        resolve(tabId);
-    });
-});
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
+/*!***************************!*\
+  !*** ./src/background.ts ***!
+  \***************************/
+
 let count = 0;
 chrome.webRequest.onBeforeRequest.addListener((e) => {
     (async () => {
         const url = e.url;
+        const tabId = e.tabId;
         const searchTargets = [
             'https://www.pixiv.net/ajax/search/illustrations/',
             'https://www.pixiv.net/ajax/search/artworks/',
@@ -50,13 +47,14 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
                     return n != undefined;
                 });
                 console.log(illustDatas);
-                chrome.tabs.sendMessage(await getTabId(), illustDatas);
+                chrome.tabs.sendMessage(tabId, illustDatas);
             }
         }));
         count = 0;
     })();
 }, { urls: ['*://www.pixiv.net/*'] }, ['requestBody', 'blocking']);
-(async () => {
+chrome.runtime.onInstalled.addListener(async () => {
+    console.log('test');
     const getSyncStorage = () => {
         return new Promise((resolve, reject) => {
             chrome.storage.sync.get(null, (result) => {
@@ -64,6 +62,13 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
             });
         });
     };
+    /* const setSyncStorage = () => {
+      chrome.storage.sync.set({
+        tagName: ['tag'],
+        userKey: [{ userId: '1111', userName: 'aaa' }],
+      });
+    };
+    // setSyncStorage(); */
     const getLocalStorage = () => {
         return new Promise((resolve, reject) => {
             chrome.storage.local.get(null, (result) => {
@@ -71,14 +76,18 @@ chrome.webRequest.onBeforeRequest.addListener((e) => {
             });
         });
     };
-    const setLocalStorage = (syncObject) => {
-        chrome.storage.local.set(syncObject);
+    const setLocalStorage = (NGObject) => {
+        chrome.storage.local.set(NGObject);
     };
-    const SyncObject = await getSyncStorage();
-    if (Object.keys(SyncObject).length) {
-        // setLocalStorage(SyncObject);
+    const syncObject = await getSyncStorage();
+    const localObject = await getLocalStorage();
+    if (Object.keys(syncObject).length && !Object.keys(localObject).length) {
+        setLocalStorage(syncObject);
     }
     else {
         return;
     }
-})();
+});
+
+/******/ })()
+;

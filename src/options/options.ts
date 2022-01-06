@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   //HTMLを生成
   const createHtml = () =>
     new Promise<void>(async (resolve) => {
@@ -38,6 +38,95 @@
       document.querySelector('.tag-select')!.appendChild(fragment);
       resolve();
     });
+
+  const filePickerOptions: SaveFilePickerOptions = {
+    suggestedName: 'pixiv_nglist',
+    types: [
+      {
+        accept: {
+          'application/json': ['.json'],
+        },
+      },
+    ],
+  };
+
+  // エクスポートエレメントを作成する
+  const createExportElement = async () => {
+    // 書き込む関数
+    const writeFIle = async (
+      handle: FileSystemFileHandle,
+      content: FileSystemWriteChunkType
+    ) => {
+      // writableを作成
+      const writable = await handle.createWritable();
+
+      // コンテントを書き込む
+      await writable.write(content);
+
+      // ファイルを閉じる
+      await writable.close();
+    };
+
+    // 保存しているNGリストを取得する
+    const NGObject = await new Promise<{ [key: string]: {}[] } | {}>(
+      (resolve, reject) => {
+        chrome.storage.local.get(null, (items: { [key: string]: {}[] }) => {
+          resolve(items);
+        });
+      }
+    );
+
+    const exportButtonElement = document.querySelector(
+      '.export-button'
+    ) as HTMLElement;
+    exportButtonElement.onclick = async () => {
+      try {
+        const handle = await window.showSaveFilePicker(filePickerOptions);
+        await writeFIle(handle, JSON.stringify(NGObject));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  };
+
+  // インポートエレメントを作成する
+  const createImportElement = () => {
+    const importButtonElement = document.querySelector(
+      '.import-button'
+    ) as HTMLElement;
+
+    importButtonElement.onclick = async () => {
+      try {
+        const handle = (await window.showOpenFilePicker(filePickerOptions))[0];
+        const file = await handle.getFile();
+        const text = await file.text();
+        const NGObject = JSON.parse(text);
+        if (
+          Object.keys(NGObject).includes('tagName') &&
+          Object.keys(NGObject).includes('userKey')
+        ) {
+          setNGObjectInStorage(NGObject);
+        } else {
+          alert('ファイルの書式が違います');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const setNGObjectInStorage = (
+      NGObject:
+        | {}
+        | {
+            [key: string]: {}[];
+          }
+    ) => {
+      chrome.storage.local.set(NGObject, () => {
+        location.reload();
+        console.log('書き込み完了');
+      });
+    };
+  };
 
   //Chromeストレージからユーザー情報を取得
   const getUserForGoogleStorage = () =>
@@ -135,6 +224,8 @@
 
   const main = async () => {
     await createHtml();
+    await createExportElement();
+    await createImportElement();
     clickEvent();
   };
 

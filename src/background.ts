@@ -1,21 +1,10 @@
-const getTabId = () =>
-  new Promise<number>((resolve, reject) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
-      const tabId = tab[0].id;
-      if (!tabId) {
-        return;
-      }
-      console.log(tabId);
-      resolve(tabId);
-    });
-  });
-
 let count = 0;
 
 chrome.webRequest.onBeforeRequest.addListener(
   (e) => {
     (async () => {
       const url = e.url;
+      const tabId = e.tabId;
       const searchTargets = [
         'https://www.pixiv.net/ajax/search/illustrations/',
         'https://www.pixiv.net/ajax/search/artworks/',
@@ -64,7 +53,7 @@ chrome.webRequest.onBeforeRequest.addListener(
             });
             console.log(illustDatas);
 
-            chrome.tabs.sendMessage(await getTabId(), illustDatas);
+            chrome.tabs.sendMessage(tabId, illustDatas);
           }
         })
       );
@@ -75,7 +64,8 @@ chrome.webRequest.onBeforeRequest.addListener(
   ['requestBody', 'blocking']
 );
 
-(async () => {
+chrome.runtime.onInstalled.addListener(async () => {
+  console.log('test');
   type NGData =
     | {}
     | {
@@ -91,6 +81,14 @@ chrome.webRequest.onBeforeRequest.addListener(
     });
   };
 
+  /* const setSyncStorage = () => {
+    chrome.storage.sync.set({
+      tagName: ['tag'],
+      userKey: [{ userId: '1111', userName: 'aaa' }],
+    });
+  };
+  // setSyncStorage(); */
+
   const getLocalStorage = () => {
     return new Promise<NGData>((resolve, reject) => {
       chrome.storage.local.get(null, (result: { [key: string]: NGData }) => {
@@ -99,14 +97,15 @@ chrome.webRequest.onBeforeRequest.addListener(
     });
   };
 
-  const setLocalStorage = (syncObject: NGData) => {
-    chrome.storage.local.set(syncObject);
+  const setLocalStorage = (NGObject: NGData) => {
+    chrome.storage.local.set(NGObject);
   };
-  const SyncObject = await getSyncStorage();
+  const syncObject = await getSyncStorage();
+  const localObject = await getLocalStorage();
 
-  if (Object.keys(SyncObject).length) {
-    // setLocalStorage(SyncObject);
+  if (Object.keys(syncObject).length && !Object.keys(localObject).length) {
+    setLocalStorage(syncObject);
   } else {
     return;
   }
-})();
+});
