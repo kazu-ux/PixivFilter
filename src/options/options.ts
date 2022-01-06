@@ -145,81 +145,80 @@
   //Chromeストレージから保存してあるタグを取得
   const getTagFromChromeStorage = () =>
     new Promise<string[]>((resolve) => {
-      chrome.storage.local.get(['tagName'], (results) => {
-        if (results.tagName) {
-          resolve(results.tagName);
-        } else {
-          resolve([]);
+      chrome.storage.local.get(
+        ['tagName'],
+        (results: { [key: string]: string[] }) => {
+          if (results.tagName) {
+            resolve(results.tagName);
+          } else {
+            resolve([]);
+          }
         }
-      });
+      );
     });
 
   //クリックイベント
   const clickEvent = async () => {
-    const removeButton = document.querySelectorAll("[name='remove']");
-    await Promise.all(
-      Array.prototype.map.call(removeButton, (element) => {
-        element.addEventListener('click', async (e: MouseEvent) => {
-          const className = (e.target as HTMLElement).getAttribute('class');
-          if (className === 'user-remove-button') {
-            const options = (
-              document.querySelector('.user-select') as HTMLSelectElement
-            ).options;
-            const selectedUsers = Array.prototype.map
-              .call(options, (option) => {
-                if (!option.selected) {
-                  const userName = option.textContent;
-                  const userId = option.getAttribute('value');
-                  console.log(option.getAttribute('value'));
-                  return { userName: userName, userId: userId };
-                }
-              })
-              .filter((n) => {
-                return n != undefined;
-              });
+    document.addEventListener('click', (event) => {
+      const userOptionsElement = (
+        document.querySelector('.user-select') as HTMLSelectElement
+      ).options;
 
-            const usersObj = { userDatas: selectedUsers };
-            console.log(usersObj);
-            removeChromeStorage(usersObj);
-          } else if (className === 'tag-remove-button') {
-            const options = (
-              document.querySelector('.tag-select') as HTMLSelectElement
-            ).options;
-            const selectedTags = Array.prototype.map
-              .call(options, (option) => {
-                if (!option.selected) {
-                  return option.getAttribute('value');
-                }
-              })
-              .filter((n) => {
-                return n != undefined;
-              });
-            const tagsObj = { tagNames: selectedTags };
-            console.log(tagsObj);
-            removeChromeStorage(tagsObj);
+      const tagOptionsElement = (
+        document.querySelector('.tag-select') as HTMLSelectElement
+      ).options;
+
+      const clickTargetClassName = (event.target as HTMLElement).className;
+
+      if (clickTargetClassName === 'user-remove-button') {
+        const notSelectedUsers = Array.from(userOptionsElement).flatMap(
+          (option) => {
+            if (!option.selected) {
+              const userName = option.textContent;
+              const userId = option.getAttribute('value');
+              console.log(option.getAttribute('value'));
+              return [{ userName, userId }];
+            } else {
+              return [];
+            }
+          }
+        );
+
+        console.log(notSelectedUsers);
+        const usersObj = { userKey: notSelectedUsers };
+        removeChromeStorage(usersObj);
+      } else if (clickTargetClassName === 'tag-remove-button') {
+        const selectedTags = Array.from(tagOptionsElement).flatMap((option) => {
+          if (!option.selected) {
+            return [option.getAttribute('value')];
+          } else {
+            return [];
           }
         });
-        return;
-      })
-    );
+
+        const tagsObj = { tagName: selectedTags };
+        console.log(tagsObj);
+        removeChromeStorage(tagsObj);
+      }
+    });
+
+    const removeButton = document.querySelectorAll("[name='remove']");
   };
 
   type UserOrTagObj = {
-    userKey?: [{ userName: string; userId: string }];
-    tagName?: [string];
-    userDatas?: any;
-    tagNames?: any;
+    userKey?: { userName: string | null; userId: string | null }[];
+    tagName?: (string | null)[];
   };
 
   //Chromeストレージから削除
   const removeChromeStorage = async (userOrTagObj: UserOrTagObj) => {
     console.log(userOrTagObj);
-    if (userOrTagObj.userDatas) {
-      chrome.storage.local.set({ userKey: userOrTagObj.userDatas });
-    } else if (userOrTagObj.tagNames) {
-      chrome.storage.local.set({ tagName: userOrTagObj.tagNames });
+    if (userOrTagObj.userKey) {
+      chrome.storage.local.set({ userKey: userOrTagObj.userKey });
+    } else if (userOrTagObj.tagName) {
+      chrome.storage.local.set({ tagName: userOrTagObj.tagName });
     }
-    location.reload();
+    // location.reload();
   };
 
   const main = async () => {
