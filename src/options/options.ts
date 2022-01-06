@@ -17,9 +17,9 @@
         const userCount = users.length;
         document.querySelector('.user-count')!.textContent = `(${userCount})`;
 
-        users.map((userDic: any) => {
-          const userName = userDic.userName;
-          const userId = userDic.userId;
+        users.map((user: User) => {
+          const userName = user.userName;
+          const userId = user.userId;
           const optionElement = document.createElement('option');
           optionElement.textContent = userName;
           optionElement.value = userId;
@@ -134,7 +134,7 @@
 
   const getLocalStorage = (key: string | null) =>
     new Promise<{ [key: string]: any }>((resolve, reject) => {
-      chrome.storage.local.get(key, (items: { [key: string]: any }) => {
+      chrome.storage.local.get(key, (items) => {
         resolve(items);
       });
     });

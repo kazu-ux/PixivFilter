@@ -13,9 +13,9 @@ var __webpack_exports__ = {};
             // NGユーザー数を表示する
             const userCount = users.length;
             document.querySelector('.user-count').textContent = `(${userCount})`;
-            users.map((userDic) => {
-                const userName = userDic.userName;
-                const userId = userDic.userId;
+            users.map((user) => {
+                const userName = user.userName;
+                const userId = user.userId;
                 const optionElement = document.createElement('option');
                 optionElement.textContent = userName;
                 optionElement.value = userId;
