@@ -9,30 +9,34 @@ var __webpack_exports__ = {};
     //HTMLを生成
     const createHtml = () => new Promise(async (resolve) => {
         const users = await getUserForGoogleStorage();
-        // NGユーザー数を表示する
-        const userCount = users.length;
-        document.querySelector('.user-count').textContent = `(${userCount})`;
-        users.map((userDic) => {
-            const userName = userDic.userName;
-            const userId = userDic.userId;
-            const optionElement = document.createElement('option');
-            optionElement.textContent = userName;
-            optionElement.value = userId;
-            document.querySelector('.user-select').appendChild(optionElement);
-        });
-        const fragment = document.createDocumentFragment();
+        if (users) {
+            // NGユーザー数を表示する
+            const userCount = users.length;
+            document.querySelector('.user-count').textContent = `(${userCount})`;
+            users.map((userDic) => {
+                const userName = userDic.userName;
+                const userId = userDic.userId;
+                const optionElement = document.createElement('option');
+                optionElement.textContent = userName;
+                optionElement.value = userId;
+                document.querySelector('.user-select').appendChild(optionElement);
+            });
+        }
         const tagList = await getTagFromChromeStorage();
-        // NGタグ数を表示する
-        const tagCount = tagList.length;
-        document.querySelector('.tag-count').textContent = `(${tagCount})`;
-        await Promise.all(tagList.map((tag) => {
-            const optionElement = document.createElement('option');
-            optionElement.textContent = tag;
-            optionElement.value = tag;
-            fragment.appendChild(optionElement);
-            return fragment;
-        }));
-        document.querySelector('.tag-select').appendChild(fragment);
+        if (tagList) {
+            const fragment = document.createDocumentFragment();
+            // NGタグ数を表示する
+            const tagCount = tagList.length;
+            document.querySelector('.tag-count').textContent = `(${tagCount})`;
+            await Promise.all(tagList.map((tag) => {
+                const optionElement = document.createElement('option');
+                optionElement.textContent = tag;
+                optionElement.value = tag;
+                fragment.appendChild(optionElement);
+                return fragment;
+            }));
+            document.querySelector('.tag-select').appendChild(fragment);
+        }
         resolve();
     });
     const filePickerOptions = {
@@ -101,29 +105,23 @@ var __webpack_exports__ = {};
             });
         };
     };
+    const getLocalStorage = (key) => new Promise((resolve, reject) => {
+        chrome.storage.local.get(key, (items) => {
+            resolve(items);
+        });
+    });
     //Chromeストレージからユーザー情報を取得
-    const getUserForGoogleStorage = () => new Promise((resolve) => {
-        chrome.storage.local.get(['userKey'], (results = {}) => {
-            if (Object.keys(results).length === 0) {
-                resolve([]);
-            }
-            else {
-                const user = results.userKey;
-                resolve(user);
-            }
-        });
-    });
-    //Chromeストレージから保存してあるタグを取得
-    const getTagFromChromeStorage = () => new Promise((resolve) => {
-        chrome.storage.local.get(['tagName'], (results) => {
-            if (results.tagName) {
-                resolve(results.tagName);
-            }
-            else {
-                resolve([]);
-            }
-        });
-    });
+    const getUserForGoogleStorage = async () => {
+        const users = (await getLocalStorage('userKey')).userKey;
+        console.log(users);
+        return users;
+    };
+    //Chromeストレージからタグを取得
+    const getTagFromChromeStorage = async () => {
+        const tags = (await getLocalStorage('tagName')).tagName;
+        console.log(tags);
+        return tags;
+    };
     //クリックイベント
     const clickEvent = async () => {
         document.addEventListener('click', (event) => {
