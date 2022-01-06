@@ -3,6 +3,10 @@
   type Users = User[] | [];
   type Tag = string;
   type Tags = Tag[] | [];
+  type UserOrTag = {
+    userKey?: Users;
+    tagName?: Tags;
+  };
 
   //HTMLを生成
   const createHtml = () =>
@@ -31,15 +35,13 @@
         const tagCount = tagList.length;
         document.querySelector('.tag-count')!.textContent = `(${tagCount})`;
 
-        await Promise.all(
-          tagList.map((tag) => {
-            const optionElement = document.createElement('option');
-            optionElement.textContent = tag;
-            optionElement.value = tag;
-            fragment.appendChild(optionElement);
-            return fragment;
-          })
-        );
+        tagList.map((tag) => {
+          const optionElement = document.createElement('option');
+          optionElement.textContent = tag;
+          optionElement.value = tag;
+          fragment.appendChild(optionElement);
+          return fragment;
+        });
 
         document.querySelector('.tag-select')!.appendChild(fragment);
       }
@@ -47,7 +49,7 @@
       resolve();
     });
 
-  const filePickerOptions: SaveFilePickerOptions = {
+  const filePickerOptions: SaveFilePickerOptions | OpenFilePickerOptions = {
     suggestedName: 'pixiv_nglist',
     types: [
       {
@@ -108,27 +110,21 @@
         const handle = (await window.showOpenFilePicker(filePickerOptions))[0];
         const file = await handle.getFile();
         const text = await file.text();
-        const NGObject = JSON.parse(text);
+        const NGObject: UserOrTag = JSON.parse(text);
         if (
           Object.keys(NGObject).includes('tagName') &&
           Object.keys(NGObject).includes('userKey')
         ) {
           setNGObjectInStorage(NGObject);
         } else {
-          alert('ファイルの書式が違います');
+          alert('JSONファイルの書式が違います');
         }
       } catch (error) {
         console.log(error);
       }
     };
 
-    const setNGObjectInStorage = (
-      NGObject:
-        | {}
-        | {
-            [key: string]: {}[];
-          }
-    ) => {
+    const setNGObjectInStorage = (NGObject: UserOrTag) => {
       chrome.storage.local.set(NGObject, () => {
         location.reload();
         console.log('書き込み完了');
@@ -147,7 +143,6 @@
   const getUserForGoogleStorage = async () => {
     const users: Users = (await getLocalStorage('userKey')).userKey;
     console.log(users);
-
     return users;
   };
 
@@ -175,9 +170,9 @@
         const notSelectedUsers = Array.from(userOptionsElement).flatMap(
           (option) => {
             if (!option.selected) {
-              const userName = option.textContent;
-              const userId = option.getAttribute('value');
-              console.log(option.getAttribute('value'));
+              const userName = option.textContent ?? '';
+              const userId = option.getAttribute('value') ?? '';
+
               return [{ userName, userId }];
             } else {
               return [];
@@ -185,47 +180,37 @@
           }
         );
 
-        console.log(notSelectedUsers);
         const usersObj = { userKey: notSelectedUsers };
         removeChromeStorage(usersObj);
       } else if (clickTargetClassName === 'tag-remove-button') {
         const selectedTags = Array.from(tagOptionsElement).flatMap((option) => {
           if (!option.selected) {
-            return [option.getAttribute('value')];
+            return [option.getAttribute('value') ?? ''];
           } else {
             return [];
           }
         });
 
         const tagsObj = { tagName: selectedTags };
-        console.log(tagsObj);
         removeChromeStorage(tagsObj);
       }
     });
-
-    const removeButton = document.querySelectorAll("[name='remove']");
-  };
-
-  type UserOrTagObj = {
-    userKey?: { userName: string | null; userId: string | null }[];
-    tagName?: (string | null)[];
   };
 
   //Chromeストレージから削除
-  const removeChromeStorage = async (userOrTagObj: UserOrTagObj) => {
-    console.log(userOrTagObj);
+  const removeChromeStorage = async (userOrTagObj: UserOrTag) => {
     if (userOrTagObj.userKey) {
       chrome.storage.local.set({ userKey: userOrTagObj.userKey });
     } else if (userOrTagObj.tagName) {
       chrome.storage.local.set({ tagName: userOrTagObj.tagName });
     }
-    // location.reload();
+    location.reload();
   };
 
   const main = async () => {
     await createHtml();
-    await createExportElement();
-    await createImportElement();
+    createExportElement();
+    createImportElement();
     clickEvent();
   };
 

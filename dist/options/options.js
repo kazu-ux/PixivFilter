@@ -28,13 +28,13 @@ var __webpack_exports__ = {};
             // NGタグ数を表示する
             const tagCount = tagList.length;
             document.querySelector('.tag-count').textContent = `(${tagCount})`;
-            await Promise.all(tagList.map((tag) => {
+            tagList.map((tag) => {
                 const optionElement = document.createElement('option');
                 optionElement.textContent = tag;
                 optionElement.value = tag;
                 fragment.appendChild(optionElement);
                 return fragment;
-            }));
+            });
             document.querySelector('.tag-select').appendChild(fragment);
         }
         resolve();
@@ -91,7 +91,7 @@ var __webpack_exports__ = {};
                     setNGObjectInStorage(NGObject);
                 }
                 else {
-                    alert('ファイルの書式が違います');
+                    alert('JSONファイルの書式が違います');
                 }
             }
             catch (error) {
@@ -131,50 +131,45 @@ var __webpack_exports__ = {};
             if (clickTargetClassName === 'user-remove-button') {
                 const notSelectedUsers = Array.from(userOptionsElement).flatMap((option) => {
                     if (!option.selected) {
-                        const userName = option.textContent;
-                        const userId = option.getAttribute('value');
-                        console.log(option.getAttribute('value'));
+                        const userName = option.textContent ?? '';
+                        const userId = option.getAttribute('value') ?? '';
                         return [{ userName, userId }];
                     }
                     else {
                         return [];
                     }
                 });
-                console.log(notSelectedUsers);
                 const usersObj = { userKey: notSelectedUsers };
                 removeChromeStorage(usersObj);
             }
             else if (clickTargetClassName === 'tag-remove-button') {
                 const selectedTags = Array.from(tagOptionsElement).flatMap((option) => {
                     if (!option.selected) {
-                        return [option.getAttribute('value')];
+                        return [option.getAttribute('value') ?? ''];
                     }
                     else {
                         return [];
                     }
                 });
                 const tagsObj = { tagName: selectedTags };
-                console.log(tagsObj);
                 removeChromeStorage(tagsObj);
             }
         });
-        const removeButton = document.querySelectorAll("[name='remove']");
     };
     //Chromeストレージから削除
     const removeChromeStorage = async (userOrTagObj) => {
-        console.log(userOrTagObj);
         if (userOrTagObj.userKey) {
             chrome.storage.local.set({ userKey: userOrTagObj.userKey });
         }
         else if (userOrTagObj.tagName) {
             chrome.storage.local.set({ tagName: userOrTagObj.tagName });
         }
-        // location.reload();
+        location.reload();
     };
     const main = async () => {
         await createHtml();
-        await createExportElement();
-        await createImportElement();
+        createExportElement();
+        createImportElement();
         clickEvent();
     };
     main();
