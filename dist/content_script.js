@@ -59,19 +59,19 @@ const createAddButton = async (elements) => new Promise(async (resolve, reject) 
     resolve();
 });
 // タグコンテナを設置する
-const createTagElement = async (illustDatas) => {
-    const targets = document.querySelectorAll('.pf-add-button');
-    await Promise.all(Array.from(targets).map(async (target, index) => {
+const setTagElement = async (illustDatas) => {
+    const targetElements = document.querySelectorAll('.pf-add-button');
+    targetElements.forEach(async (target, index) => {
         //タグコンテナを追加
         const tags = illustDatas[index].tags;
         target
             .closest('li')
             ?.firstElementChild.appendChild(await createTagContainer(tags));
-        return;
-    }));
+    });
+    return;
 };
 //タグコンテナを作成する
-const createTagContainer = (illustTags) => new Promise(async (resolve) => {
+const createTagContainer = async (illustTags) => {
     const divElement = document.createElement('div');
     divElement.className = 'pf-tag-container';
     divElement.style.display = 'none';
@@ -92,8 +92,8 @@ const createTagContainer = (illustTags) => new Promise(async (resolve) => {
         pElement.appendChild(spanElementTagNgButton);
         divElement.appendChild(pElement);
     });
-    resolve(divElement);
-});
+    return divElement;
+};
 //クリックイベント処理
 const clickEvent = (e) => {
     e.stopPropagation();
@@ -209,7 +209,7 @@ const main = async (illustDatas) => {
         if (elements[0]) {
             clearInterval(interval);
             await createAddButton(elements);
-            await createTagElement(illustDatas);
+            await setTagElement(illustDatas);
             await checkGoogleStorage();
         }
     }, 100);

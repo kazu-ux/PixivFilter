@@ -67,52 +67,48 @@ const createAddButton = async (elements: HTMLCollectionOf<Element>) =>
   });
 
 // タグコンテナを設置する
-const createTagElement = async (illustDatas: [{ tags: string[] }]) => {
-  const targets = document.querySelectorAll('.pf-add-button');
+const setTagElement = async (illustDatas: [{ tags: string[] }]) => {
+  const targetElements = document.querySelectorAll('.pf-add-button');
 
-  await Promise.all(
-    Array.from(targets).map(async (target, index) => {
-      //タグコンテナを追加
-      const tags = illustDatas[index].tags;
-      target
-        .closest('li')
-        ?.firstElementChild!.appendChild(await createTagContainer(tags));
-      return;
-    })
-  );
+  targetElements.forEach(async (target, index) => {
+    //タグコンテナを追加
+    const tags = illustDatas[index].tags;
+    target
+      .closest('li')
+      ?.firstElementChild!.appendChild(await createTagContainer(tags));
+  });
+  return;
 };
 
 //タグコンテナを作成する
-const createTagContainer = (illustTags: string[]) =>
-  new Promise<HTMLDivElement>(async (resolve) => {
-    const divElement = document.createElement('div');
-    divElement.className = 'pf-tag-container';
-    divElement.style.display = 'none';
+const createTagContainer = async (illustTags: string[]) => {
+  const divElement = document.createElement('div');
+  divElement.className = 'pf-tag-container';
+  divElement.style.display = 'none';
 
-    illustTags.forEach((tag) => {
-      const pElement = document.createElement('p');
-      pElement.className = 'pf-illust-tag';
+  illustTags.forEach((tag) => {
+    const pElement = document.createElement('p');
+    pElement.className = 'pf-illust-tag';
 
-      const aElement = document.createElement('a');
-      aElement.className = 'pf-illust-tag-link';
-      aElement.target = '-blank';
-      aElement.href = `https://www.pixiv.net/tags/${tag}`;
-      aElement.textContent = tag;
+    const aElement = document.createElement('a');
+    aElement.className = 'pf-illust-tag-link';
+    aElement.target = '-blank';
+    aElement.href = `https://www.pixiv.net/tags/${tag}`;
+    aElement.textContent = tag;
 
-      const spanElementTagNgButton = document.createElement('span');
-      spanElementTagNgButton.className = 'pf-tag-ng-button';
-      spanElementTagNgButton.setAttribute('data-type', 'add');
-      spanElementTagNgButton.setAttribute('data-tag-name', tag);
-      spanElementTagNgButton.textContent = '[+]';
+    const spanElementTagNgButton = document.createElement('span');
+    spanElementTagNgButton.className = 'pf-tag-ng-button';
+    spanElementTagNgButton.setAttribute('data-type', 'add');
+    spanElementTagNgButton.setAttribute('data-tag-name', tag);
+    spanElementTagNgButton.textContent = '[+]';
 
-      pElement.appendChild(aElement);
-      pElement.appendChild(spanElementTagNgButton);
+    pElement.appendChild(aElement);
+    pElement.appendChild(spanElementTagNgButton);
 
-      divElement.appendChild(pElement);
-    });
-
-    resolve(divElement);
+    divElement.appendChild(pElement);
   });
+  return divElement;
+};
 
 //クリックイベント処理
 const clickEvent = (e: MouseEvent) => {
@@ -249,7 +245,7 @@ const main = async (illustDatas: [{ tags: string[] }]) => {
     if (elements[0]) {
       clearInterval(interval);
       await createAddButton(elements);
-      await createTagElement(illustDatas);
+      await setTagElement(illustDatas);
       await checkGoogleStorage();
     }
   }, 100);
