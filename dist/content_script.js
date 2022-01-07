@@ -46,7 +46,6 @@ const createAddButton = async (elements) => new Promise(async (resolve, reject) 
             const toggleElement = document.createElement('span');
             toggleElement.className = 'pf-illust-info-toggle';
             toggleElement.textContent = '▼';
-            toggleElement.setAttribute('data-state', 'hide');
             toggleElement.style.userSelect = 'none';
             divElement.appendChild(spanElementAddButton);
             divElement.appendChild(toggleElement);
@@ -100,38 +99,43 @@ const createTagContainer = (illustTags) => new Promise(async (resolve) => {
 const clickEvent = (e) => {
     e.stopPropagation();
     const targetElement = e.target;
-    console.log(e);
     const targetParent = targetElement
         .closest('li')
         ?.querySelector('.pf-tag-container');
-    /*   if (targetElement.getAttribute('class') === 'pf-add-button') {
-      const userName = (e.composedPath()[2] as HTMLElement)
-        .querySelector('[title]')!
-        .getAttribute('title')!;
-      const userId = (e.composedPath()[2] as HTMLElement)
-        .querySelector('[href]')!
-        .getAttribute('href')!
-        .slice(7);
-      console.log(userName, userId);
-      addChoromeStorage({ userName: userName, userId: userId });
-      removeElement({ userKey: [{ userName: userName, userId: userId }] });
-    } else */ if (targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
-        targetElement.dataset.state === 'hide') {
+    if (!targetParent) {
+        return;
+    }
+    // NGユーザーボタン
+    if (targetElement.getAttribute('class') === 'pf-add-button') {
+        const userName = e.composedPath()[2]
+            .querySelector('[title]')
+            .getAttribute('title');
+        const userId = e.composedPath()[2]
+            .querySelector('[href]')
+            .getAttribute('href')
+            .slice(7);
+        console.log(userName, userId);
+        addChoromeStorage({ userName: userName, userId: userId });
+        removeElement({ userKey: [{ userName: userName, userId: userId }] });
+        return;
+    }
+    // タグトグルボタン
+    if (targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
+        targetParent.style.display === 'none') {
         targetElement.textContent = '▲';
-        targetElement.dataset.state = 'show';
         targetParent.style.display = '';
     }
     else if (targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
-        targetElement.dataset.state === 'show') {
+        targetParent.style.display === '') {
         targetElement.textContent = '▼';
-        targetElement.dataset.state = 'hide';
         targetParent.style.display = 'none';
     }
-    /* if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
-      const tagName = targetElement.getAttribute('data-tag-name')!;
-      addChoromeStorage({ tagName: tagName });
-      removeElement({ tagName: [tagName] });
-    } */
+    // NGタグボタン
+    if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
+        const tagName = targetElement.getAttribute('data-tag-name');
+        addChoromeStorage({ tagName: tagName });
+        removeElement({ tagName: [tagName] });
+    }
 };
 //NG登録ボタンを押したらChromeストレージに保存する
 const addChoromeStorage = async (illustDataDic) => {

@@ -49,7 +49,6 @@ const createAddButton = async (elements: HTMLCollectionOf<Element>) =>
           const toggleElement = document.createElement('span');
           toggleElement.className = 'pf-illust-info-toggle';
           toggleElement.textContent = '▼';
-          toggleElement.setAttribute('data-state', 'hide');
           toggleElement.style.userSelect = 'none';
 
           divElement.appendChild(spanElementAddButton);
@@ -126,13 +125,15 @@ const createTagContainer = (illustTags: string[]) =>
 const clickEvent = (e: MouseEvent) => {
   e.stopPropagation();
   const targetElement = e.target as HTMLElement;
-  console.log(e);
 
   const targetParent = targetElement
     .closest('li')
     ?.querySelector('.pf-tag-container')! as HTMLElement;
-
-  /*   if (targetElement.getAttribute('class') === 'pf-add-button') {
+  if (!targetParent) {
+    return;
+  }
+  // NGユーザーボタン
+  if (targetElement.getAttribute('class') === 'pf-add-button') {
     const userName = (e.composedPath()[2] as HTMLElement)
       .querySelector('[title]')!
       .getAttribute('title')!;
@@ -143,26 +144,30 @@ const clickEvent = (e: MouseEvent) => {
     console.log(userName, userId);
     addChoromeStorage({ userName: userName, userId: userId });
     removeElement({ userKey: [{ userName: userName, userId: userId }] });
-  } else */ if (
+    return;
+  }
+
+  // タグトグルボタン
+  if (
     targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
-    targetElement.dataset.state === 'hide'
+    targetParent.style.display === 'none'
   ) {
     targetElement.textContent = '▲';
-    targetElement.dataset.state = 'show';
     targetParent.style.display = '';
   } else if (
     targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
-    targetElement.dataset.state === 'show'
+    targetParent.style.display === ''
   ) {
     targetElement.textContent = '▼';
-    targetElement.dataset.state = 'hide';
     targetParent.style.display = 'none';
   }
-  /* if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
+
+  // NGタグボタン
+  if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
     const tagName = targetElement.getAttribute('data-tag-name')!;
     addChoromeStorage({ tagName: tagName });
     removeElement({ tagName: [tagName] });
-  } */
+  }
 };
 
 type IllustDataDic = {
