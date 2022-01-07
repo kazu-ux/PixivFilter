@@ -66,17 +66,17 @@ const createAddButton = async (elements: HTMLCollectionOf<Element>) =>
     resolve();
   });
 
-//タグを表示する
+// タグコンテナを設置する
 const createTagElement = async (illustDatas: [{ tags: string[] }]) => {
-  const targets = document.getElementsByClassName('pf-add-button');
+  const targets = document.querySelectorAll('.pf-add-button');
 
   await Promise.all(
-    Array.prototype.map.call(targets, async (target, index) => {
+    Array.from(targets).map(async (target, index) => {
       //タグコンテナを追加
       const tags = illustDatas[index].tags;
-      target.parentElement.parentElement.parentElement.appendChild(
-        await createTagContainer(tags)
-      );
+      target
+        .closest('li')
+        ?.firstElementChild!.appendChild(await createTagContainer(tags));
       return;
     })
   );
@@ -84,37 +84,34 @@ const createTagElement = async (illustDatas: [{ tags: string[] }]) => {
 
 //タグコンテナを作成する
 const createTagContainer = (illustTags: string[]) =>
-  new Promise(async (resolve) => {
+  new Promise<HTMLDivElement>(async (resolve) => {
     const divElement = document.createElement('div');
     divElement.className = 'pf-tag-container';
     divElement.style.display = 'none';
 
-    const illustTagcontainers = await Promise.all(
-      illustTags.map((illust_tag) => {
-        const spanElementIllustTag = document.createElement('p');
-        spanElementIllustTag.className = 'pf-illust-tag';
+    illustTags.forEach((tag) => {
+      const pElement = document.createElement('p');
+      pElement.className = 'pf-illust-tag';
 
-        const aElement = document.createElement('a');
-        aElement.className = 'pf-illust-tag-link';
-        aElement.target = '-blank';
-        aElement.href = `https://www.pixiv.net/tags/${illust_tag}`;
-        aElement.textContent = illust_tag;
+      const aElement = document.createElement('a');
+      aElement.className = 'pf-illust-tag-link';
+      aElement.target = '-blank';
+      aElement.href = `https://www.pixiv.net/tags/${tag}`;
+      aElement.textContent = tag;
 
-        const spanElementTagNgButton = document.createElement('span');
-        spanElementTagNgButton.className = 'pf-tag-ng-button';
-        spanElementTagNgButton.setAttribute('data-type', 'add');
-        spanElementTagNgButton.setAttribute('data-tag-name', illust_tag);
-        spanElementTagNgButton.textContent = '[+]';
+      const spanElementTagNgButton = document.createElement('span');
+      spanElementTagNgButton.className = 'pf-tag-ng-button';
+      spanElementTagNgButton.setAttribute('data-type', 'add');
+      spanElementTagNgButton.setAttribute('data-tag-name', tag);
+      spanElementTagNgButton.textContent = '[+]';
 
-        spanElementIllustTag.appendChild(aElement);
-        spanElementIllustTag.appendChild(spanElementTagNgButton);
+      pElement.appendChild(aElement);
+      pElement.appendChild(spanElementTagNgButton);
 
-        divElement.appendChild(spanElementIllustTag);
+      divElement.appendChild(pElement);
+    });
 
-        return divElement;
-      })
-    );
-    resolve(illustTagcontainers[illustTagcontainers.length - 1]);
+    resolve(divElement);
   });
 
 //クリックイベント処理
