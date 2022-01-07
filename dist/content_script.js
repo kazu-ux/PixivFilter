@@ -8,12 +8,12 @@ var __webpack_exports__ = {};
 //NG登録したユーザーのイラストを非表示
 const removeElement = (userOrTagObj) => new Promise((resolve) => {
     if (userOrTagObj.userKey) {
-        const userDatas = userOrTagObj.userKey;
-        userDatas.map((userData) => {
-            const userId = userData.userId;
+        const users = userOrTagObj.userKey;
+        users.map((user) => {
+            const userId = user.userId;
             const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
             if (targets) {
-                Array.prototype.map.call(targets, (target) => {
+                Array.from(targets).map((target) => {
                     target.closest('li').style.display = 'none';
                 });
             }
@@ -24,7 +24,7 @@ const removeElement = (userOrTagObj) => new Promise((resolve) => {
         tags.map((tag) => {
             const targets = document.querySelectorAll(`[data-tag-name="${tag}"]`);
             if (targets) {
-                Array.prototype.map.call(targets, (target) => {
+                Array.from(targets).map((target) => {
                     target.closest('li').style.display = 'none';
                 });
             }
@@ -59,7 +59,7 @@ const createAddButton = async (elements) => new Promise(async (resolve, reject) 
     resolve();
 });
 //タグを表示する
-const createTagElement = async (illustDatas) => new Promise(async (resolve) => {
+const createTagElement = async (illustDatas) => {
     const targets = document.getElementsByClassName('pf-add-button');
     await Promise.all(Array.prototype.map.call(targets, async (target, index) => {
         //タグコンテナを追加
@@ -67,8 +67,7 @@ const createTagElement = async (illustDatas) => new Promise(async (resolve) => {
         target.parentElement.parentElement.parentElement.appendChild(await createTagContainer(tags));
         return;
     }));
-    resolve();
-});
+};
 //タグコンテナを作成する
 const createTagContainer = (illustTags) => new Promise(async (resolve) => {
     const divElement = document.createElement('div');
@@ -90,7 +89,6 @@ const createTagContainer = (illustTags) => new Promise(async (resolve) => {
         spanElementIllustTag.appendChild(aElement);
         spanElementIllustTag.appendChild(spanElementTagNgButton);
         divElement.appendChild(spanElementIllustTag);
-        // divElement.appendChild(divElement);
         return divElement;
     }));
     resolve(illustTagcontainers[illustTagcontainers.length - 1]);
@@ -140,7 +138,7 @@ const clickEvent = (e) => {
 //NG登録ボタンを押したらChromeストレージに保存する
 const addChoromeStorage = async (illustDataDic) => {
     if (illustDataDic.userName) {
-        const userDatas = await new Promise((resolve) => {
+        const users = await new Promise((resolve) => {
             chrome.storage.local.get(['userKey'], (results) => {
                 if (results.userKey) {
                     resolve(results.userKey);
@@ -152,14 +150,14 @@ const addChoromeStorage = async (illustDataDic) => {
         });
         //重複している場合は保存しない
         //userIdのみの配列を作成
-        const userIds = userDatas.map((result) => {
+        const userIds = users.map((result) => {
             return result.userId;
         });
         //クリックしたユーザーが保存されているかを確認
         if (!userIds.includes(illustDataDic.userId)) {
-            userDatas.push(illustDataDic);
+            users.push(illustDataDic);
         }
-        chrome.storage.local.set({ userKey: userDatas });
+        chrome.storage.local.set({ userKey: users });
         chrome.storage.local.get(null, (results) => {
             console.log(results);
         });

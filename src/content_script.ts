@@ -1,19 +1,19 @@
 type UserOrTagObj = {
-  userKey?: [{ userName: string; userId: string }];
-  tagName?: [string];
+  userKey?: { userName: string; userId: string }[];
+  tagName?: string[];
 };
 
 //NG登録したユーザーのイラストを非表示
 const removeElement = (userOrTagObj: UserOrTagObj) =>
   new Promise<void>((resolve) => {
     if (userOrTagObj.userKey) {
-      const userDatas = userOrTagObj.userKey;
-      userDatas.map((userData) => {
-        const userId = userData.userId;
+      const users = userOrTagObj.userKey;
+      users.map((user) => {
+        const userId = user.userId;
         const targets = document.querySelectorAll(`[href="/users/${userId}"]`);
         if (targets) {
-          Array.prototype.map.call(targets, (target) => {
-            target.closest('li').style.display = 'none';
+          Array.from(targets).map((target) => {
+            target.closest('li')!.style.display = 'none';
           });
         }
       });
@@ -22,8 +22,8 @@ const removeElement = (userOrTagObj: UserOrTagObj) =>
       tags.map((tag) => {
         const targets = document.querySelectorAll(`[data-tag-name="${tag}"]`);
         if (targets) {
-          Array.prototype.map.call(targets, (target) => {
-            target.closest('li').style.display = 'none';
+          Array.from(targets).map((target) => {
+            target.closest('li')!.style.display = 'none';
           });
         }
       });
@@ -67,22 +67,20 @@ const createAddButton = async (elements: HTMLCollectionOf<Element>) =>
   });
 
 //タグを表示する
-const createTagElement = async (illustDatas: [{ tags: string[] }]) =>
-  new Promise<void>(async (resolve) => {
-    const targets = document.getElementsByClassName('pf-add-button');
+const createTagElement = async (illustDatas: [{ tags: string[] }]) => {
+  const targets = document.getElementsByClassName('pf-add-button');
 
-    await Promise.all(
-      Array.prototype.map.call(targets, async (target, index) => {
-        //タグコンテナを追加
-        const tags = illustDatas[index].tags;
-        target.parentElement.parentElement.parentElement.appendChild(
-          await createTagContainer(tags)
-        );
-        return;
-      })
-    );
-    resolve();
-  });
+  await Promise.all(
+    Array.prototype.map.call(targets, async (target, index) => {
+      //タグコンテナを追加
+      const tags = illustDatas[index].tags;
+      target.parentElement.parentElement.parentElement.appendChild(
+        await createTagContainer(tags)
+      );
+      return;
+    })
+  );
+};
 
 //タグコンテナを作成する
 const createTagContainer = (illustTags: string[]) =>
@@ -113,8 +111,6 @@ const createTagContainer = (illustTags: string[]) =>
 
         divElement.appendChild(spanElementIllustTag);
 
-        // divElement.appendChild(divElement);
-
         return divElement;
       })
     );
@@ -129,6 +125,7 @@ const clickEvent = (e: MouseEvent) => {
   const targetParent = targetElement
     .closest('li')
     ?.querySelector('.pf-tag-container')! as HTMLElement;
+
   if (!targetParent) {
     return;
   }
@@ -179,7 +176,7 @@ type IllustDataDic = {
 //NG登録ボタンを押したらChromeストレージに保存する
 const addChoromeStorage = async (illustDataDic: IllustDataDic) => {
   if (illustDataDic.userName) {
-    const userDatas = await new Promise<any[]>((resolve) => {
+    const users = await new Promise<any[]>((resolve) => {
       chrome.storage.local.get(['userKey'], (results) => {
         if (results.userKey) {
           resolve(results.userKey);
@@ -190,15 +187,15 @@ const addChoromeStorage = async (illustDataDic: IllustDataDic) => {
     });
     //重複している場合は保存しない
     //userIdのみの配列を作成
-    const userIds = userDatas.map((result) => {
+    const userIds = users.map((result) => {
       return result.userId;
     });
     //クリックしたユーザーが保存されているかを確認
     if (!userIds.includes(illustDataDic.userId)) {
-      userDatas.push(illustDataDic);
+      users.push(illustDataDic);
     }
 
-    chrome.storage.local.set({ userKey: userDatas });
+    chrome.storage.local.set({ userKey: users });
     chrome.storage.local.get(null, (results) => {
       console.log(results);
     });
