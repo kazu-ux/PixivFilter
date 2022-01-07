@@ -1,10 +1,9 @@
-let count = 0;
-
 chrome.webRequest.onBeforeRequest.addListener(
-  (e) => {
+  (details) => {
     (async () => {
-      const url = e.url;
-      const tabId = e.tabId;
+      const url = details.url;
+      const tabId = details.tabId;
+      const initiator = details.initiator;
       const searchTargets = [
         'https://www.pixiv.net/ajax/search/illustrations/',
         'https://www.pixiv.net/ajax/search/artworks/',
@@ -13,16 +12,16 @@ chrome.webRequest.onBeforeRequest.addListener(
       ];
       await Promise.all(
         searchTargets.map(async (searchTarget) => {
-          if (url.includes(searchTarget) && count === 0) {
-            count += 1;
-            console.log(count);
-
+          if (
+            url.includes(searchTarget) &&
+            initiator === 'https://www.pixiv.net'
+          ) {
             const json = await fetch(url).then((res) => {
               return res.json();
             });
             console.log(json);
 
-            let illustDatas = [];
+            let illustDatas;
             if (
               searchTarget === 'https://www.pixiv.net/ajax/search/artworks/' ||
               searchTarget === 'https://www.pixiv.net/ajax/search/top/'
@@ -48,16 +47,13 @@ chrome.webRequest.onBeforeRequest.addListener(
                 }
               })
             );
-            illustDatas = illustDatas.filter((n) => {
-              return n != undefined;
-            });
+            illustDatas = illustDatas.filter(Boolean);
             console.log(illustDatas);
 
             chrome.tabs.sendMessage(tabId, illustDatas);
           }
         })
       );
-      count = 0;
     })();
   },
   { urls: ['*://www.pixiv.net/*'] },
