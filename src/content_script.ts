@@ -35,32 +35,32 @@ const removeElement = (userOrTagObj: UserOrTagObj) =>
 const createAddButton = async (elements: HTMLCollectionOf<Element>) =>
   new Promise<void>(async (resolve, reject) => {
     await Promise.all(
-      Array.prototype.map.call(elements, async (element, index) => {
-        if (element) {
-          if (!element.parentElement.nextElementSibling) {
-            const divElement = document.createElement('div');
-            divElement.className = 'pf-add-button-and-toggle';
+      Array.from(elements).map(async (element, index) => {
+        if (!element.parentElement!.nextElementSibling) {
+          const divElement = document.createElement('div');
+          divElement.className = 'pf-add-button-and-toggle';
 
-            //ユーザー登録ボタンを設置
-            const spanElementAddButton = document.createElement('span');
-            spanElementAddButton.className = 'pf-add-button';
-            spanElementAddButton.textContent = '[+]';
+          //ユーザー登録ボタンを設置
+          const spanElementAddButton = document.createElement('span');
+          spanElementAddButton.className = 'pf-add-button';
+          spanElementAddButton.textContent = '[+]';
 
-            //矢印を設置
-            const toggleElement = document.createElement('span');
-            toggleElement.className = 'pf-illust-info-toggle';
-            toggleElement.textContent = '▼';
+          //矢印を設置
+          const toggleElement = document.createElement('span');
+          toggleElement.className = 'pf-illust-info-toggle';
+          toggleElement.textContent = '▼';
+          toggleElement.setAttribute('data-state', 'hide');
+          toggleElement.style.userSelect = 'none';
 
-            divElement.appendChild(spanElementAddButton);
-            divElement.appendChild(toggleElement);
+          divElement.appendChild(spanElementAddButton);
+          divElement.appendChild(toggleElement);
 
-            const userContainerElement = element.parentElement.parentElement;
+          const userContainerElement = element.parentElement!.parentElement!;
 
-            // トグルボタンをユーザーごとの右端に配置するため
-            userContainerElement.style.position = 'relative';
-            userContainerElement.appendChild(divElement);
-            return;
-          }
+          // トグルボタンをユーザーごとの右端に配置するため
+          userContainerElement.style.position = 'relative';
+          userContainerElement.appendChild(divElement);
+          return;
         }
       })
     );
@@ -85,16 +85,15 @@ const createTagElement = async (illustDatas: [{ tags: string[] }]) =>
     resolve();
   });
 
-//タグコンテナ
+//タグコンテナを作成する
 const createTagContainer = (illustTags: string[]) =>
   new Promise(async (resolve) => {
-    const pElement = document.createElement('p');
-    pElement.className = 'pf-tag-container';
+    const divElement = document.createElement('div');
+    divElement.className = 'pf-tag-container';
+    divElement.style.display = 'none';
+
     const illustTagcontainers = await Promise.all(
       illustTags.map((illust_tag) => {
-        const divElement = document.createElement('div');
-        divElement.className = 'pf-illust-info-container';
-
         const spanElementIllustTag = document.createElement('p');
         spanElementIllustTag.className = 'pf-illust-tag';
 
@@ -113,9 +112,9 @@ const createTagContainer = (illustTags: string[]) =>
         spanElementIllustTag.appendChild(aElement);
         spanElementIllustTag.appendChild(spanElementTagNgButton);
 
-        pElement.appendChild(spanElementIllustTag);
+        divElement.appendChild(spanElementIllustTag);
 
-        divElement.appendChild(pElement);
+        // divElement.appendChild(divElement);
 
         return divElement;
       })
@@ -127,12 +126,13 @@ const createTagContainer = (illustTags: string[]) =>
 const clickEvent = (e: MouseEvent) => {
   e.stopPropagation();
   const targetElement = e.target as HTMLElement;
-  const target =
-    targetElement.parentElement!.parentElement!.parentElement!.getElementsByClassName(
-      'pf-tag-container'
-    )[0];
+  console.log(e);
 
-  if (targetElement.getAttribute('class') === 'pf-add-button') {
+  const targetParent = targetElement
+    .closest('li')
+    ?.querySelector('.pf-tag-container')! as HTMLElement;
+
+  /*   if (targetElement.getAttribute('class') === 'pf-add-button') {
     const userName = (e.composedPath()[2] as HTMLElement)
       .querySelector('[title]')!
       .getAttribute('title')!;
@@ -143,17 +143,26 @@ const clickEvent = (e: MouseEvent) => {
     console.log(userName, userId);
     addChoromeStorage({ userName: userName, userId: userId });
     removeElement({ userKey: [{ userName: userName, userId: userId }] });
-  } else if (targetElement.getAttribute('class') === 'pf-illust-info-toggle') {
-    if (target.parentElement!.classList.toggle('pf-illust-info-container')) {
-      targetElement.textContent = '▼';
-    } else {
-      targetElement.textContent = '▲';
-    }
-  } else if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
+  } else */ if (
+    targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
+    targetElement.dataset.state === 'hide'
+  ) {
+    targetElement.textContent = '▲';
+    targetElement.dataset.state = 'show';
+    targetParent.style.display = '';
+  } else if (
+    targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
+    targetElement.dataset.state === 'show'
+  ) {
+    targetElement.textContent = '▼';
+    targetElement.dataset.state = 'hide';
+    targetParent.style.display = 'none';
+  }
+  /* if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
     const tagName = targetElement.getAttribute('data-tag-name')!;
     addChoromeStorage({ tagName: tagName });
     removeElement({ tagName: [tagName] });
-  }
+  } */
 };
 
 type IllustDataDic = {
@@ -224,9 +233,20 @@ const checkGoogleStorage = () =>
 document.addEventListener('click', clickEvent);
 
 const main = async (illustDatas: [{ tags: string[] }]) => {
+  // 検索結果が0の場合は処理をしない
+  if (!illustDatas.length) {
+    return;
+  }
+
+  let count = 0;
   const interval = setInterval(async () => {
+    count += 1;
+    if (count === 30) {
+      clearInterval(interval);
+    }
     //要素が読み込まれるまで待機
     const elements = document.getElementsByClassName('sc-1rx6dmq-2');
+
     if (elements[0]) {
       clearInterval(interval);
       await createAddButton(elements);

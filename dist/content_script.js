@@ -34,27 +34,27 @@ const removeElement = (userOrTagObj) => new Promise((resolve) => {
 });
 //ユーザー名の隣にNG登録するボタンとタグ表示ボタンを設置
 const createAddButton = async (elements) => new Promise(async (resolve, reject) => {
-    await Promise.all(Array.prototype.map.call(elements, async (element, index) => {
-        if (element) {
-            if (!element.parentElement.nextElementSibling) {
-                const divElement = document.createElement('div');
-                divElement.className = 'pf-add-button-and-toggle';
-                //ユーザー登録ボタンを設置
-                const spanElementAddButton = document.createElement('span');
-                spanElementAddButton.className = 'pf-add-button';
-                spanElementAddButton.textContent = '[+]';
-                //矢印を設置
-                const toggleElement = document.createElement('span');
-                toggleElement.className = 'pf-illust-info-toggle';
-                toggleElement.textContent = '▼';
-                divElement.appendChild(spanElementAddButton);
-                divElement.appendChild(toggleElement);
-                const userContainerElement = element.parentElement.parentElement;
-                // トグルボタンをユーザーごとの右端に配置するため
-                userContainerElement.style.position = 'relative';
-                userContainerElement.appendChild(divElement);
-                return;
-            }
+    await Promise.all(Array.from(elements).map(async (element, index) => {
+        if (!element.parentElement.nextElementSibling) {
+            const divElement = document.createElement('div');
+            divElement.className = 'pf-add-button-and-toggle';
+            //ユーザー登録ボタンを設置
+            const spanElementAddButton = document.createElement('span');
+            spanElementAddButton.className = 'pf-add-button';
+            spanElementAddButton.textContent = '[+]';
+            //矢印を設置
+            const toggleElement = document.createElement('span');
+            toggleElement.className = 'pf-illust-info-toggle';
+            toggleElement.textContent = '▼';
+            toggleElement.setAttribute('data-state', 'hide');
+            toggleElement.style.userSelect = 'none';
+            divElement.appendChild(spanElementAddButton);
+            divElement.appendChild(toggleElement);
+            const userContainerElement = element.parentElement.parentElement;
+            // トグルボタンをユーザーごとの右端に配置するため
+            userContainerElement.style.position = 'relative';
+            userContainerElement.appendChild(divElement);
+            return;
         }
     }));
     resolve();
@@ -70,13 +70,12 @@ const createTagElement = async (illustDatas) => new Promise(async (resolve) => {
     }));
     resolve();
 });
-//タグコンテナ
+//タグコンテナを作成する
 const createTagContainer = (illustTags) => new Promise(async (resolve) => {
-    const pElement = document.createElement('p');
-    pElement.className = 'pf-tag-container';
+    const divElement = document.createElement('div');
+    divElement.className = 'pf-tag-container';
+    divElement.style.display = 'none';
     const illustTagcontainers = await Promise.all(illustTags.map((illust_tag) => {
-        const divElement = document.createElement('div');
-        divElement.className = 'pf-illust-info-container';
         const spanElementIllustTag = document.createElement('p');
         spanElementIllustTag.className = 'pf-illust-tag';
         const aElement = document.createElement('a');
@@ -91,8 +90,8 @@ const createTagContainer = (illustTags) => new Promise(async (resolve) => {
         spanElementTagNgButton.textContent = '[+]';
         spanElementIllustTag.appendChild(aElement);
         spanElementIllustTag.appendChild(spanElementTagNgButton);
-        pElement.appendChild(spanElementIllustTag);
-        divElement.appendChild(pElement);
+        divElement.appendChild(spanElementIllustTag);
+        // divElement.appendChild(divElement);
         return divElement;
     }));
     resolve(illustTagcontainers[illustTagcontainers.length - 1]);
@@ -101,32 +100,38 @@ const createTagContainer = (illustTags) => new Promise(async (resolve) => {
 const clickEvent = (e) => {
     e.stopPropagation();
     const targetElement = e.target;
-    const target = targetElement.parentElement.parentElement.parentElement.getElementsByClassName('pf-tag-container')[0];
-    if (targetElement.getAttribute('class') === 'pf-add-button') {
-        const userName = e.composedPath()[2]
-            .querySelector('[title]')
-            .getAttribute('title');
-        const userId = e.composedPath()[2]
-            .querySelector('[href]')
-            .getAttribute('href')
-            .slice(7);
-        console.log(userName, userId);
-        addChoromeStorage({ userName: userName, userId: userId });
-        removeElement({ userKey: [{ userName: userName, userId: userId }] });
+    console.log(e);
+    const targetParent = targetElement
+        .closest('li')
+        ?.querySelector('.pf-tag-container');
+    /*   if (targetElement.getAttribute('class') === 'pf-add-button') {
+      const userName = (e.composedPath()[2] as HTMLElement)
+        .querySelector('[title]')!
+        .getAttribute('title')!;
+      const userId = (e.composedPath()[2] as HTMLElement)
+        .querySelector('[href]')!
+        .getAttribute('href')!
+        .slice(7);
+      console.log(userName, userId);
+      addChoromeStorage({ userName: userName, userId: userId });
+      removeElement({ userKey: [{ userName: userName, userId: userId }] });
+    } else */ if (targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
+        targetElement.dataset.state === 'hide') {
+        targetElement.textContent = '▲';
+        targetElement.dataset.state = 'show';
+        targetParent.style.display = '';
     }
-    else if (targetElement.getAttribute('class') === 'pf-illust-info-toggle') {
-        if (target.parentElement.classList.toggle('pf-illust-info-container')) {
-            targetElement.textContent = '▼';
-        }
-        else {
-            targetElement.textContent = '▲';
-        }
+    else if (targetElement.getAttribute('class') === 'pf-illust-info-toggle' &&
+        targetElement.dataset.state === 'show') {
+        targetElement.textContent = '▼';
+        targetElement.dataset.state = 'hide';
+        targetParent.style.display = 'none';
     }
-    else if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
-        const tagName = targetElement.getAttribute('data-tag-name');
-        addChoromeStorage({ tagName: tagName });
-        removeElement({ tagName: [tagName] });
-    }
+    /* if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
+      const tagName = targetElement.getAttribute('data-tag-name')!;
+      addChoromeStorage({ tagName: tagName });
+      removeElement({ tagName: [tagName] });
+    } */
 };
 //NG登録ボタンを押したらChromeストレージに保存する
 const addChoromeStorage = async (illustDataDic) => {
@@ -186,7 +191,16 @@ const checkGoogleStorage = () => new Promise((resolve) => {
 });
 document.addEventListener('click', clickEvent);
 const main = async (illustDatas) => {
+    // 検索結果が0の場合は処理をしない
+    if (!illustDatas.length) {
+        return;
+    }
+    let count = 0;
     const interval = setInterval(async () => {
+        count += 1;
+        if (count === 30) {
+            clearInterval(interval);
+        }
         //要素が読み込まれるまで待機
         const elements = document.getElementsByClassName('sc-1rx6dmq-2');
         if (elements[0]) {
