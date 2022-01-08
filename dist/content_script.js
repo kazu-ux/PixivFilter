@@ -61,11 +61,11 @@ var __webpack_exports__ = {};
         resolve();
     });
     // タグコンテナを設置する
-    const setTagElement = async (elements, illustDatas) => {
+    const setTagElement = async (elements, worksData) => {
         const getTargetWorksTag = (worksId) => {
             return new Promise((resolve, reject) => {
-                illustDatas.forEach((data) => {
-                    if (data.illustId === worksId) {
+                worksData.forEach((data) => {
+                    if (data.id === worksId) {
                         resolve(data.tags);
                     }
                 });
@@ -151,8 +151,10 @@ var __webpack_exports__ = {};
         }
     };
     //NG登録ボタンを押したらChromeストレージに保存する
-    const addChoromeStorage = async (illustDataDic) => {
-        if (illustDataDic.userName) {
+    const addChoromeStorage = async (clickedWorksData) => {
+        const keys = Object.keys(clickedWorksData);
+        // ユーザーの場合
+        if ('userId' in clickedWorksData) {
             const users = await new Promise((resolve) => {
                 chrome.storage.local.get(['userKey'], (results) => {
                     if (results.userKey) {
@@ -165,19 +167,17 @@ var __webpack_exports__ = {};
             });
             //重複している場合は保存しない
             //userIdのみの配列を作成
-            const userIds = users.map((result) => {
-                return result.userId;
-            });
+            const userIds = users.map((result) => result.userId);
             //クリックしたユーザーが保存されているかを確認
-            if (!userIds.includes(illustDataDic.userId)) {
-                users.push(illustDataDic);
+            if (userIds.includes(clickedWorksData.userId)) {
+                return;
             }
+            users.push(clickedWorksData);
             chrome.storage.local.set({ userKey: users });
-            chrome.storage.local.get(null, (results) => {
-                console.log(results);
-            });
+            return;
         }
-        else if (illustDataDic.tagName) {
+        // タグの場合
+        if ('tagName' in clickedWorksData) {
             //保存してあるタグを取得
             const tags = await new Promise((resolve) => {
                 chrome.storage.local.get(['tagName'], (results) => {
@@ -189,13 +189,11 @@ var __webpack_exports__ = {};
                     }
                 });
             });
-            tags.push(illustDataDic.tagName);
+            tags.push(clickedWorksData.tagName);
             //重複を削除
             const newTags = Array.from(new Set(tags));
             chrome.storage.local.set({ tagName: newTags });
-            chrome.storage.local.get(null, (results) => {
-                console.log(results);
-            });
+            return;
         }
     };
     //ローカルストレージに保存されているNGキーワードの作品を非表示にする
@@ -204,9 +202,9 @@ var __webpack_exports__ = {};
         await removeElement({ tagName: results.tagName });
     });
     document.addEventListener('click', clickEvent);
-    const main = async (illustDatas) => {
+    const main = async (worksData) => {
         // 検索結果が0の場合は処理をしない
-        if (!illustDatas.length) {
+        if (!worksData.length) {
             return;
         }
         let count = 0;
@@ -221,13 +219,13 @@ var __webpack_exports__ = {};
                 clearInterval(interval);
                 const workElements = Array.from(monitoredElements).flatMap((element) => element.closest('li') ?? []);
                 await createAddButton(monitoredElements);
-                await setTagElement(workElements, illustDatas);
+                await setTagElement(workElements, worksData);
                 checkGoogleStorage();
             }
         }, 100);
     };
-    chrome.runtime.onMessage.addListener((illustDatas = []) => {
-        main(illustDatas);
+    chrome.runtime.onMessage.addListener((worksData) => {
+        main(worksData);
     });
 })();
 

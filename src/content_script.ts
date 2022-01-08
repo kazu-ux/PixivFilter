@@ -1,11 +1,6 @@
 (() => {
-  type UserOrTagObj = {
-    userKey?: { userName: string; userId: string }[];
-    tagName?: string[];
-  };
-
   //NG登録したユーザーのイラストを非表示
-  const removeElement = (userOrTagObj: UserOrTagObj) =>
+  const removeElement = (userOrTagObj: UserOrTag) =>
     new Promise<void>((resolve) => {
       if (userOrTagObj.userKey) {
         const users = userOrTagObj.userKey;
@@ -73,12 +68,12 @@
   // タグコンテナを設置する
   const setTagElement = async (
     elements: HTMLLIElement[],
-    illustDatas: [{ illustId: string; tags: string[] }]
+    worksData: WorksData
   ) => {
     const getTargetWorksTag = (worksId: string) => {
       return new Promise<string[]>((resolve, reject) => {
-        illustDatas.forEach((data) => {
-          if (data.illustId === worksId) {
+        worksData.forEach((data) => {
+          if (data.id === worksId) {
             resolve(data.tags);
           }
         });
@@ -180,16 +175,12 @@
     }
   };
 
-  type IllustDataDic = {
-    userName?: string;
-    userId?: string;
-    tagName?: string;
-  };
-
   //NG登録ボタンを押したらChromeストレージに保存する
-  const addChoromeStorage = async (illustDataDic: IllustDataDic) => {
-    if (illustDataDic.userName) {
-      const users = await new Promise<any[]>((resolve) => {
+  const addChoromeStorage = async (clickedWorksData: ClickedWorksData) => {
+    const keys = Object.keys(clickedWorksData);
+    // ユーザーの場合
+    if ('userId' in clickedWorksData) {
+      const users = await new Promise<Users>((resolve) => {
         chrome.storage.local.get(['userKey'], (results) => {
           if (results.userKey) {
             resolve(results.userKey);
@@ -200,21 +191,20 @@
       });
       //重複している場合は保存しない
       //userIdのみの配列を作成
-      const userIds = users.map((result) => {
-        return result.userId;
-      });
+      const userIds = users.map((result) => result.userId);
       //クリックしたユーザーが保存されているかを確認
-      if (!userIds.includes(illustDataDic.userId)) {
-        users.push(illustDataDic);
+      if (userIds.includes(clickedWorksData.userId)) {
+        return;
       }
-
+      users.push(clickedWorksData);
       chrome.storage.local.set({ userKey: users });
-      chrome.storage.local.get(null, (results) => {
-        console.log(results);
-      });
-    } else if (illustDataDic.tagName) {
+      return;
+    }
+
+    // タグの場合
+    if ('tagName' in clickedWorksData) {
       //保存してあるタグを取得
-      const tags = await new Promise<any[]>((resolve) => {
+      const tags = await new Promise<Tags>((resolve) => {
         chrome.storage.local.get(['tagName'], (results) => {
           if (results.tagName) {
             resolve(results.tagName);
@@ -223,15 +213,13 @@
           }
         });
       });
-      tags.push(illustDataDic.tagName);
+      tags.push(clickedWorksData.tagName);
 
       //重複を削除
       const newTags = Array.from(new Set(tags));
 
       chrome.storage.local.set({ tagName: newTags });
-      chrome.storage.local.get(null, (results) => {
-        console.log(results);
-      });
+      return;
     }
   };
 
@@ -244,9 +232,9 @@
 
   document.addEventListener('click', clickEvent);
 
-  const main = async (illustDatas: [{ illustId: string; tags: string[] }]) => {
+  const main = async (worksData: WorksData) => {
     // 検索結果が0の場合は処理をしない
-    if (!illustDatas.length) {
+    if (!worksData.length) {
       return;
     }
 
@@ -269,13 +257,13 @@
         );
 
         await createAddButton(monitoredElements);
-        await setTagElement(workElements, illustDatas);
+        await setTagElement(workElements, worksData);
         checkGoogleStorage();
       }
     }, 100);
   };
 
-  chrome.runtime.onMessage.addListener((illustDatas = []) => {
-    main(illustDatas);
+  chrome.runtime.onMessage.addListener((worksData: WorksData) => {
+    main(worksData);
   });
 })();

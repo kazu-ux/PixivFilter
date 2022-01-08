@@ -21,12 +21,12 @@ chrome.webRequest.onBeforeRequest.addListener(
             });
             console.log(json);
 
-            let illustDatas: any[] = [];
+            let worksData: WorksData = [];
             if (
               searchTarget === 'https://www.pixiv.net/ajax/search/artworks/' ||
               searchTarget === 'https://www.pixiv.net/ajax/search/top/'
             ) {
-              illustDatas = illustDatas.concat(
+              worksData = worksData.concat(
                 json.body.illustManga.data,
                 json.body.popular.permanent,
                 json.body.popular.recent
@@ -35,25 +35,17 @@ chrome.webRequest.onBeforeRequest.addListener(
               searchTarget ===
               'https://www.pixiv.net/ajax/search/illustrations/'
             ) {
-              illustDatas = json.body.illust.data;
+              worksData = json.body.illust.data;
             } else if (
               searchTarget === 'https://www.pixiv.net/ajax/search/manga/'
             ) {
-              illustDatas = json.body.manga.data;
+              worksData = json.body.manga.data;
             }
 
-            illustDatas = await Promise.all(
-              illustDatas.map((illustData: { id: any; tags: any[] }) => {
-                const illustId = illustData.id;
-                const tags = illustData.tags;
-                if (illustId) {
-                  return { illustId: illustId, tags: tags };
-                }
-              })
-            );
-            illustDatas = illustDatas.filter(Boolean);
+            worksData = worksData.filter(Boolean);
+            console.log(worksData);
 
-            chrome.tabs.sendMessage(tabId, illustDatas);
+            chrome.tabs.sendMessage(tabId, worksData);
           }
         })
       );
@@ -65,16 +57,10 @@ chrome.webRequest.onBeforeRequest.addListener(
 
 chrome.runtime.onInstalled.addListener(async () => {
   console.log('test');
-  type NGData =
-    | {}
-    | {
-        tagName: string[];
-        userKey: { userId: string; uerName: string }[];
-      };
 
   const getSyncStorage = () => {
-    return new Promise<NGData>((resolve, reject) => {
-      chrome.storage.sync.get(null, (result: { [key: string]: NGData }) => {
+    return new Promise<NGObject>((resolve, reject) => {
+      chrome.storage.sync.get(null, (result) => {
         resolve(result);
       });
     });
@@ -89,14 +75,14 @@ chrome.runtime.onInstalled.addListener(async () => {
   // setSyncStorage(); */
 
   const getLocalStorage = () => {
-    return new Promise<NGData>((resolve, reject) => {
-      chrome.storage.local.get(null, (result: { [key: string]: NGData }) => {
+    return new Promise<NGObject>((resolve, reject) => {
+      chrome.storage.local.get(null, (result) => {
         resolve(result);
       });
     });
   };
 
-  const setLocalStorage = (NGObject: NGData) => {
+  const setLocalStorage = (NGObject: NGObject) => {
     chrome.storage.local.set(NGObject);
   };
   const syncObject = await getSyncStorage();

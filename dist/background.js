@@ -23,27 +23,21 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
                     return res.json();
                 });
                 console.log(json);
-                let illustDatas = [];
+                let worksData = [];
                 if (searchTarget === 'https://www.pixiv.net/ajax/search/artworks/' ||
                     searchTarget === 'https://www.pixiv.net/ajax/search/top/') {
-                    illustDatas = illustDatas.concat(json.body.illustManga.data, json.body.popular.permanent, json.body.popular.recent);
+                    worksData = worksData.concat(json.body.illustManga.data, json.body.popular.permanent, json.body.popular.recent);
                 }
                 else if (searchTarget ===
                     'https://www.pixiv.net/ajax/search/illustrations/') {
-                    illustDatas = json.body.illust.data;
+                    worksData = json.body.illust.data;
                 }
                 else if (searchTarget === 'https://www.pixiv.net/ajax/search/manga/') {
-                    illustDatas = json.body.manga.data;
+                    worksData = json.body.manga.data;
                 }
-                illustDatas = await Promise.all(illustDatas.map((illustData) => {
-                    const illustId = illustData.id;
-                    const tags = illustData.tags;
-                    if (illustId) {
-                        return { illustId: illustId, tags: tags };
-                    }
-                }));
-                illustDatas = illustDatas.filter(Boolean);
-                chrome.tabs.sendMessage(tabId, illustDatas);
+                worksData = worksData.filter(Boolean);
+                console.log(worksData);
+                chrome.tabs.sendMessage(tabId, worksData);
             }
         }));
     })();
