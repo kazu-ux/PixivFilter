@@ -4,23 +4,23 @@
     new Promise<void>((resolve) => {
       if (userOrTagObj.userKey) {
         const users = userOrTagObj.userKey;
-        users.map((user) => {
+        users.forEach((user) => {
           const userId = user.userId;
           const targets = document.querySelectorAll(
             `[href="/users/${userId}"]`
           );
           if (targets) {
-            Array.from(targets).map((target) => {
+            targets.forEach((target) => {
               target.closest('li')!.style.display = 'none';
             });
           }
         });
       } else if (userOrTagObj.tagName) {
         const tags = userOrTagObj.tagName;
-        tags.map((tag) => {
+        tags.forEach((tag) => {
           const targets = document.querySelectorAll(`[data-tag-name="${tag}"]`);
           if (targets) {
-            Array.from(targets).map((target) => {
+            targets.forEach((target) => {
               target.closest('li')!.style.display = 'none';
             });
           }
