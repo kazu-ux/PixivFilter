@@ -40,11 +40,9 @@
       await Promise.all(
         Array.from(elements).map(async (element, index) => {
           if (!element.parentElement!.nextElementSibling) {
-            // const userId = element.
-            const userContainerElement = element.parentElement!;
             const wrapperElement = document.createElement('div');
-            // wrapperElement.appendChild(element);
             wrapperElement.style.display = 'flex';
+            wrapperElement.style.width = '100%';
 
             const divElement = document.createElement('div');
             divElement.className = 'pf-add-button-and-toggle';
@@ -65,7 +63,7 @@
             wrapperElement.appendChild(divElement);
 
             // トグルボタンをユーザーごとの右端に配置するため
-            userContainerElement.style.position = 'relative';
+            element.parentElement!.style.position = 'relative';
 
             element.after(wrapperElement);
             wrapperElement.prepend(element);
