@@ -40,7 +40,7 @@ var __webpack_exports__ = {};
                 // const userId = element.
                 const userContainerElement = element.parentElement;
                 const wrapperElement = document.createElement('div');
-                wrapperElement.appendChild(element);
+                // wrapperElement.appendChild(element);
                 wrapperElement.style.display = 'flex';
                 const divElement = document.createElement('div');
                 divElement.className = 'pf-add-button-and-toggle';
@@ -58,7 +58,8 @@ var __webpack_exports__ = {};
                 wrapperElement.appendChild(divElement);
                 // トグルボタンをユーザーごとの右端に配置するため
                 userContainerElement.style.position = 'relative';
-                userContainerElement.appendChild(wrapperElement);
+                element.after(wrapperElement);
+                wrapperElement.prepend(element);
                 return;
             }
         }));
