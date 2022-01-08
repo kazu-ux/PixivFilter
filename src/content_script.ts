@@ -85,7 +85,7 @@
       });
     };
 
-    elements.forEach(async (target, index) => {
+    elements.forEach(async (target) => {
       const worksId = target
         .querySelector('[data-gtm-value]')!
         .getAttribute('data-gtm-value');
@@ -142,7 +142,7 @@
     if (!targetParent) {
       return;
     }
-    // NGユーザーボタン
+    // ユーザーNGボタン
     if (targetElement.getAttribute('class') === 'pf-user-add-button') {
       const userName = (e.composedPath()[2] as HTMLElement)
         .querySelector('[title]')!
@@ -172,7 +172,7 @@
       targetParent.style.display = 'none';
     }
 
-    // NGタグボタン
+    // タグNGボタン
     if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
       const tagName = targetElement.getAttribute('data-tag-name')!;
       addChoromeStorage({ tagName: tagName });
