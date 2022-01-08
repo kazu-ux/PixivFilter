@@ -1,4 +1,4 @@
-.pf-add-button {
+.pf-user-add-button {
   margin-left: 0.5rem;
   margin-right: 2rem;
 }
@@ -14,7 +14,7 @@
 }
 
 .pf-illust-info-toggle,
-.pf-add-button,
+.pf-user-add-button,
 .pf-tag-ng-button {
   font-size: 1.2rem;
   cursor: pointer;

@@ -44,12 +44,9 @@
             wrapperElement.style.display = 'flex';
             wrapperElement.style.width = '100%';
 
-            const divElement = document.createElement('div');
-            divElement.className = 'pf-add-button-and-toggle';
-
             //ユーザー登録ボタンを設置
             const spanElementAddButton = document.createElement('span');
-            spanElementAddButton.className = 'pf-add-button';
+            spanElementAddButton.className = 'pf-user-add-button';
             spanElementAddButton.textContent = '[+]';
 
             //矢印を設置
@@ -58,9 +55,8 @@
             toggleElement.textContent = '▼';
             toggleElement.style.userSelect = 'none';
 
-            divElement.appendChild(spanElementAddButton);
-            divElement.appendChild(toggleElement);
-            wrapperElement.appendChild(divElement);
+            wrapperElement.appendChild(spanElementAddButton);
+            wrapperElement.appendChild(toggleElement);
 
             // トグルボタンをユーザーごとの右端に配置するため
             element.parentElement!.style.position = 'relative';
@@ -147,7 +143,7 @@
       return;
     }
     // NGユーザーボタン
-    if (targetElement.getAttribute('class') === 'pf-add-button') {
+    if (targetElement.getAttribute('class') === 'pf-user-add-button') {
       const userName = (e.composedPath()[2] as HTMLElement)
         .querySelector('[title]')!
         .getAttribute('title')!;
@@ -274,7 +270,7 @@
 
         await createAddButton(monitoredElements);
         await setTagElement(workElements, illustDatas);
-        // checkGoogleStorage();
+        checkGoogleStorage();
       }
     }, 100);
   };

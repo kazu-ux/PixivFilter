@@ -40,20 +40,17 @@ var __webpack_exports__ = {};
                 const wrapperElement = document.createElement('div');
                 wrapperElement.style.display = 'flex';
                 wrapperElement.style.width = '100%';
-                const divElement = document.createElement('div');
-                divElement.className = 'pf-add-button-and-toggle';
                 //ユーザー登録ボタンを設置
                 const spanElementAddButton = document.createElement('span');
-                spanElementAddButton.className = 'pf-add-button';
+                spanElementAddButton.className = 'pf-user-add-button';
                 spanElementAddButton.textContent = '[+]';
                 //矢印を設置
                 const toggleElement = document.createElement('span');
                 toggleElement.className = 'pf-illust-info-toggle';
                 toggleElement.textContent = '▼';
                 toggleElement.style.userSelect = 'none';
-                divElement.appendChild(spanElementAddButton);
-                divElement.appendChild(toggleElement);
-                wrapperElement.appendChild(divElement);
+                wrapperElement.appendChild(spanElementAddButton);
+                wrapperElement.appendChild(toggleElement);
                 // トグルボタンをユーザーごとの右端に配置するため
                 element.parentElement.style.position = 'relative';
                 element.after(wrapperElement);
@@ -122,7 +119,7 @@ var __webpack_exports__ = {};
             return;
         }
         // NGユーザーボタン
-        if (targetElement.getAttribute('class') === 'pf-add-button') {
+        if (targetElement.getAttribute('class') === 'pf-user-add-button') {
             const userName = e.composedPath()[2]
                 .querySelector('[title]')
                 .getAttribute('title');
@@ -225,7 +222,7 @@ var __webpack_exports__ = {};
                 const workElements = Array.from(monitoredElements).flatMap((element) => element.closest('li') ?? []);
                 await createAddButton(monitoredElements);
                 await setTagElement(workElements, illustDatas);
-                // checkGoogleStorage();
+                checkGoogleStorage();
             }
         }, 100);
     };
