@@ -1,3 +1,5 @@
+import { getRequest } from './fetch_api';
+
 chrome.webRequest.onBeforeRequest.addListener(
   (details) => {
     (async () => {
@@ -10,45 +12,19 @@ chrome.webRequest.onBeforeRequest.addListener(
         'https://www.pixiv.net/ajax/search/manga/',
         'https://www.pixiv.net/ajax/search/top/',
       ];
-      await Promise.all(
-        searchTargets.map(async (searchTarget) => {
-          if (
-            url.includes(searchTarget) &&
-            initiator === 'https://www.pixiv.net'
-          ) {
-            const json = await fetch(url).then((res) => {
-              return res.json();
-            });
-            console.log(json);
 
-            let worksData: WorksData = [];
-            if (
-              searchTarget === 'https://www.pixiv.net/ajax/search/artworks/' ||
-              searchTarget === 'https://www.pixiv.net/ajax/search/top/'
-            ) {
-              worksData = worksData.concat(
-                json.body.illustManga.data,
-                json.body.popular.permanent,
-                json.body.popular.recent
-              );
-            } else if (
-              searchTarget ===
-              'https://www.pixiv.net/ajax/search/illustrations/'
-            ) {
-              worksData = json.body.illust.data;
-            } else if (
-              searchTarget === 'https://www.pixiv.net/ajax/search/manga/'
-            ) {
-              worksData = json.body.manga.data;
-            }
+      searchTargets.forEach(async (searchTarget) => {
+        if (
+          url.includes(searchTarget) &&
+          initiator === 'https://www.pixiv.net'
+        ) {
+          const worksData = await getRequest(url, '1');
 
-            worksData = worksData.filter(Boolean);
-            console.log(worksData);
+          console.log(worksData);
 
-            chrome.tabs.sendMessage(tabId, worksData);
-          }
-        })
-      );
+          chrome.tabs.sendMessage(tabId, { worksData, url });
+        }
+      });
     })();
   },
   { urls: ['*://www.pixiv.net/*'] },
