@@ -111,26 +111,24 @@ var __webpack_exports__ = {};
     //クリックイベント処理
     const clickEvent = (e) => {
         e.stopPropagation();
-        console.log(e.composedPath());
         const targetElement = e.target;
         const targetParent = targetElement
             .closest('li')
             ?.querySelector('.pf-tag-container');
-        if (!targetParent) {
-            return;
-        }
         // ユーザーNGボタン
         if (targetElement.getAttribute('class') === 'pf-user-add-button') {
-            const userName = e.composedPath()[2]
-                .querySelector('[title]')
-                .getAttribute('title');
-            const userId = e.composedPath()[2]
+            const userName = e.composedPath()[1].firstElementChild
+                ?.textContent;
+            const userId = e.composedPath()[1]
                 .querySelector('[href]')
                 .getAttribute('href')
                 .slice(7);
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
             removeElement({ userKey: [{ userName: userName, userId: userId }] });
+            return;
+        }
+        if (!targetParent) {
             return;
         }
         // タグトグルボタン

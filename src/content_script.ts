@@ -128,28 +128,28 @@
   //クリックイベント処理
   const clickEvent = (e: MouseEvent) => {
     e.stopPropagation();
-    console.log(e.composedPath());
+
     const targetElement = e.target as HTMLElement;
 
     const targetParent = targetElement
       .closest('li')
       ?.querySelector('.pf-tag-container')! as HTMLElement;
 
-    if (!targetParent) {
-      return;
-    }
     // ユーザーNGボタン
     if (targetElement.getAttribute('class') === 'pf-user-add-button') {
-      const userName = (e.composedPath()[2] as HTMLElement)
-        .querySelector('[title]')!
-        .getAttribute('title')!;
-      const userId = (e.composedPath()[2] as HTMLElement)
+      const userName = (e.composedPath()[1] as HTMLElement).firstElementChild
+        ?.textContent!;
+      const userId = (e.composedPath()[1] as HTMLElement)
         .querySelector('[href]')!
         .getAttribute('href')!
         .slice(7);
       console.log(userName, userId);
       addChoromeStorage({ userName: userName, userId: userId });
       removeElement({ userKey: [{ userName: userName, userId: userId }] });
+      return;
+    }
+
+    if (!targetParent) {
       return;
     }
 
