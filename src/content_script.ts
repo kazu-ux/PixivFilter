@@ -1,3 +1,5 @@
+import { getRequest } from './fetch_api';
+
 (() => {
   //NG登録したユーザーのイラストを非表示
   const removeElement = (userOrTagObj: UserOrTag) =>
@@ -231,9 +233,76 @@
       await removeElement({ tagName: results.tagName });
     });
 
+  const createClone = (workElement: HTMLLIElement, worksData: WorksData) => {
+    const cloneElement = workElement.cloneNode(true) as HTMLLIElement;
+    cloneElement.querySelector('button')?.remove();
+    cloneElement.querySelector('.pf-tag-container')?.remove();
+    const nodeElements = cloneElement.querySelectorAll('li>div>div');
+    // サムネイル画像とURLを変更
+    nodeElements[0]
+      .querySelector('img')
+      ?.setAttribute(
+        'src',
+        'https://i.pximg.net/c/250x250_80_a2/img-master/img/2021/12/25/19/20/28/95014704_p0_square1200.jpg'
+      );
+
+    nodeElements[0]
+      .querySelector('a')
+      ?.setAttribute('href', '/artworks/95014704');
+    //
+
+    // タイトルとURLを変更
+    nodeElements[1]
+      .querySelector('a')
+      ?.setAttribute('href', '/artworks/95014704');
+
+    nodeElements[1].querySelector('a')!.textContent =
+      '愛し合う二人はいつも一緒なやすなとソーニャちゃん';
+    //
+
+    // ユーザーアイコンを変更
+    nodeElements[2]
+      .querySelectorAll('a')[0]
+      ?.setAttribute('href', '/users/7499778');
+    nodeElements[2]
+      .querySelector('img')
+      ?.setAttribute(
+        'src',
+        'https://i.pximg.net/user-profile/img/2021/01/13/04/37/36/19994816_9af9107dfd594e24fada419d2cafecd9_50.jpg'
+      );
+    //
+
+    // ユーザー名を変更
+    nodeElements[2].querySelectorAll('a')[1]!.textContent = 'DiZ';
+    nodeElements[2]
+      .querySelectorAll('a')[1]
+      .setAttribute('href', '/users/7499778');
+    //
+    workElement.parentElement?.prepend(cloneElement);
+  };
+
+  const waitImageDisplayed = (workElement: HTMLLIElement) => {
+    const className = workElement.classList[0];
+    return new Promise<void>((resolve, reject) => {
+      const interval = setInterval(() => {
+        const imgElement = document
+          .querySelector(`.${className}`)
+          ?.querySelector('img');
+
+        if (imgElement) {
+          clearInterval(interval);
+          console.log('clearinterval');
+          resolve();
+        }
+      }, 500);
+    });
+  };
+
+  const getNextPage = () => {};
+
   document.addEventListener('click', clickEvent);
 
-  const main = async (worksData: WorksData) => {
+  const main = async (worksData: WorksData, url: string) => {
     // 検索結果が0の場合は処理をしない
     if (!worksData.length) {
       return;
@@ -259,12 +328,18 @@
 
         await createAddButton(monitoredElements);
         await setTagElement(workElements, worksData);
-        checkGoogleStorage();
+        // checkGoogleStorage();
+        await waitImageDisplayed(workElements[0]);
+        //await getRequest(url,'2')
+        createClone(workElements[0], worksData);
+        createClone(workElements[0], worksData);
       }
     }, 100);
   };
 
-  chrome.runtime.onMessage.addListener((worksData: WorksData) => {
-    main(worksData);
-  });
+  chrome.runtime.onMessage.addListener(
+    (message: { worksData: WorksData; url: string }) => {
+      main(message.worksData, message.url);
+    }
+  );
 })();
