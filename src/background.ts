@@ -12,15 +12,24 @@ chrome.webRequest.onBeforeRequest.addListener(
         'https://www.pixiv.net/ajax/search/manga/',
         'https://www.pixiv.net/ajax/search/top/',
       ];
-
+      // 状態管理にlocalstorageを使う
       searchTargets.forEach(async (searchTarget) => {
+        const isEnabled = () => {
+          return new Promise<boolean>((resolve, reject) => {
+            chrome.storage.local.get(['state'], (result) => {
+              resolve(result.state);
+            });
+          });
+        };
         if (
           url.includes(searchTarget) &&
-          initiator === 'https://www.pixiv.net'
+          initiator === 'https://www.pixiv.net' &&
+          (await isEnabled())
         ) {
           const worksData = await getRequest(url);
+          await chrome.storage.local.set({ state: false });
           console.log(worksData);
-          chrome.tabs.sendMessage(tabId, worksData);
+          chrome.tabs.sendMessage(tabId, { url, worksData });
         }
       });
     })();
@@ -30,6 +39,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 );
 
 chrome.runtime.onInstalled.addListener(async () => {
+  chrome.storage.local.set({ state: true });
   console.log('test');
 
   const getSyncStorage = () => {

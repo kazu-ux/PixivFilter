@@ -1,9 +1,123 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/fetch_api.ts":
+/*!**************************!*\
+  !*** ./src/fetch_api.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getRequest": () => (/* binding */ getRequest)
+/* harmony export */ });
+const getRequest = async (url, pages) => {
+    const getWorksData = (json) => {
+        let worksData = [];
+        try {
+            worksData = worksData.concat(json.body.illustManga.data, json.body.popular.permanent, json.body.popular.recent);
+        }
+        catch (error) { }
+        try {
+            worksData = json.body.illust.data;
+        }
+        catch (error) { }
+        try {
+            worksData = json.body.manga.data;
+        }
+        catch (error) { }
+        return worksData;
+    };
+    const getJson = async (url) => {
+        const json = await (await fetch(url)).json();
+        const worksData = getWorksData(json)
+            .filter(Boolean)
+            .flatMap((data) => {
+            if (Object.keys(data).includes('isAdContainer')) {
+                return [];
+            }
+            return [data];
+        });
+        return worksData;
+    };
+    if (!pages) {
+        return await getJson(url);
+    }
+    const newURL = new URL(url);
+    newURL.searchParams.set('p', pages);
+    const href = newURL.href;
+    console.log(href);
+    return await getJson(href);
+};
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
 var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
 /*!*******************************!*\
   !*** ./src/content_script.ts ***!
   \*******************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _fetch_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./fetch_api */ "./src/fetch_api.ts");
 
 (() => {
     //NG登録したユーザーのイラストを非表示
@@ -200,8 +314,43 @@ var __webpack_exports__ = {};
         await removeElement({ userKey: results.userKey });
         await removeElement({ tagName: results.tagName });
     });
+    const createCloneElement = (workElement, worksData) => {
+        const cloneElement = workElement.cloneNode(true);
+        cloneElement.querySelector('button')?.remove();
+        cloneElement.querySelector('.pf-tag-container')?.remove();
+        const nodeElements = cloneElement.querySelectorAll('li>div>div');
+        // サムネイル画像とURLを変更
+        nodeElements[0].querySelector('img')?.setAttribute('src', worksData.url);
+        nodeElements[0]
+            .querySelector('a')
+            ?.setAttribute('href', `/artworks/${worksData.id}`);
+        //
+        // タイトルとURLを変更
+        nodeElements[1]
+            .querySelector('a')
+            ?.setAttribute('href', `/artworks/${worksData.id}`);
+        nodeElements[1].querySelector('a').textContent = worksData.title;
+        //
+        // ユーザーアイコンを変更
+        nodeElements[2]
+            .querySelectorAll('a')[0]
+            ?.setAttribute('href', `/users/${worksData.userId}`);
+        nodeElements[2]
+            .querySelector('img')
+            ?.setAttribute('src', worksData.profileImageUrl);
+        //
+        // ユーザー名を変更
+        nodeElements[2].querySelectorAll('a')[1].textContent = worksData.userName;
+        nodeElements[2]
+            .querySelectorAll('a')[1]
+            .setAttribute('href', `/users/${worksData.userId}`);
+        //
+        return cloneElement;
+        // workElement.parentElement?.prepend(cloneElement);
+    };
     document.addEventListener('click', clickEvent);
-    const main = async (worksData) => {
+    const main = async (url, worksData) => {
+        // console.log(worksData);
         // 検索結果が0の場合は処理をしない
         if (!worksData.length) {
             return;
@@ -220,12 +369,23 @@ var __webpack_exports__ = {};
                 await createAddButton(monitoredElements);
                 await setTagElement(workElements, worksData);
                 checkGoogleStorage();
+                // fetch
+                await new Promise((resolve, reject) => {
+                    setTimeout(async () => {
+                        console.log(await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url));
+                        resolve();
+                    }, 1000);
+                });
+                console.log('trueにする');
+                await chrome.storage.local.set({ state: true });
             }
         }, 100);
     };
-    chrome.runtime.onMessage.addListener((worksData) => {
-        main(worksData);
+    chrome.runtime.onMessage.addListener((message) => {
+        main(message.url, message.worksData);
     });
+})();
+
 })();
 
 /******/ })()

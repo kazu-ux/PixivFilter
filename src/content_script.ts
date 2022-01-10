@@ -1,3 +1,5 @@
+import { getRequest } from './fetch_api';
+
 (() => {
   //NG登録したユーザーのイラストを非表示
   const removeElement = (userOrTagObj: UserOrTag) =>
@@ -231,9 +233,53 @@
       await removeElement({ tagName: results.tagName });
     });
 
+  const createCloneElement = (
+    workElement: HTMLLIElement,
+    worksData: WorksData[0]
+  ) => {
+    const cloneElement = workElement.cloneNode(true) as HTMLLIElement;
+    cloneElement.querySelector('button')?.remove();
+    cloneElement.querySelector('.pf-tag-container')?.remove();
+    const nodeElements = cloneElement.querySelectorAll('li>div>div');
+    // サムネイル画像とURLを変更
+    nodeElements[0].querySelector('img')?.setAttribute('src', worksData.url);
+
+    nodeElements[0]
+      .querySelector('a')
+      ?.setAttribute('href', `/artworks/${worksData.id}`);
+    //
+
+    // タイトルとURLを変更
+    nodeElements[1]
+      .querySelector('a')
+      ?.setAttribute('href', `/artworks/${worksData.id}`);
+
+    nodeElements[1].querySelector('a')!.textContent = worksData.title;
+    //
+
+    // ユーザーアイコンを変更
+    nodeElements[2]
+      .querySelectorAll('a')[0]
+      ?.setAttribute('href', `/users/${worksData.userId}`);
+    nodeElements[2]
+      .querySelector('img')
+      ?.setAttribute('src', worksData.profileImageUrl);
+    //
+
+    // ユーザー名を変更
+    nodeElements[2].querySelectorAll('a')[1]!.textContent = worksData.userName;
+    nodeElements[2]
+      .querySelectorAll('a')[1]
+      .setAttribute('href', `/users/${worksData.userId}`);
+    //
+    return cloneElement;
+    // workElement.parentElement?.prepend(cloneElement);
+  };
+
   document.addEventListener('click', clickEvent);
 
-  const main = async (worksData: WorksData) => {
+  const main = async (url: string, worksData: WorksData) => {
+    // console.log(worksData);
     // 検索結果が0の場合は処理をしない
     if (!worksData.length) {
       return;
@@ -260,11 +306,23 @@
         await createAddButton(monitoredElements);
         await setTagElement(workElements, worksData);
         checkGoogleStorage();
+        // fetch
+        await new Promise<void>((resolve, reject) => {
+          setTimeout(async () => {
+            console.log(await getRequest(url));
+            resolve();
+          }, 1000);
+        });
+        console.log('trueにする');
+
+        await chrome.storage.local.set({ state: true });
       }
     }, 100);
   };
 
-  chrome.runtime.onMessage.addListener((worksData: WorksData) => {
-    main(worksData);
-  });
+  chrome.runtime.onMessage.addListener(
+    (message: { url: string; worksData: WorksData }) => {
+      main(message.url, message.worksData);
+    }
+  );
 })();
