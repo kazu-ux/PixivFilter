@@ -29,12 +29,31 @@ const getRequest = async (url, pages) => {
         catch (error) { }
         return worksData;
     };
+    if (!pages) {
+        const json = await (await fetch(url)).json();
+        const worksData = getWorksData(json)
+            .filter(Boolean)
+            .flatMap((data) => {
+            if (Object.keys(data).includes('isAdContainer')) {
+                return [];
+            }
+            return [data];
+        });
+        return worksData;
+    }
     const newURL = new URL(url);
     newURL.searchParams.set('p', pages);
     const href = newURL.href;
     console.log(href);
     const json = await (await fetch(href)).json();
-    const worksData = getWorksData(json).filter(Boolean);
+    const worksData = getWorksData(json)
+        .filter(Boolean)
+        .flatMap((data) => {
+        if (Object.keys(data).includes('isAdContainer')) {
+            return [];
+        }
+        return [data];
+    });
     return worksData;
 };
 
@@ -120,13 +139,20 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
         searchTargets.forEach(async (searchTarget) => {
             if (url.includes(searchTarget) &&
                 initiator === 'https://www.pixiv.net') {
-                const worksData = await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url, '1');
-                console.log(worksData);
-                chrome.tabs.sendMessage(tabId, { worksData, url });
+                /*    const worksData = await getRequest(url);
+                console.log(worksData); */
+                chrome.tabs.sendMessage(tabId, { url });
             }
         });
     })();
 }, { urls: ['*://www.pixiv.net/*'] }, ['requestBody', 'blocking']);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(message.url, message.pages).then((worksData) => {
+        sendResponse(worksData);
+    });
+    console.log({ message, sender });
+    return true;
+});
 chrome.runtime.onInstalled.addListener(async () => {
     console.log('test');
     const getSyncStorage = () => {

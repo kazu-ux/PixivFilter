@@ -18,11 +18,9 @@ chrome.webRequest.onBeforeRequest.addListener(
           url.includes(searchTarget) &&
           initiator === 'https://www.pixiv.net'
         ) {
-          const worksData = await getRequest(url, '1');
-
-          console.log(worksData);
-
-          chrome.tabs.sendMessage(tabId, { worksData, url });
+          /*    const worksData = await getRequest(url);
+          console.log(worksData); */
+          chrome.tabs.sendMessage(tabId, { url });
         }
       });
     })();
@@ -30,6 +28,15 @@ chrome.webRequest.onBeforeRequest.addListener(
   { urls: ['*://www.pixiv.net/*'] },
   ['requestBody', 'blocking']
 );
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  getRequest(message.url, message.pages).then((worksData) => {
+    sendResponse(worksData);
+  });
+
+  console.log({ message, sender });
+  return true;
+});
 
 chrome.runtime.onInstalled.addListener(async () => {
   console.log('test');

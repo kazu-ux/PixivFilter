@@ -222,33 +222,30 @@ __webpack_require__.r(__webpack_exports__);
         cloneElement.querySelector('.pf-tag-container')?.remove();
         const nodeElements = cloneElement.querySelectorAll('li>div>div');
         // サムネイル画像とURLを変更
-        nodeElements[0]
-            .querySelector('img')
-            ?.setAttribute('src', 'https://i.pximg.net/c/250x250_80_a2/img-master/img/2021/12/25/19/20/28/95014704_p0_square1200.jpg');
+        nodeElements[0].querySelector('img')?.setAttribute('src', worksData.url);
         nodeElements[0]
             .querySelector('a')
-            ?.setAttribute('href', '/artworks/95014704');
+            ?.setAttribute('href', `/artworks/${worksData.id}`);
         //
         // タイトルとURLを変更
         nodeElements[1]
             .querySelector('a')
-            ?.setAttribute('href', '/artworks/95014704');
-        nodeElements[1].querySelector('a').textContent =
-            '愛し合う二人はいつも一緒なやすなとソーニャちゃん';
+            ?.setAttribute('href', `/artworks/${worksData.id}`);
+        nodeElements[1].querySelector('a').textContent = worksData.title;
         //
         // ユーザーアイコンを変更
         nodeElements[2]
             .querySelectorAll('a')[0]
-            ?.setAttribute('href', '/users/7499778');
+            ?.setAttribute('href', `/users/${worksData.userId}`);
         nodeElements[2]
             .querySelector('img')
-            ?.setAttribute('src', 'https://i.pximg.net/user-profile/img/2021/01/13/04/37/36/19994816_9af9107dfd594e24fada419d2cafecd9_50.jpg');
+            ?.setAttribute('src', worksData.profileImageUrl);
         //
         // ユーザー名を変更
-        nodeElements[2].querySelectorAll('a')[1].textContent = 'DiZ';
+        nodeElements[2].querySelectorAll('a')[1].textContent = worksData.userName;
         nodeElements[2]
             .querySelectorAll('a')[1]
-            .setAttribute('href', '/users/7499778');
+            .setAttribute('href', `/users/${worksData.userId}`);
         //
         workElement.parentElement?.prepend(cloneElement);
     };
@@ -269,11 +266,8 @@ __webpack_require__.r(__webpack_exports__);
     };
     const getNextPage = () => { };
     document.addEventListener('click', clickEvent);
-    const main = async (worksData, url) => {
-        // 検索結果が0の場合は処理をしない
-        if (!worksData.length) {
-            return;
-        }
+    const main = async (url) => {
+        // console.log(count);
         let count = 0;
         const interval = setInterval(async () => {
             count += 1;
@@ -284,19 +278,27 @@ __webpack_require__.r(__webpack_exports__);
             const monitoredElements = document.querySelectorAll('[aria-haspopup=true]');
             if (monitoredElements[0]) {
                 clearInterval(interval);
+                const sendBackground = (url, pages) => {
+                    return new Promise((resolve, reject) => {
+                        chrome.runtime.sendMessage({ url, pages }, (response) => {
+                            resolve(response);
+                            console.log(response);
+                        });
+                    });
+                };
+                const worksData = await sendBackground(url, '1');
                 const workElements = Array.from(monitoredElements).flatMap((element) => element.closest('li') ?? []);
                 await createAddButton(monitoredElements);
                 await setTagElement(workElements, worksData);
                 // checkGoogleStorage();
                 await waitImageDisplayed(workElements[0]);
-                //await getRequest(url,'2')
-                createClone(workElements[0], worksData);
-                createClone(workElements[0], worksData);
+                /* createClone(workElements[0], worksData);
+                createClone(workElements[0], worksData); */
             }
         }, 100);
     };
     chrome.runtime.onMessage.addListener((message) => {
-        main(message.worksData, message.url);
+        main(message.url);
     });
 })();
 
