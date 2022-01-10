@@ -9,10 +9,12 @@ type UserOrTag = {
 
 type WorksData = {
   id: string;
+  title: string;
   tags: string[];
   userId: string;
   userName: string;
-  url: string;
+  url: string; // サムネイル画像のURL
+  profileImageUrl: string; // ユーザーアイコン画像のURL
 }[];
 
 type NGObject =
