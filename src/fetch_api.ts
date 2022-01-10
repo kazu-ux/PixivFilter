@@ -16,7 +16,8 @@ export const getRequest = async (url: string, pages?: string) => {
     } catch (error) {}
     return worksData;
   };
-  if (!pages) {
+
+  const getJson = async (url: string) => {
     const json = await (await fetch(url)).json();
     const worksData = getWorksData(json)!
       .filter(Boolean)
@@ -28,21 +29,14 @@ export const getRequest = async (url: string, pages?: string) => {
       });
 
     return worksData;
+  };
+  if (!pages) {
+    return await getJson(url);
   }
 
   const newURL = new URL(url);
   newURL.searchParams.set('p', pages);
   const href = newURL.href;
   console.log(href);
-  const json = await (await fetch(href)).json();
-  const worksData = getWorksData(json)!
-    .filter(Boolean)
-    .flatMap((data) => {
-      if (Object.keys(data).includes('isAdContainer')) {
-        return [];
-      }
-      return [data];
-    });
-
-  return worksData;
+  return await getJson(href);
 };
