@@ -12,18 +12,17 @@ chrome.webRequest.onBeforeRequest.addListener(
         'https://www.pixiv.net/ajax/search/manga/',
         'https://www.pixiv.net/ajax/search/top/',
       ];
-      await Promise.all(
-        searchTargets.map(async (searchTarget) => {
-          if (
-            url.includes(searchTarget) &&
-            initiator === 'https://www.pixiv.net'
-          ) {
-            const worksData = await getRequest(url);
-            console.log(worksData);
-            chrome.tabs.sendMessage(tabId, worksData);
-          }
-        })
-      );
+
+      searchTargets.forEach(async (searchTarget) => {
+        if (
+          url.includes(searchTarget) &&
+          initiator === 'https://www.pixiv.net'
+        ) {
+          const worksData = await getRequest(url);
+          console.log(worksData);
+          chrome.tabs.sendMessage(tabId, worksData);
+        }
+      });
     })();
   },
   { urls: ['*://www.pixiv.net/*'] },

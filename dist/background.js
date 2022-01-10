@@ -29,7 +29,7 @@ const getRequest = async (url, pages) => {
         catch (error) { }
         return worksData;
     };
-    if (!pages) {
+    const getJson = async (url) => {
         const json = await (await fetch(url)).json();
         const worksData = getWorksData(json)
             .filter(Boolean)
@@ -40,21 +40,15 @@ const getRequest = async (url, pages) => {
             return [data];
         });
         return worksData;
+    };
+    if (!pages) {
+        return await getJson(url);
     }
     const newURL = new URL(url);
     newURL.searchParams.set('p', pages);
     const href = newURL.href;
     console.log(href);
-    const json = await (await fetch(href)).json();
-    const worksData = getWorksData(json)
-        .filter(Boolean)
-        .flatMap((data) => {
-        if (Object.keys(data).includes('isAdContainer')) {
-            return [];
-        }
-        return [data];
-    });
-    return worksData;
+    return await getJson(href);
 };
 
 
@@ -136,14 +130,14 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
             'https://www.pixiv.net/ajax/search/manga/',
             'https://www.pixiv.net/ajax/search/top/',
         ];
-        await Promise.all(searchTargets.map(async (searchTarget) => {
+        searchTargets.forEach(async (searchTarget) => {
             if (url.includes(searchTarget) &&
                 initiator === 'https://www.pixiv.net') {
                 const worksData = await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url);
                 console.log(worksData);
                 chrome.tabs.sendMessage(tabId, worksData);
             }
-        }));
+        });
     })();
 }, { urls: ['*://www.pixiv.net/*'] }, ['requestBody', 'blocking']);
 chrome.runtime.onInstalled.addListener(async () => {
