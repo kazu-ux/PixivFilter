@@ -350,12 +350,11 @@ __webpack_require__.r(__webpack_exports__);
     };
     const setCloneElement = (workElement, worksData) => {
         worksData.forEach(async (worksDatum) => {
-            const target = document.querySelectorAll('ul')[2];
+            const target = workElement.parentElement;
             target?.appendChild(await createCloneElement(workElement, worksDatum));
         });
     };
     document.addEventListener('click', clickEvent);
-    // オブジェクトの段階でNG作品を弾く
     const main = async (url, worksData) => {
         // console.log(worksData);
         // 検索結果が0の場合は処理をしない

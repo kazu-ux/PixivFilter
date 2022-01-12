@@ -282,7 +282,7 @@ import { getRequest } from './fetch_api';
     worksData: WorksData
   ) => {
     worksData.forEach(async (worksDatum) => {
-      const target = document.querySelectorAll('ul')[2];
+      const target = workElement.parentElement;
       target?.appendChild(await createCloneElement(workElement, worksDatum));
     });
   };
