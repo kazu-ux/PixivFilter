@@ -3,9 +3,9 @@ export const getRequest = async (url: string, pages?: string) => {
     let worksData: WorksData = [];
     try {
       worksData = worksData.concat(
-        json.body.illustManga.data,
-        json.body.popular.permanent,
-        json.body.popular.recent
+        json.body.illustManga.data
+        //json.body.popular.permanent,
+        //json.body.popular.recent
       );
     } catch (error) {}
     try {

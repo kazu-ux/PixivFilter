@@ -16,7 +16,10 @@ const getRequest = async (url, pages) => {
     const getWorksData = (json) => {
         let worksData = [];
         try {
-            worksData = worksData.concat(json.body.illustManga.data, json.body.popular.permanent, json.body.popular.recent);
+            worksData = worksData.concat(json.body.illustManga.data
+            //json.body.popular.permanent,
+            //json.body.popular.recent
+            );
         }
         catch (error) { }
         try {
@@ -350,11 +353,13 @@ __webpack_require__.r(__webpack_exports__);
     };
     const setCloneElement = (workElement, worksData) => {
         worksData.forEach(async (worksDatum) => {
+            // 追加ページを追加する要素
             const target = workElement.parentElement;
             target?.appendChild(await createCloneElement(workElement, worksDatum));
         });
     };
     document.addEventListener('click', clickEvent);
+    let currentPageNumber = 1;
     const main = async (url, worksData) => {
         // console.log(worksData);
         // 検索結果が0の場合は処理をしない
@@ -371,21 +376,41 @@ __webpack_require__.r(__webpack_exports__);
             const monitoredElements = document.querySelectorAll('[aria-haspopup=true]');
             if (monitoredElements[0]) {
                 clearInterval(interval);
+                const callback = async (event) => {
+                    if (event[0].isIntersecting) {
+                        console.log(currentPageNumber);
+                        await new Promise((resolve, reject) => {
+                            setTimeout(() => {
+                                resolve();
+                            }, 2000);
+                        });
+                        const nextPageWorksData = await new Promise((resolve, reject) => {
+                            setTimeout(async () => {
+                                const worksData = await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url, String(currentPageNumber + 1));
+                                console.log(worksData);
+                                resolve(worksData);
+                            }, 1000);
+                        });
+                        await setCloneElement(workElements[0], nextPageWorksData);
+                        observer.disconnect();
+                    }
+                };
+                const observer = new IntersectionObserver(callback, { threshold: 1 });
                 const workElements = Array.from(monitoredElements).flatMap((element) => element.closest('li') ?? []);
-                await createAddButton(monitoredElements);
-                await setTagElement(workElements, worksData);
-                checkGoogleStorage();
+                // await createAddButton(monitoredElements);
+                // await setTagElement(workElements, worksData);
+                // checkGoogleStorage();
                 // fetch
-                const nextPageWorksData = await new Promise((resolve, reject) => {
-                    setTimeout(async () => {
-                        const worksData = await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url, '2');
-                        console.log(worksData);
-                        resolve(worksData);
-                    }, 1000);
-                });
                 console.log('trueにする');
+                await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 2000);
+                });
+                observer.disconnect();
+                observer.observe(document.querySelectorAll('nav')[1]);
                 await chrome.storage.local.set({ state: true });
-                await setCloneElement(workElements[0], nextPageWorksData);
+                currentPageNumber += 1;
             }
         }, 100);
     };

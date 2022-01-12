@@ -16,7 +16,10 @@ const getRequest = async (url, pages) => {
     const getWorksData = (json) => {
         let worksData = [];
         try {
-            worksData = worksData.concat(json.body.illustManga.data, json.body.popular.permanent, json.body.popular.recent);
+            worksData = worksData.concat(json.body.illustManga.data
+            //json.body.popular.permanent,
+            //json.body.popular.recent
+            );
         }
         catch (error) { }
         try {

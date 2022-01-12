@@ -282,12 +282,15 @@ import { getRequest } from './fetch_api';
     worksData: WorksData
   ) => {
     worksData.forEach(async (worksDatum) => {
+      // 追加ページを追加する要素
       const target = workElement.parentElement;
       target?.appendChild(await createCloneElement(workElement, worksDatum));
     });
   };
 
   document.addEventListener('click', clickEvent);
+
+  let currentPageNumber = 1;
 
   const main = async (url: string, worksData: WorksData) => {
     // console.log(worksData);
@@ -309,28 +312,54 @@ import { getRequest } from './fetch_api';
 
       if (monitoredElements[0]) {
         clearInterval(interval);
+        const callback = async (event: IntersectionObserverEntry[]) => {
+          if (event[0].isIntersecting) {
+            console.log(currentPageNumber);
+            await new Promise<void>((resolve, reject) => {
+              setTimeout(() => {
+                resolve();
+              }, 2000);
+            });
+            const nextPageWorksData = await new Promise<WorksData>(
+              (resolve, reject) => {
+                setTimeout(async () => {
+                  const worksData = await getRequest(
+                    url,
+                    String(currentPageNumber + 1)
+                  );
+                  console.log(worksData);
+                  resolve(worksData);
+                }, 1000);
+              }
+            );
+            await setCloneElement(workElements[0], nextPageWorksData);
+            observer.disconnect();
+          }
+        };
+        const observer = new IntersectionObserver(callback, { threshold: 1 });
 
         const workElements = Array.from(monitoredElements).flatMap(
           (element) => element.closest('li') ?? []
         );
 
-        await createAddButton(monitoredElements);
-        await setTagElement(workElements, worksData);
-        checkGoogleStorage();
+        // await createAddButton(monitoredElements);
+        // await setTagElement(workElements, worksData);
+        // checkGoogleStorage();
         // fetch
-        const nextPageWorksData = await new Promise<WorksData>(
-          (resolve, reject) => {
-            setTimeout(async () => {
-              const worksData = await getRequest(url, '2');
-              console.log(worksData);
-              resolve(worksData);
-            }, 1000);
-          }
-        );
+
         console.log('trueにする');
 
+        await new Promise<void>((resolve, reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 2000);
+        });
+        observer.disconnect();
+        observer.observe(document.querySelectorAll('nav')[1]);
+
         await chrome.storage.local.set({ state: true });
-        await setCloneElement(workElements[0], nextPageWorksData);
+
+        currentPageNumber += 1;
       }
     }, 100);
   };
