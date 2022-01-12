@@ -314,41 +314,48 @@ __webpack_require__.r(__webpack_exports__);
         await removeElement({ userKey: results.userKey });
         await removeElement({ tagName: results.tagName });
     });
-    const createCloneElement = (workElement, worksData) => {
+    const createCloneElement = (workElement, worksDatum) => {
         const cloneElement = workElement.cloneNode(true);
         cloneElement.querySelector('button')?.remove();
         cloneElement.querySelector('.pf-tag-container')?.remove();
         const nodeElements = cloneElement.querySelectorAll('li>div>div');
         // サムネイル画像とURLを変更
-        nodeElements[0].querySelector('img')?.setAttribute('src', worksData.url);
+        nodeElements[0].querySelector('img')?.setAttribute('src', worksDatum.url);
         nodeElements[0]
             .querySelector('a')
-            ?.setAttribute('href', `/artworks/${worksData.id}`);
+            ?.setAttribute('href', `/artworks/${worksDatum.id}`);
         //
         // タイトルとURLを変更
         nodeElements[1]
             .querySelector('a')
-            ?.setAttribute('href', `/artworks/${worksData.id}`);
-        nodeElements[1].querySelector('a').textContent = worksData.title;
+            ?.setAttribute('href', `/artworks/${worksDatum.id}`);
+        nodeElements[1].querySelector('a').textContent = worksDatum.title;
         //
         // ユーザーアイコンを変更
         nodeElements[2]
             .querySelectorAll('a')[0]
-            ?.setAttribute('href', `/users/${worksData.userId}`);
+            ?.setAttribute('href', `/users/${worksDatum.userId}`);
         nodeElements[2]
             .querySelector('img')
-            ?.setAttribute('src', worksData.profileImageUrl);
+            ?.setAttribute('src', worksDatum.profileImageUrl);
         //
         // ユーザー名を変更
-        nodeElements[2].querySelectorAll('a')[1].textContent = worksData.userName;
+        nodeElements[2].querySelectorAll('a')[1].textContent = worksDatum.userName;
         nodeElements[2]
             .querySelectorAll('a')[1]
-            .setAttribute('href', `/users/${worksData.userId}`);
+            .setAttribute('href', `/users/${worksDatum.userId}`);
         //
-        return cloneElement;
+        return Promise.resolve(cloneElement);
         // workElement.parentElement?.prepend(cloneElement);
     };
+    const setCloneElement = (workElement, worksData) => {
+        worksData.forEach(async (worksDatum) => {
+            const target = document.querySelectorAll('ul')[2];
+            target?.appendChild(await createCloneElement(workElement, worksDatum));
+        });
+    };
     document.addEventListener('click', clickEvent);
+    // オブジェクトの段階でNG作品を弾く
     const main = async (url, worksData) => {
         // console.log(worksData);
         // 検索結果が0の場合は処理をしない
@@ -370,14 +377,16 @@ __webpack_require__.r(__webpack_exports__);
                 await setTagElement(workElements, worksData);
                 checkGoogleStorage();
                 // fetch
-                await new Promise((resolve, reject) => {
+                const nextPageWorksData = await new Promise((resolve, reject) => {
                     setTimeout(async () => {
-                        console.log(await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url));
-                        resolve();
+                        const worksData = await (0,_fetch_api__WEBPACK_IMPORTED_MODULE_0__.getRequest)(url, '2');
+                        console.log(worksData);
+                        resolve(worksData);
                     }, 1000);
                 });
                 console.log('trueにする');
                 await chrome.storage.local.set({ state: true });
+                await setCloneElement(workElements[0], nextPageWorksData);
             }
         }, 100);
     };

@@ -235,45 +235,56 @@ import { getRequest } from './fetch_api';
 
   const createCloneElement = (
     workElement: HTMLLIElement,
-    worksData: WorksData[0]
+    worksDatum: WorksData[0]
   ) => {
     const cloneElement = workElement.cloneNode(true) as HTMLLIElement;
     cloneElement.querySelector('button')?.remove();
     cloneElement.querySelector('.pf-tag-container')?.remove();
     const nodeElements = cloneElement.querySelectorAll('li>div>div');
     // サムネイル画像とURLを変更
-    nodeElements[0].querySelector('img')?.setAttribute('src', worksData.url);
+    nodeElements[0].querySelector('img')?.setAttribute('src', worksDatum.url);
 
     nodeElements[0]
       .querySelector('a')
-      ?.setAttribute('href', `/artworks/${worksData.id}`);
+      ?.setAttribute('href', `/artworks/${worksDatum.id}`);
     //
 
     // タイトルとURLを変更
     nodeElements[1]
       .querySelector('a')
-      ?.setAttribute('href', `/artworks/${worksData.id}`);
+      ?.setAttribute('href', `/artworks/${worksDatum.id}`);
 
-    nodeElements[1].querySelector('a')!.textContent = worksData.title;
+    nodeElements[1].querySelector('a')!.textContent = worksDatum.title;
     //
 
     // ユーザーアイコンを変更
     nodeElements[2]
       .querySelectorAll('a')[0]
-      ?.setAttribute('href', `/users/${worksData.userId}`);
+      ?.setAttribute('href', `/users/${worksDatum.userId}`);
     nodeElements[2]
       .querySelector('img')
-      ?.setAttribute('src', worksData.profileImageUrl);
+      ?.setAttribute('src', worksDatum.profileImageUrl);
     //
 
     // ユーザー名を変更
-    nodeElements[2].querySelectorAll('a')[1]!.textContent = worksData.userName;
+    nodeElements[2].querySelectorAll('a')[1]!.textContent = worksDatum.userName;
     nodeElements[2]
       .querySelectorAll('a')[1]
-      .setAttribute('href', `/users/${worksData.userId}`);
+      .setAttribute('href', `/users/${worksDatum.userId}`);
     //
-    return cloneElement;
+    return Promise.resolve(cloneElement);
+
     // workElement.parentElement?.prepend(cloneElement);
+  };
+
+  const setCloneElement = (
+    workElement: HTMLLIElement,
+    worksData: WorksData
+  ) => {
+    worksData.forEach(async (worksDatum) => {
+      const target = document.querySelectorAll('ul')[2];
+      target?.appendChild(await createCloneElement(workElement, worksDatum));
+    });
   };
 
   document.addEventListener('click', clickEvent);
@@ -307,15 +318,19 @@ import { getRequest } from './fetch_api';
         await setTagElement(workElements, worksData);
         checkGoogleStorage();
         // fetch
-        await new Promise<void>((resolve, reject) => {
-          setTimeout(async () => {
-            console.log(await getRequest(url));
-            resolve();
-          }, 1000);
-        });
+        const nextPageWorksData = await new Promise<WorksData>(
+          (resolve, reject) => {
+            setTimeout(async () => {
+              const worksData = await getRequest(url, '2');
+              console.log(worksData);
+              resolve(worksData);
+            }, 1000);
+          }
+        );
         console.log('trueにする');
 
         await chrome.storage.local.set({ state: true });
+        await setCloneElement(workElements[0], nextPageWorksData);
       }
     }, 100);
   };
