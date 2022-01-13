@@ -7,7 +7,7 @@ var __webpack_exports__ = {};
 
 (() => {
     //NG登録したユーザーのイラストを非表示
-    const removeElement = (userOrTagObj) => new Promise((resolve) => {
+    const hideElement = (userOrTagObj) => new Promise((resolve) => {
         if (userOrTagObj.userKey) {
             const users = userOrTagObj.userKey;
             users.forEach((user) => {
@@ -137,7 +137,7 @@ var __webpack_exports__ = {};
                 .slice(7);
             console.log(userName, userId);
             addChoromeStorage({ userName: userName, userId: userId });
-            removeElement({ userKey: [{ userName: userName, userId: userId }] });
+            hideElement({ userKey: [{ userName: userName, userId: userId }] });
             return;
         }
         if (!targetParent) {
@@ -158,7 +158,7 @@ var __webpack_exports__ = {};
         if (targetElement.getAttribute('class') === 'pf-tag-ng-button') {
             const tagName = targetElement.getAttribute('data-tag-name');
             addChoromeStorage({ tagName: tagName });
-            removeElement({ tagName: [tagName] });
+            hideElement({ tagName: [tagName] });
         }
     };
     //NG登録ボタンを押したらChromeストレージに保存する
@@ -209,8 +209,8 @@ var __webpack_exports__ = {};
     };
     //ローカルストレージに保存されているNGキーワードの作品を非表示にする
     const checkGoogleStorage = () => chrome.storage.local.get(null, async (results) => {
-        await removeElement({ userKey: results.userKey });
-        await removeElement({ tagName: results.tagName });
+        await hideElement({ userKey: results.userKey });
+        await hideElement({ tagName: results.tagName });
     });
     document.addEventListener('click', clickEvent);
     const main = async (worksData) => {
