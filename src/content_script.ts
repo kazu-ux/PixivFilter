@@ -96,6 +96,35 @@
         });
       });
     };
+    //タグコンテナを作成する
+    const createTagContainer = (worksTags: string[]) => {
+      const divElement = document.createElement('div');
+      divElement.className = 'pf-tag-container';
+      divElement.style.display = 'none';
+
+      worksTags.forEach((tag) => {
+        const pElement = document.createElement('p');
+        pElement.className = 'pf-illust-tag';
+
+        const aElement = document.createElement('a');
+        aElement.className = 'pf-illust-tag-link';
+        aElement.target = '-blank';
+        aElement.href = `https://www.pixiv.net/tags/${tag}`;
+        aElement.textContent = tag;
+
+        const spanElementTagNgButton = document.createElement('span');
+        spanElementTagNgButton.className = 'pf-tag-ng-button';
+        spanElementTagNgButton.setAttribute('data-type', 'add');
+        spanElementTagNgButton.setAttribute('data-tag-name', tag);
+        spanElementTagNgButton.textContent = '[+]';
+
+        pElement.appendChild(aElement);
+        pElement.appendChild(spanElementTagNgButton);
+
+        divElement.appendChild(pElement);
+      });
+      return divElement;
+    };
 
     elements.forEach(async (target) => {
       const worksId = target
@@ -107,39 +136,9 @@
 
       const tags = await getTargetWorksTag(worksId);
       //タグコンテナを追加
-      target.appendChild(await createTagContainer(tags));
+      target.appendChild(createTagContainer(tags));
     });
     return;
-  };
-
-  //タグコンテナを作成する
-  const createTagContainer = async (illustTags: string[]) => {
-    const divElement = document.createElement('div');
-    divElement.className = 'pf-tag-container';
-    divElement.style.display = 'none';
-
-    illustTags.forEach((tag) => {
-      const pElement = document.createElement('p');
-      pElement.className = 'pf-illust-tag';
-
-      const aElement = document.createElement('a');
-      aElement.className = 'pf-illust-tag-link';
-      aElement.target = '-blank';
-      aElement.href = `https://www.pixiv.net/tags/${tag}`;
-      aElement.textContent = tag;
-
-      const spanElementTagNgButton = document.createElement('span');
-      spanElementTagNgButton.className = 'pf-tag-ng-button';
-      spanElementTagNgButton.setAttribute('data-type', 'add');
-      spanElementTagNgButton.setAttribute('data-tag-name', tag);
-      spanElementTagNgButton.textContent = '[+]';
-
-      pElement.appendChild(aElement);
-      pElement.appendChild(spanElementTagNgButton);
-
-      divElement.appendChild(pElement);
-    });
-    return divElement;
   };
 
   //クリックイベント
