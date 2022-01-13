@@ -30,40 +30,57 @@
     });
 
   //ユーザー名の隣にNG登録するボタンとタグ表示ボタンを設置
-  const createAddButton = async (elements: NodeListOf<Element>) =>
-    new Promise<void>(async (resolve, reject) => {
-      await Promise.all(
-        Array.from(elements).map(async (element, index) => {
-          if (!element.parentElement!.nextElementSibling) {
-            const wrapperElement = document.createElement('div');
-            wrapperElement.style.display = 'flex';
-            wrapperElement.style.width = '100%';
+  const setUserAddButtonAndToggleButton = async (
+    elements: NodeListOf<Element>
+  ) => {
+    const createWrapperElement = () => {
+      const createUserAddButton = () => {
+        //ユーザー登録ボタンを作成する
+        const spanElementAddButton = document.createElement('span');
+        spanElementAddButton.className = 'pf-user-add-button';
+        spanElementAddButton.textContent = '[+]';
+        return spanElementAddButton;
+      };
 
-            //ユーザー登録ボタンを設置
-            const spanElementAddButton = document.createElement('span');
-            spanElementAddButton.className = 'pf-user-add-button';
-            spanElementAddButton.textContent = '[+]';
+      const createToggleButton = () => {
+        // トグルボタンを作成する
+        const toggleElement = document.createElement('span');
+        toggleElement.className = 'pf-illust-info-toggle';
+        toggleElement.textContent = '▼';
+        toggleElement.style.userSelect = 'none';
+        return toggleElement;
+      };
 
-            //矢印を設置
-            const toggleElement = document.createElement('span');
-            toggleElement.className = 'pf-illust-info-toggle';
-            toggleElement.textContent = '▼';
-            toggleElement.style.userSelect = 'none';
+      const wrapperElement = document.createElement('div');
+      wrapperElement.style.display = 'flex';
+      wrapperElement.style.width = '100%';
 
-            wrapperElement.appendChild(spanElementAddButton);
-            wrapperElement.appendChild(toggleElement);
+      const userAddButtonElement = createUserAddButton();
+      const tagToggleButtonElement = createToggleButton();
 
-            // トグルボタンをユーザーごとの右端に配置するため
-            element.parentElement!.style.position = 'relative';
+      wrapperElement.appendChild(userAddButtonElement);
+      wrapperElement.appendChild(tagToggleButtonElement);
+      return wrapperElement;
+    };
 
-            element.after(wrapperElement);
-            wrapperElement.prepend(element);
-            return;
-          }
-        })
-      );
-      resolve();
-    });
+    return await Promise.all(
+      Array.from(elements).map(async (element, index) => {
+        const isButtonExist = Boolean(
+          element.parentElement!.nextElementSibling
+        );
+        if (!isButtonExist) {
+          const wrapperElement = createWrapperElement();
+
+          // トグルボタンをユーザーごとの右端に配置するため
+          element.parentElement!.style.position = 'relative';
+
+          element.after(wrapperElement);
+          wrapperElement.prepend(element);
+          return;
+        }
+      })
+    );
+  };
 
   // タグコンテナを設置する
   const setTagElement = async (
@@ -125,7 +142,7 @@
     return divElement;
   };
 
-  //クリックイベント処理
+  //クリックイベント
   const clickEvent = (e: MouseEvent) => {
     e.stopPropagation();
 
@@ -242,6 +259,7 @@
     let count = 0;
     const interval = setInterval(async () => {
       count += 1;
+      console.log(count);
       if (count === 30) {
         clearInterval(interval);
       }
@@ -257,7 +275,7 @@
           (element) => element.closest('li') ?? []
         );
 
-        await createAddButton(monitoredElements);
+        await setUserAddButtonAndToggleButton(monitoredElements);
         await setTagElement(workElements, worksData);
         checkGoogleStorage();
       }
