@@ -7,8 +7,9 @@
         users.forEach((user) => {
           const userId = user.userId;
           const targets = document.querySelectorAll(
-            `[href="/users/${userId}"]`
+            `[data-gtm-value="${userId}"]`
           );
+
           if (targets) {
             targets.forEach((target) => {
               target.closest('li')!.style.display = 'none';
@@ -156,9 +157,9 @@
       const userName = (e.composedPath()[1] as HTMLElement).firstElementChild
         ?.textContent!;
       const userId = (e.composedPath()[1] as HTMLElement)
-        .querySelector('[href]')!
-        .getAttribute('href')!
-        .slice(7);
+        .querySelector('[data-gtm-value]')!
+        .getAttribute('data-gtm-value')!;
+
       console.log(userName, userId);
       addChoromeStorage({ userName: userName, userId: userId });
       hideElement({ userKey: [{ userName: userName, userId: userId }] });
