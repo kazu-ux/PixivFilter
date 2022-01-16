@@ -15,8 +15,8 @@ input[type='checkbox'] {
 .checkbox {
   user-select: none;
 }
-.ng-user-title,
-.ng-tag-title {
+.blocked-users-title,
+.blocked-tags-title {
   display: flex;
 }
 .user-count,

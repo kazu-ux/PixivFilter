@@ -1,4 +1,8 @@
 (async () => {
+  const blockedUsers = chrome.i18n.getMessage('blockedUsers');
+  const blockedTags = chrome.i18n.getMessage('blockedTags');
+  const removeButton = chrome.i18n.getMessage('removeButton');
+
   type User = { userId: string; userName: string };
   type Users = User[] | [];
   type Tag = string;
@@ -11,8 +15,18 @@
   //HTMLを生成
   const createHtml = () =>
     new Promise<void>(async (resolve) => {
+      const setHTMLtext = (text: string, selector: string) => {
+        const targetElements: NodeListOf<HTMLElement> =
+          document.querySelectorAll(selector);
+        console.log(targetElements);
+        targetElements.forEach((targetElement) => {
+          targetElement.innerText = text;
+        });
+      };
+
       const users = await getUserForGoogleStorage();
       if (users) {
+        setHTMLtext(blockedUsers, '.blocked-users');
         // NGユーザー数を表示する
         const userCount = users.length;
         document.querySelector('.user-count')!.textContent = `(${userCount})`;
@@ -30,6 +44,7 @@
       const tagList = await getTagFromChromeStorage();
 
       if (tagList) {
+        setHTMLtext(blockedTags, '.blocked-tags');
         const fragment = document.createDocumentFragment();
         // NGタグ数を表示する
         const tagCount = tagList.length;
@@ -45,7 +60,7 @@
 
         document.querySelector('.tag-select')!.appendChild(fragment);
       }
-
+      setHTMLtext(removeButton, '[name="remove"]');
       resolve();
     });
 
