@@ -211,6 +211,21 @@ var __webpack_exports__ = {};
         await hideElement({ userKey: results.userKey });
         await hideElement({ tagName: results.tagName });
     });
+    const hideNovelAddButtonAndToggleButton = () => {
+        const targetElements = document.querySelectorAll('li');
+        targetElements.forEach((element) => {
+            if (!element.querySelector('.pf-tag-container')) {
+                try {
+                    element.querySelector('.pf-user-add-button').style.display = 'none';
+                }
+                catch (error) { }
+                try {
+                    element.querySelector('.pf-illust-info-toggle').style.display = 'none';
+                }
+                catch (error) { }
+            }
+        });
+    };
     document.addEventListener('click', clickEvent);
     const main = async (worksData) => {
         // 検索結果が0の場合は処理をしない
@@ -232,6 +247,7 @@ var __webpack_exports__ = {};
                 await setUserAddButtonAndToggleButton(monitoredElements);
                 await setTagElement(workElements, worksData);
                 checkGoogleStorage();
+                hideNovelAddButtonAndToggleButton();
             }
         }, 100);
     };
