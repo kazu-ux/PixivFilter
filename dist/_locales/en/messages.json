@@ -1,0 +1,14 @@
+{
+  "ext_description": {
+    "message": "Hides illustrations of a specific Pixiv users and tags."
+  },
+  "blockedUsers": {
+    "message": "Blocked users"
+  },
+  "blockedTags": {
+    "message": "Blocked tags"
+  },
+  "removeButton": {
+    "message": "remove"
+  }
+}
