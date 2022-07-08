@@ -20,7 +20,7 @@
   "dependencies": {
     "@types/chrome": "^0.0.174",
     "@types/wicg-file-system-access": "^2020.9.4",
-    "deepmerge-ts": "^2.0.1"
+    "deepmerge-ts": "^4.0.2"
   },
   "devDependencies": {
     "ts-loader": "^9.2.6",
