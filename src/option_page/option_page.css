@@ -1,0 +1,27 @@
+* {
+  font-size: 2vh;
+}
+select {
+  width: 40vh;
+  height: 30vh;
+}
+
+.ng-user-title,
+.ng-tag-title {
+  display: flex;
+  justify-content: center;
+  margin: 1vh;
+}
+.users-count,
+.tags-count {
+  margin-left: 1vh;
+}
+
+.import-export-buttons * {
+  margin: 1vh;
+}
+
+button {
+  margin-top: 1vh;
+  margin-left: 1vh;
+}

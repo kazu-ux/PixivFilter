@@ -1,0 +1,14 @@
+{
+  "Description": {
+    "message": "Hide works by specific Pixiv users and tags."
+  },
+  "blockUsers": {
+    "message": "Block users"
+  },
+  "blockTags": {
+    "message": "Block tags"
+  },
+  "removeButton": {
+    "message": "Remove"
+  }
+}
