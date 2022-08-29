@@ -10,7 +10,6 @@ const manifest = defineManifest({
   version: '1.2.0',
   description: '__MSG_Description__',
   icons: { 128: 'public/icons/128.png' },
-  action: { default_popup: 'index.html' },
   options_page: 'index.html',
   permissions: ['storage', 'tabs', 'webRequest'],
   host_permissions: [
