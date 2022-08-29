@@ -1,12 +1,12 @@
 {
-  "ext_description": {
-    "message": "PixivでNG登録したユーザーやタグのイラストを非表示にします。"
+  "Description": {
+    "message": "PixivでNG登録したユーザーやタグの作品を非表示にします。"
   },
-  "blockedUsers": {
-    "message": "ブロックしたユーザー"
+  "blockUsers": {
+    "message": "ブロックするユーザー"
   },
-  "blockedTags": {
-    "message": "ブロックしたタグ"
+  "blockTags": {
+    "message": "ブロックするタグ"
   },
   "removeButton": {
     "message": "削除"
