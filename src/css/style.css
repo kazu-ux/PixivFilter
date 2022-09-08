@@ -1,0 +1,30 @@
+.pf-tag-toggle-button {
+  position: absolute;
+  right: 0px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pf-users-container {
+  width: 100%;
+}
+.pf-user-ng-button {
+  position: relative;
+  margin-right: 0.5rem;
+  margin-left: 1.5rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
+.pf-tag-ng-button {
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.hide-pf-tag-container {
+  display: none;
+}
+
+li {
+  position: relative;
+}

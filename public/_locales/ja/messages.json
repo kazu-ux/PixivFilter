@@ -1,0 +1,14 @@
+{
+  "Description": {
+    "message": "PixivでNG登録したユーザーやタグの作品を非表示にします。"
+  },
+  "blockUsers": {
+    "message": "ブロックするユーザー"
+  },
+  "blockTags": {
+    "message": "ブロックするタグ"
+  },
+  "removeButton": {
+    "message": "削除"
+  }
+}
