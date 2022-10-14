@@ -1,10 +1,10 @@
-import { ChromeStorage } from './database/chrome_storage';
-import MigrateStorage from './migrate_storage';
+import { ChromeStorage } from "./database/chrome_storage";
+import MigrateStorage from "./migrate_storage";
 
 const fetchWork = async (url: string) => {
   const isRequest = await ChromeStorage.getRequestFlag();
   if (isRequest) {
-    console.log('短期間のリクエストはできません');
+    console.log("短期間のリクエストはできません");
     return;
   }
   console.log(isRequest);
@@ -37,9 +37,9 @@ const fetchWork = async (url: string) => {
   MigrateStorage();
   await ChromeStorage.setRequestFlag(false);
 
-  const test = ChromeStorage.getUser();
-  if (test) {
-    test.then((res) => {
+  const savedUsers = ChromeStorage.getUser();
+  if (savedUsers) {
+    savedUsers.then((res) => {
       console.log(res);
     });
   }
@@ -51,8 +51,8 @@ chrome.runtime.onMessage.addListener((res) => {
 
 chrome.webRequest.onCompleted.addListener(
   async (res) => {
-    if (res.initiator === 'https://www.pixiv.net') {
-      const keyword = res.url.split('/')[5];
+    if (res.initiator === "https://www.pixiv.net") {
+      const keyword = res.url.split("/")[5];
       console.log(keyword);
 
       const getWorks: { [key: string]: () => Promise<object[]> } = {
@@ -107,7 +107,7 @@ chrome.webRequest.onCompleted.addListener(
         await new Promise((resolve) => setTimeout(resolve, 500));
         console.log(count);
         console.log(error);
-        return chrome.tabs.sendMessage(res.tabId, '');
+        return chrome.tabs.sendMessage(res.tabId, "");
       };
 
       Promise.reject()
@@ -119,7 +119,7 @@ chrome.webRequest.onCompleted.addListener(
         .then(() => {
           count = 0;
           console.log(count);
-          console.log('成功');
+          console.log("成功");
         });
       console.log(worksData);
 
@@ -128,15 +128,15 @@ chrome.webRequest.onCompleted.addListener(
       return;
     }
 
-    console.log('ピクシブからのアクセスではない');
+    console.log("ピクシブからのアクセスではない");
   },
   {
     urls: [
-      'https://www.pixiv.net/ajax/search/top/*',
-      'https://www.pixiv.net/ajax/search/artworks/*',
-      'https://www.pixiv.net/ajax/search/illustrations/*',
-      'https://www.pixiv.net/ajax/search/manga/*',
-      'https://www.pixiv.net/ajax/search/novels/*',
+      "https://www.pixiv.net/ajax/search/top/*",
+      "https://www.pixiv.net/ajax/search/artworks/*",
+      "https://www.pixiv.net/ajax/search/illustrations/*",
+      "https://www.pixiv.net/ajax/search/manga/*",
+      "https://www.pixiv.net/ajax/search/novels/*",
     ],
   }
 );
