@@ -7,7 +7,6 @@ const fetchWork = async (url: string) => {
     console.log("短期間のリクエストはできません");
     return;
   }
-  console.log(isRequest);
 
   await ChromeStorage.setRequestFlag(true);
   await new Promise((resolve) => setTimeout(resolve, 1000));
