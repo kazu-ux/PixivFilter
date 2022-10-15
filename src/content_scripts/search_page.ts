@@ -73,9 +73,9 @@ export default () => {
   };
 
   // user指定で作品を非表示にする
-  const hideNGUserWorks = (ngUserId: string) => {
+  const hideNGUserWorks = (userId: string) => {
     const ngUserWorks: NodeListOf<HTMLElement> = document.querySelectorAll(
-      `[data-gtm-value="${ngUserId}"]`
+      `[data-gtm-value="${userId}"]`
     );
 
     ngUserWorks.forEach((element) => {
@@ -85,9 +85,9 @@ export default () => {
     });
   };
 
-  const hideNGTagWorks = (NGTag: string) => {
+  const hideNGTagWorks = (tagName: string) => {
     const ngTagWorks: NodeListOf<HTMLElement> = document.querySelectorAll(
-      `[data-tag-name="${NGTag}"]`
+      `[data-tag-name="${tagName}"]`
     );
 
     ngTagWorks.forEach((element) => {
