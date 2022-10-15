@@ -22,7 +22,7 @@ export const BlockTag = () => {
   };
 
   useEffect(() => {
-    ChromeStorage.getTags().then((res) => {
+    ChromeStorage.getBlockTags().then((res) => {
       setTagCount(res.length);
       setOptionElement(toOptionElements(res));
     });
@@ -60,7 +60,7 @@ export const BlockTag = () => {
             .filter((item): item is NonNullable<typeof item> => item !== null);
           console.log(selectedTags);
 
-          const savedTags = await ChromeStorage.removeTags(selectedTags);
+          const savedTags = await ChromeStorage.removeBlockTags(selectedTags);
           setTagCount(savedTags.length);
           setOptionElement(toOptionElements(savedTags));
         }}

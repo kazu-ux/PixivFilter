@@ -25,7 +25,7 @@ export const BlockUser = () => {
   useEffect(() => {
     console.log('useEffect');
 
-    ChromeStorage.getUser().then((res) => {
+    ChromeStorage.getBlockUsers().then((res) => {
       setUserCount(res.length);
       setOptionElement(toOptionElements(res));
     });
@@ -63,7 +63,7 @@ export const BlockUser = () => {
             .filter((item): item is NonNullable<typeof item> => item !== null);
           console.log(selectedUsers);
 
-          const savedUsers = await ChromeStorage.removeUser(selectedUsers);
+          const savedUsers = await ChromeStorage.removeBlockUser(selectedUsers);
           setUserCount(savedUsers.length);
           setOptionElement(toOptionElements(savedUsers));
         }}

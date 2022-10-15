@@ -9,12 +9,12 @@ export default () => {
     await setTagContainer();
     setNGButtonTagNovel();
 
-    const ngUsers = await ChromeStorage.getUser();
+    const ngUsers = await ChromeStorage.getBlockUsers();
     ngUsers.forEach((user) => {
       hideNGUserWorks(user.userId);
     });
 
-    const ngTags = await ChromeStorage.getTags();
+    const ngTags = await ChromeStorage.getBlockTags();
     ngTags.forEach((tag) => {
       hideNGTagWorks(tag);
     });
@@ -52,7 +52,7 @@ export default () => {
           userElement?.textContent ??
           '';
 
-        await ChromeStorage.setUser({ userId, userName });
+        await ChromeStorage.setBlockUser({ userId, userName });
         hideNGUserWorks(userId);
         console.log(userId, userName);
         console.log(userElement);
@@ -105,7 +105,7 @@ export default () => {
     spanElementTagNgButton.textContent = '[+]';
     spanElementTagNgButton.onclick = async (event) => {
       console.log(event.target);
-      await ChromeStorage.setTag(tag);
+      await ChromeStorage.setBlockTag(tag);
       hideNGTagWorks(tag);
       return;
     };
