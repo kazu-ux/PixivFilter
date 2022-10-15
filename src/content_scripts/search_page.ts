@@ -51,9 +51,10 @@ export default () => {
     });
   };
 
+  const targetElements =
+    document.querySelectorAll<HTMLElement>('[aria-haspopup]');
+
   const setNovelFlag = () => {
-    const targetElements =
-      document.querySelectorAll<HTMLElement>('[aria-haspopup]');
     targetElements.forEach((element) => {
       const childrenELementCount = element.parentElement?.childElementCount;
       if (childrenELementCount === 1) {
@@ -64,10 +65,7 @@ export default () => {
     });
   };
 
-  // 各作品にNGユーザー追加ボタンを設置
   const setUserNGButton = async () => {
-    const targetElements = document.querySelectorAll('[aria-haspopup]');
-
     targetElements.forEach((element) => {
       const isNovel = element.getAttribute('is-novel');
       if (isNovel === 'false') {
@@ -101,8 +99,6 @@ export default () => {
   };
 
   const setTagToggleButton = async () => {
-    const targetElements = document.querySelectorAll('[aria-haspopup]');
-
     targetElements.forEach(async (element) => {
       const isNovel = element.getAttribute('is-novel');
       if (isNovel === 'false') {
