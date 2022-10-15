@@ -20,6 +20,31 @@ export default () => {
     });
   };
 
+  // user指定で作品を非表示にする
+  const hideNGUserWorks = (userId: string) => {
+    const ngUserWorks: NodeListOf<HTMLElement> = document.querySelectorAll(
+      `[data-gtm-value="${userId}"]`
+    );
+
+    ngUserWorks.forEach((element) => {
+      const liElement = element.closest('li');
+      if (!liElement) return;
+      liElement.style.display = 'none';
+    });
+  };
+
+  const hideNGTagWorks = (tagName: string) => {
+    const ngTagWorks: NodeListOf<HTMLElement> = document.querySelectorAll(
+      `[data-tag-name="${tagName}"]`
+    );
+
+    ngTagWorks.forEach((element) => {
+      const liElement = element.closest('li');
+      if (!liElement) return;
+      liElement.style.display = 'none';
+    });
+  };
+
   const setNovelFlag = () => {
     const targetElements =
       document.querySelectorAll<HTMLElement>('[aria-haspopup]');
@@ -69,31 +94,6 @@ export default () => {
       } else {
         element.append(createNGUserAddButton());
       }
-    });
-  };
-
-  // user指定で作品を非表示にする
-  const hideNGUserWorks = (userId: string) => {
-    const ngUserWorks: NodeListOf<HTMLElement> = document.querySelectorAll(
-      `[data-gtm-value="${userId}"]`
-    );
-
-    ngUserWorks.forEach((element) => {
-      const liElement = element.closest('li');
-      if (!liElement) return;
-      liElement.style.display = 'none';
-    });
-  };
-
-  const hideNGTagWorks = (tagName: string) => {
-    const ngTagWorks: NodeListOf<HTMLElement> = document.querySelectorAll(
-      `[data-tag-name="${tagName}"]`
-    );
-
-    ngTagWorks.forEach((element) => {
-      const liElement = element.closest('li');
-      if (!liElement) return;
-      liElement.style.display = 'none';
     });
   };
 
