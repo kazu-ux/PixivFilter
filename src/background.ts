@@ -7,7 +7,6 @@ const fetchWork = async (url: string) => {
     console.log('短期間のリクエストはできません');
     return;
   }
-  console.log(isRequest);
 
   await ChromeStorage.setRequestFlag(true);
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -37,9 +36,9 @@ const fetchWork = async (url: string) => {
   MigrateStorage();
   await ChromeStorage.setRequestFlag(false);
 
-  const test = ChromeStorage.getUser();
-  if (test) {
-    test.then((res) => {
+  const savedUsers = ChromeStorage.getBlockUsers();
+  if (savedUsers) {
+    savedUsers.then((res) => {
       console.log(res);
     });
   }

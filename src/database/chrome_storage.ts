@@ -8,8 +8,8 @@ const getRequestFlag: () => Promise<boolean> = async () => {
 };
 
 //ユーザーをストレージに保存する
-const setUser = async (userData: UserData) => {
-  const savedUsers = await ChromeStorage.getUser();
+const setBlockUser = async (userData: UserData) => {
+  const savedUsers = await ChromeStorage.getBlockUsers();
 
   if (!savedUsers) {
     await chrome.storage.local.set({ blockUsers: [userData] });
@@ -24,7 +24,7 @@ const setUser = async (userData: UserData) => {
 };
 
 // ストレージからNGユーザーを取得する
-const getUser = async () => {
+const getBlockUsers = async () => {
   const savedUsers: UserData[] | undefined = (
     await chrome.storage.local.get('blockUsers')
   ).blockUsers;
@@ -36,10 +36,10 @@ const getUser = async () => {
 };
 
 // ストレージからユーザーを削除する
-const removeUser = async (Users: UserData[]) => {
+const removeBlockUser = async (Users: UserData[]) => {
   const userIds: string[] = Users.map((user) => user.userId);
 
-  const sevedUsers = await ChromeStorage.getUser();
+  const sevedUsers = await ChromeStorage.getBlockUsers();
   if (!sevedUsers) return [];
 
   const newUsers = sevedUsers
@@ -66,8 +66,8 @@ const getWorksData: () => Promise<WorksData> = async () => {
   return (await chrome.storage.local.get('worksData')).worksData;
 };
 
-const setTag = async (tag: string) => {
-  const savedTags = await ChromeStorage.getTags();
+const setBlockTag = async (tag: string) => {
+  const savedTags = await ChromeStorage.getBlockTags();
   console.log(savedTags);
 
   if (!savedTags) {
@@ -83,7 +83,7 @@ const setTag = async (tag: string) => {
   return;
 };
 
-const getTags = async () => {
+const getBlockTags = async () => {
   const savedTags: string[] | undefined = (
     await chrome.storage.local.get('blockTags')
   ).blockTags;
@@ -92,8 +92,8 @@ const getTags = async () => {
   return savedTags;
 };
 
-const removeTags = async (blockTags: string[]) => {
-  const savedTags = await ChromeStorage.getTags();
+const removeBlockTags = async (blockTags: string[]) => {
+  const savedTags = await ChromeStorage.getBlockTags();
   if (!savedTags) return [];
 
   const newTags = savedTags
@@ -114,12 +114,12 @@ const removeTags = async (blockTags: string[]) => {
 export const ChromeStorage = {
   setRequestFlag,
   getRequestFlag,
-  getUser,
-  setUser,
-  removeUser,
+  getBlockUsers,
+  setBlockUser,
+  removeBlockUser,
   setWorksData,
   getWorksData,
-  setTag,
-  getTags,
-  removeTags,
+  setBlockTag,
+  getBlockTags,
+  removeBlockTags,
 };

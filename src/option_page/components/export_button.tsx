@@ -21,8 +21,8 @@ const onClick = async (
   };
 
   // 保存しているNGリストを取得する
-  const blockUsers = await ChromeStorage.getUser();
-  const blockTags = await ChromeStorage.getTags();
+  const blockUsers = await ChromeStorage.getBlockUsers();
+  const blockTags = await ChromeStorage.getBlockTags();
 
   try {
     const handle = await window.showSaveFilePicker({

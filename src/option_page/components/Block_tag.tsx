@@ -22,11 +22,37 @@ export const BlockTag = () => {
   };
 
   useEffect(() => {
-    ChromeStorage.getTags().then((res) => {
+    ChromeStorage.getBlockTags().then((res) => {
       setTagCount(res.length);
       setOptionElement(toOptionElements(res));
     });
   }, []);
+
+  const onClick = async () => {
+    const tagOptions = (
+      document.querySelector('select.tag-select') as HTMLSelectElement
+    ).options;
+    const selectedTags = Array.from(tagOptions)
+      .map((option) => {
+        if (option.selected) {
+          const tagName = option.textContent;
+
+          if (!tagName) return;
+
+          console.log(tagName);
+
+          return tagName;
+        }
+      })
+      .filter(Boolean)
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+    console.log(selectedTags);
+    if (!selectedTags.includes) return;
+
+    const savedTags = await ChromeStorage.removeBlockTags(selectedTags);
+    setTagCount(savedTags.length);
+    setOptionElement(toOptionElements(savedTags));
+  };
 
   return (
     <div className="ng-tag-container">
@@ -37,34 +63,7 @@ export const BlockTag = () => {
       <select className="tag-select" multiple name="tagNames">
         {optionElement}
       </select>
-      <button
-        className="tag-remove-button"
-        name="remove"
-        onClick={async () => {
-          const tagOptions = (
-            document.querySelector('select.tag-select') as HTMLSelectElement
-          ).options;
-          const selectedTags = Array.from(tagOptions)
-            .map((option) => {
-              if (option.selected) {
-                const tagName = option.textContent;
-
-                if (!tagName) return;
-
-                console.log(tagName);
-
-                return tagName;
-              }
-            })
-            .filter(Boolean)
-            .filter((item): item is NonNullable<typeof item> => item !== null);
-          console.log(selectedTags);
-
-          const savedTags = await ChromeStorage.removeTags(selectedTags);
-          setTagCount(savedTags.length);
-          setOptionElement(toOptionElements(savedTags));
-        }}
-      >
+      <button className="tag-remove-button" name="remove" onClick={onClick}>
         {removeButtonStr}
       </button>
     </div>
