@@ -31,6 +31,34 @@ export const BlockUser = () => {
     });
   }, []);
 
+  const onClick = async () => {
+    const userOptions =
+      document.querySelector<HTMLSelectElement>('select.user-select')?.options;
+    if (!userOptions) return;
+    const selectedUsers = Array.from(userOptions)
+      .map((option) => {
+        if (option.selected) {
+          const userName = option.textContent;
+          const userId = option.getAttribute('value');
+          if (!(userName && userId)) {
+            return;
+          }
+          console.log(userName, userId);
+
+          return { userName: userName, userId: userId };
+        }
+      })
+      .filter(Boolean)
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+    console.log(selectedUsers);
+
+    if (!selectedUsers.includes) return;
+
+    const savedUsers = await ChromeStorage.removeBlockUser(selectedUsers);
+    setUserCount(savedUsers.length);
+    setOptionElement(toOptionElements(savedUsers));
+  };
+
   return (
     <div className="ng-user-container">
       <div className="ng-user-title">
@@ -39,35 +67,7 @@ export const BlockUser = () => {
       <select className="user-select" multiple name="userNames">
         {optionElement}
       </select>
-      <button
-        className="user-remove-button"
-        name="remove"
-        onClick={async () => {
-          const userOptions = (
-            document.querySelector('select.user-select') as HTMLSelectElement
-          ).options;
-          const selectedUsers = Array.from(userOptions)
-            .map((option) => {
-              if (option.selected) {
-                const userName = option.textContent;
-                const userId = option.getAttribute('value');
-                if (!(userName && userId)) {
-                  return;
-                }
-                console.log(userName, userId);
-
-                return { userName: userName, userId: userId };
-              }
-            })
-            .filter(Boolean)
-            .filter((item): item is NonNullable<typeof item> => item !== null);
-          console.log(selectedUsers);
-
-          const savedUsers = await ChromeStorage.removeBlockUser(selectedUsers);
-          setUserCount(savedUsers.length);
-          setOptionElement(toOptionElements(savedUsers));
-        }}
-      >
+      <button className="user-remove-button" name="remove" onClick={onClick}>
         {removeButtonStr}
       </button>
     </div>
