@@ -11,7 +11,7 @@ const manifest = defineManifest({
   description: '__MSG_Description__',
   icons: { 128: 'public/icons/128.png' },
   options_page: 'index.html',
-  permissions: ['storage', 'tabs', 'webRequest'],
+  permissions: ['storage', 'tabs', 'webRequest', 'scripting'],
   host_permissions: [
     'https://www.pixiv.net/ajax/search/top/*',
     'https://www.pixiv.net/ajax/search/illustrations/*',
