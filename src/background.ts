@@ -51,6 +51,7 @@ chrome.runtime.onMessage.addListener((isSearchPage, sender) => {
     chrome.scripting.insertCSS({
       target: { tabId },
       css: 'li { visibility: hidden; }',
+      // css: object.worksHide,
     });
     return;
   }
@@ -58,8 +59,8 @@ chrome.runtime.onMessage.addListener((isSearchPage, sender) => {
   chrome.scripting.insertCSS({
     target: { tabId },
     css: 'li { visibility: visible; }',
+    // css: object.worksVisible,
   });
-  console.log({ isSearchPage });
 });
 
 chrome.webRequest.onCompleted.addListener(
