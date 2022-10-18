@@ -1,4 +1,5 @@
 import { ChromeStorage } from '../database/chrome_storage';
+import { WorksStyle } from '../works_style';
 import {
   createUserBlockButton,
   createTagContainer,
@@ -49,9 +50,7 @@ export default () => {
       hideNGTagWorks(tag);
     });
 
-    document.querySelectorAll('li').forEach((element) => {
-      element.style.visibility = 'visible';
-    });
+    chrome.runtime.sendMessage(WorksStyle.visible);
   };
 
   const targetElements =
