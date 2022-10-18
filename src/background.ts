@@ -1,5 +1,6 @@
 import { ChromeStorage } from './database/chrome_storage';
 import MigrateStorage from './migrate_storage';
+import { WorksStyle } from './works_style';
 
 const fetchWork = async (url: string) => {
   const isRequest = await ChromeStorage.getRequestFlag();
@@ -44,23 +45,29 @@ const fetchWork = async (url: string) => {
   }
 })();
 
-chrome.runtime.onMessage.addListener((isSearchPage, sender) => {
+chrome.runtime.onMessage.addListener((css: string, sender) => {
   const tabId = sender.tab?.id;
   if (!tabId) return;
-  if (isSearchPage) {
-    chrome.scripting.insertCSS({
-      target: { tabId },
-      css: 'li { visibility: hidden; }',
-      // css: object.worksHide,
-    });
-    return;
-  }
+  if (!css) return;
 
   chrome.scripting.insertCSS({
     target: { tabId },
-    css: 'li { visibility: visible; }',
-    // css: object.worksVisible,
+    css,
   });
+  return;
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  const url = tab.url;
+  const isLoading = changeInfo.status === 'loading';
+  if (!url?.startsWith('https://www.pixiv.net/tags/')) return;
+  if (!isLoading) return;
+
+  chrome.scripting.insertCSS({
+    target: { tabId },
+    css: WorksStyle.hidden,
+  });
+  return;
 });
 
 chrome.webRequest.onCompleted.addListener(
@@ -142,7 +149,7 @@ chrome.webRequest.onCompleted.addListener(
       return;
     }
 
-    console.log('ピクシブからのアクセスではない');
+    console.log('サービスワーカーからのアクセス');
   },
   {
     urls: [
