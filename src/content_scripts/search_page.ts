@@ -1,5 +1,4 @@
 import { ChromeStorage } from '../database/chrome_storage';
-import '../css/style.css';
 import {
   createUserBlockButton,
   createTagContainer,
@@ -48,6 +47,10 @@ export default () => {
     const ngTags = await ChromeStorage.getBlockTags();
     ngTags.forEach((tag) => {
       hideNGTagWorks(tag);
+    });
+
+    document.querySelectorAll('li').forEach((element) => {
+      element.style.visibility = 'visible';
     });
   };
 

@@ -9,7 +9,7 @@ const fetchWork = async (url: string) => {
   }
 
   await ChromeStorage.setRequestFlag(true);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   const response = await fetch(url);
   if (response.ok) {
@@ -44,8 +44,22 @@ const fetchWork = async (url: string) => {
   }
 })();
 
-chrome.runtime.onMessage.addListener((res) => {
-  console.log(res);
+chrome.runtime.onMessage.addListener((isSearchPage, sender) => {
+  const tabId = sender.tab?.id;
+  if (!tabId) return;
+  if (isSearchPage) {
+    chrome.scripting.insertCSS({
+      target: { tabId },
+      css: 'li { visibility: hidden; }',
+    });
+    return;
+  }
+
+  chrome.scripting.insertCSS({
+    target: { tabId },
+    css: 'li { visibility: visible; }',
+  });
+  console.log({ isSearchPage });
 });
 
 chrome.webRequest.onCompleted.addListener(
