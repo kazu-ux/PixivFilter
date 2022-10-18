@@ -3,7 +3,8 @@ import MigrateStorage from './migrate_storage';
 
 const fetchWork = async (url: string) => {
   const isRequest = await ChromeStorage.getRequestFlag();
-  if (isRequest) {
+  //ディスカバリーは同時に複数のリクエストが発生することがある
+  if (isRequest && !url.startsWith('https://www.pixiv.net/ajax/discovery/artworks')) {
     console.log('短期間のリクエストはできません');
     return;
   }
@@ -50,12 +51,17 @@ chrome.runtime.onMessage.addListener((res) => {
 
 chrome.webRequest.onCompleted.addListener(
   async (res) => {
+    if ( res.url.startsWith('https://www.pixiv.net/ajax/discovery/artworks/meta')){
+      return;
+    }
     if (res.initiator === 'https://www.pixiv.net') {
-      const keyword = res.url.split('/')[5];
+      //リクエストパラメータを除外
+      const paths = res.url.split('?')[0].split('/');
+      const keyword = paths[4]+'_'+paths[5];
       console.log(keyword);
 
       const getWorks: { [key: string]: () => Promise<object[]> } = {
-        top: async () => {
+        search_top: async () => {
           const json: SearchTop = await fetchWork(res.url);
 
           return [
@@ -65,7 +71,7 @@ chrome.webRequest.onCompleted.addListener(
             json.body.popular.permanent,
           ].flat();
         },
-        artworks: async () => {
+        search_artworks: async () => {
           const json: Artworks = await fetchWork(res.url);
 
           return [
@@ -74,7 +80,7 @@ chrome.webRequest.onCompleted.addListener(
             json.body.popular.permanent,
           ].flat();
         },
-        illustrations: async () => {
+        search_illustrations: async () => {
           const json: Illustrations = await fetchWork(res.url);
 
           return [
@@ -83,7 +89,7 @@ chrome.webRequest.onCompleted.addListener(
             json.body.popular.permanent,
           ].flat();
         },
-        manga: async () => {
+        search_manga: async () => {
           const json: Manga = await fetchWork(res.url);
 
           return [
@@ -92,10 +98,17 @@ chrome.webRequest.onCompleted.addListener(
             json.body.popular.permanent,
           ].flat();
         },
-        novels: async () => {
+        search_novels: async () => {
           const json: Novels = await fetchWork(res.url);
           return json.body.novel.data;
         },
+        discovery_artworks: async () => {
+          const json: DiscoveryArtworks = await fetchWork(res.url);
+
+          return [
+              json.body.thumbnails.illust,
+          ].flat();
+        }
       };
 
       const worksData = (await getWorks[keyword]()) as WorksData;
@@ -136,6 +149,7 @@ chrome.webRequest.onCompleted.addListener(
       'https://www.pixiv.net/ajax/search/illustrations/*',
       'https://www.pixiv.net/ajax/search/manga/*',
       'https://www.pixiv.net/ajax/search/novels/*',
+      'https://www.pixiv.net/ajax/discovery/*',
     ],
   }
 );

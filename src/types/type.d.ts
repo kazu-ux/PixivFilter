@@ -100,3 +100,12 @@ type Artworks = {
     };
   };
 };
+
+type DiscoveryArtworks = {
+  error: boolean;
+  body: {
+    thumbnails: {
+      illust: WorksData;
+    }
+  }
+}
