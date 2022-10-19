@@ -11,11 +11,12 @@ export const createUserBlockButton = () => {
     const userElement = (
       event.target as HTMLElement
     ).parentElement?.querySelector('[href*="users"]');
-    const userId = userElement?.getAttribute('data-gtm-value') ?? '';
+    const userId = userElement?.getAttribute('data-gtm-value');
     const userName =
       userElement?.children[0]?.getAttribute('title') ??
-      userElement?.textContent ??
-      '';
+      userElement?.textContent;
+
+    if (!userName || !userId) return;
 
     await ChromeStorage.setBlockUser({ userId, userName });
     hideNGUserWorks(userId);
