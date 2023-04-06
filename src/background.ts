@@ -2,11 +2,7 @@ import { ChromeStorage } from './database/chrome_storage';
 
 const fetchWork = async (url: string) => {
   const isRequest = await ChromeStorage.getRequestFlag();
-  if (isRequest) {
-    console.log('短期間のリクエストはできません');
-    return;
-  }
-  console.log(isRequest);
+  if (isRequest) return console.log('短期間のリクエストはできません');
 
   await ChromeStorage.setRequestFlag(true);
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -123,5 +119,3 @@ const callback = async (res: chrome.webRequest.WebResponseCacheDetails) => {
 chrome.webRequest.onCompleted.addListener(callback, {
   urls: ['https://www.pixiv.net/ajax/search/*'],
 });
-
-export {};
