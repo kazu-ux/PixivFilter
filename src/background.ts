@@ -138,7 +138,7 @@ chrome.webRequest.onCompleted.addListener(
     console.log('ピクシブからのアクセスではない');
   },
   {
-    urls: ['https://www.pixiv.net/ajax/*'],
+    urls: ['https://www.pixiv.net/ajax/search/*'],
   }
 );
 
