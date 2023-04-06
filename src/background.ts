@@ -29,91 +29,86 @@ const fetchWork = async (url: string) => {
 };
 
 const callback = async (res: chrome.webRequest.WebResponseCacheDetails) => {
-  if (res.initiator === 'https://www.pixiv.net') {
-    const keyword = res.url.split('/')[5].split('?')[0];
-    console.log(keyword);
+  if (res.initiator !== 'https://www.pixiv.net')
+    return console.log('ピクシブからのアクセスではない');
 
-    console.log(res.url);
+  const keyword = res.url.split('/')[5].split('?')[0];
+  console.log(keyword);
 
-    const getWorks: { [key: string]: () => Promise<object[]> } = {
-      top: async () => {
-        const json: SearchTop = await fetchWork(res.url);
+  console.log(res.url);
 
-        return [
-          json.body.illustManga?.data ?? {},
-          json.body.novel?.data ?? {},
-          json.body.popular?.recent ?? {},
-          json.body.popular?.permanent ?? {},
-        ].flat();
-      },
-      artworks: async () => {
-        const json: Artworks = await fetchWork(res.url);
+  const getWorks: { [key: string]: () => Promise<object[]> } = {
+    top: async () => {
+      const json: SearchTop = await fetchWork(res.url);
 
-        return [
-          json.body.illustManga?.data ?? {},
-          json.body.popular?.recent ?? {},
-          json.body.popular?.permanent ?? {},
-        ].flat();
-      },
-      illust: async () => {
-        const json: Illustrations = await fetchWork(res.url);
+      return [
+        json.body.illustManga?.data ?? {},
+        json.body.novel?.data ?? {},
+        json.body.popular?.recent ?? {},
+        json.body.popular?.permanent ?? {},
+      ].flat();
+    },
+    artworks: async () => {
+      const json: Artworks = await fetchWork(res.url);
 
-        return [
-          json.body.thumbnails?.illust ?? {},
-          json.body.thumbnails?.novel ?? {},
-        ].flat();
-      },
-      illustrations: async () => {
-        const json: Illustrations = await fetchWork(res.url);
+      return [
+        json.body.illustManga?.data ?? {},
+        json.body.popular?.recent ?? {},
+        json.body.popular?.permanent ?? {},
+      ].flat();
+    },
+    illust: async () => {
+      const json: Illustrations = await fetchWork(res.url);
 
-        return [
-          json.body.illust?.data ?? {},
-          json.body.popular?.recent ?? {},
-          json.body.popular?.permanent ?? {},
-        ].flat();
-      },
-      manga: async () => {
-        const json: Manga = await fetchWork(res.url);
+      return [
+        json.body.thumbnails?.illust ?? {},
+        json.body.thumbnails?.novel ?? {},
+      ].flat();
+    },
+    illustrations: async () => {
+      const json: Illustrations = await fetchWork(res.url);
 
-        return [
-          json.body.thumbnails?.illust ?? {},
-          json.body.thumbnails?.novel ?? {},
-          json.body.manga?.data ?? {},
-          json.body.popular?.recent ?? {},
-          json.body.popular?.permanent ?? {},
-        ].flat();
-      },
-      novels: async () => {
-        const json: Novels = await fetchWork(res.url);
-        return [json.body.novel?.data ?? {}].flat();
-      },
-      novel: async () => {
-        const json: Novels = await fetchWork(res.url);
-        return [
-          json.body.novel?.data ?? {},
-          json.body.thumbnails?.illust ?? {},
+      return [
+        json.body.illust?.data ?? {},
+        json.body.popular?.recent ?? {},
+        json.body.popular?.permanent ?? {},
+      ].flat();
+    },
+    manga: async () => {
+      const json: Manga = await fetchWork(res.url);
 
-          json.body.thumbnails?.novel ?? {},
-          json.body.thumbnails?.novelSeries ?? {},
-        ].flat();
-      },
-    };
+      return [
+        json.body.thumbnails?.illust ?? {},
+        json.body.thumbnails?.novel ?? {},
+        json.body.manga?.data ?? {},
+        json.body.popular?.recent ?? {},
+        json.body.popular?.permanent ?? {},
+      ].flat();
+    },
+    novels: async () => {
+      const json: Novels = await fetchWork(res.url);
+      return [json.body.novel?.data ?? {}].flat();
+    },
+    novel: async () => {
+      const json: Novels = await fetchWork(res.url);
+      return [
+        json.body.novel?.data ?? {},
+        json.body.thumbnails?.illust ?? {},
+        json.body.thumbnails?.novel ?? {},
+        json.body.thumbnails?.novelSeries ?? {},
+      ].flat();
+    },
+  };
 
-    const keywords = Object.keys(getWorks);
-    if (!keywords.includes(keyword)) return;
+  const keywords = Object.keys(getWorks);
+  if (!keywords.includes(keyword)) return;
 
-    const worksData = (await getWorks[keyword]()) as WorksData;
+  const worksData = (await getWorks[keyword]()) as WorksData;
 
-    await ChromeStorage.setWorksData(worksData);
+  await ChromeStorage.setWorksData(worksData);
 
-    console.log(worksData);
-
-    console.log(res);
-    console.log(res.initiator);
-    return;
-  }
-
-  console.log('ピクシブからのアクセスではない');
+  console.log(worksData);
+  console.log(res.initiator);
 };
 
 chrome.webRequest.onCompleted.addListener(callback, {
