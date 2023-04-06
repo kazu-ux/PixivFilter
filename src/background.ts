@@ -1,4 +1,22 @@
 import { ChromeStorage } from './database/chrome_storage';
+import MigrateStorage from './migrate_storage';
+
+//古いデータベースが使われていたら更新する。
+(async () => {
+  MigrateStorage();
+  await ChromeStorage.setRequestFlag(false);
+
+  const test = ChromeStorage.getBlockUser();
+  if (test) {
+    test.then((res) => {
+      console.log(res);
+    });
+  }
+})();
+
+chrome.runtime.onMessage.addListener((res) => {
+  console.log(res);
+});
 
 const fetchWork = async (url: string) => {
   const isRequest = await ChromeStorage.getRequestFlag();
