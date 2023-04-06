@@ -22,7 +22,7 @@ export const BlockTag = () => {
   };
 
   useEffect(() => {
-    ChromeStorage.getTags().then((res) => {
+    ChromeStorage.getBlockTags().then((res) => {
       setTagCount(res.length);
       setOptionElement(toOptionElements(res));
     });

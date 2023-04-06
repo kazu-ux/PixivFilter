@@ -25,7 +25,7 @@ export const BlockUser = () => {
   useEffect(() => {
     console.log('useEffect');
 
-    ChromeStorage.getUser().then((res) => {
+    ChromeStorage.getBlockUser().then((res) => {
       setUserCount(res.length);
       setOptionElement(toOptionElements(res));
     });
