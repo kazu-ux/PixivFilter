@@ -58,7 +58,7 @@ export const SearchPage = () => {
             userElement?.textContent ??
             '';
 
-          await ChromeStorage.setUser({ userId, userName });
+          await ChromeStorage.setBlockUser({ userId, userName });
           // hideNGUserWorks(userId);
           console.log(userId, userName);
           console.log(userElement);
