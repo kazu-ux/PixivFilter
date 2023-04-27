@@ -174,8 +174,8 @@ function WorkCard(workData: WorkData) {
   };
 
   return (
-    <Card sx={{ width: '250px' }}>
-      <CardContent>
+    <Card sx={{ width: '200px' }}>
+      <CardContent sx={{ padding: 0 }}>
         <Stack direction={'column'}>
           <ImageContainer></ImageContainer>
           <Stack
