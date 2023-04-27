@@ -57,12 +57,12 @@ const removeUser = async (Users: UserData[]) => {
   return newUsers;
 };
 
-const setWorksData = async (worksData: WorksData) => {
+const setWorksData = async (worksData: WorkData[]) => {
   await chrome.storage.local.set({ worksData });
   return;
 };
 
-const getWorksData: () => Promise<WorksData> = async () => {
+const getWorksData: () => Promise<WorkData[]> = async () => {
   return (await chrome.storage.local.get('worksData')).worksData;
 };
 

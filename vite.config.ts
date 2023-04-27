@@ -25,7 +25,7 @@ const manifest = defineManifest({
     {
       matches: ['https://www.pixiv.net/*'],
       run_at: 'document_start',
-      js: ['src/content_script.ts'],
+      js: ['src/content_script.tsx'],
     },
   ],
   background: { service_worker: 'src/background.ts' },

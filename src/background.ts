@@ -121,7 +121,7 @@ const callback = async (res: chrome.webRequest.WebResponseCacheDetails) => {
   const keywords = Object.keys(getWorks);
   if (!keywords.includes(keyword)) return;
 
-  const worksData = (await getWorks[keyword]()) as WorksData;
+  const worksData = (await getWorks[keyword]()) as WorkData[];
 
   await ChromeStorage.setWorksData(worksData);
 

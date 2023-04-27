@@ -1,7 +1,7 @@
 type UserData = { userId: string; userName: string };
 type RequestFlag = { requestFlag: boolean };
 
-type WorksData = Array<{
+type WorkData = {
   id: string;
   title: string;
   illustType?: number;
@@ -34,10 +34,10 @@ type WorksData = Array<{
   useWordCount?: boolean;
   bookmarkCount?: number;
   isOriginal?: boolean;
-  marker: unknown;
   seriesId?: string;
   seriesTitle?: string;
-}>;
+  isRead?: boolean;
+};
 
 type SearchTop = {
   body: {
@@ -75,3 +75,28 @@ type Novels = {
 };
 
 type Artworks = SearchTop;
+
+type WatchWork = {
+  displayName: string;
+  worksData: WorkData[];
+  url: string;
+  readWorks?: string[];
+};
+
+type SearchTargetPath = 'artworks' | 'illustrations' | 'manga' | 'novel';
+type SearchTargetParameter =
+  | 'all'
+  | 'illust_and_ugoira'
+  | 'illust'
+  | 'manga'
+  | 'ugoira';
+type SearchMethodParameter = 's_tag' | 's_tag_full' | 's_tc';
+type TargetAgeParameter = 'all' | 'safe' | 'r18';
+type parameterKey = 'type' | 's_mode' | 'mode';
+
+interface SearchQuery {
+  searchWord: string;
+  searchTarget: [SearchTargetPath, SearchTargetParameter];
+  searchMethod: SearchMethodParameter;
+  targetAge: TargetAgeParameter;
+}
