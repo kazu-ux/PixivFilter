@@ -7,7 +7,7 @@ const manifest = defineManifest({
   manifest_version: 3,
   default_locale: 'en',
   name: 'Pixiv Filter',
-  version: '1.3.0',
+  version: '1.4.0',
   description: '__MSG_Description__',
   icons: { 128: 'public/icons/128.png' },
   options_page: 'src/option_page/option_index.html',
