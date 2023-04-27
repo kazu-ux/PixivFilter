@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { SearchPage } from './content_scripts/search_page';
+
 import App from './app';
 
 // debounce関数の定義
@@ -20,17 +20,13 @@ const observer = new MutationObserver(
 
     console.log(url);
     if (document.querySelector('#pf_root')) return;
-    const TargetElement = document.querySelector('section');
-    if (!TargetElement) return;
+    const TargetElements = document.querySelectorAll('section');
+    TargetElements.forEach((element) => (element.innerHTML = ''));
 
-    TargetElement.innerHTML = '<div id="pf_root"></div>';
-    /*     const rootElement = document.createElement('div');
-    rootElement.id = 'pf_root'; */
+    TargetElements[0].innerHTML = '<div id="pf_root"></div>';
 
     const root = createRoot(document.getElementById('pf_root')!);
-    root.render(<App></App>);
-
-    // document.querySelector('body')?.before(createWatchButton());
+    root.render(<App />);
   }, 100)
 );
 
