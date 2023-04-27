@@ -115,7 +115,7 @@ function WorkCard(workData: WorkData) {
           rel="noopener noreferrer nofollow"
           onClick={handleWorkClick}
         >
-          <img src={workData.url}></img>
+          <img src={workData.url} width={'100%'}></img>
         </Link>
 
         <ImageListItemBar
