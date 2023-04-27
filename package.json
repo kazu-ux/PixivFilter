@@ -16,7 +16,8 @@
     "@types/chrome": "^0.0.233",
     "jotai": "^2.0.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "use-chrome-storage": "^1.2.1"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.16",
