@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-
 import App from './app';
 
 // debounce関数の定義
@@ -21,13 +20,17 @@ const observer = new MutationObserver(
     console.log(url);
     if (document.querySelector('#pf_root')) return;
     const TargetElements = document.querySelectorAll('section');
-    TargetElements.forEach((element) => (element.innerHTML = ''));
 
-    TargetElements[0].innerHTML = '<div id="pf_root"></div>';
+    try {
+      TargetElements[1].innerHTML = '<div id="pf_root"></div>';
+    } catch (error) {
+      TargetElements[0].innerHTML = '<div id="pf_root"></div>';
+    }
 
     const root = createRoot(document.getElementById('pf_root')!);
     root.render(<App />);
-  }, 100)
+    console.log('root作成');
+  }, 500)
 );
 
 // 監視対象の要素を取得

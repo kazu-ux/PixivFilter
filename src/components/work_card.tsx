@@ -106,36 +106,6 @@ function WorkCard(workData: WorkData) {
   const hasDuplicateElements = (arr1: string[], arr2: string[]): boolean =>
     arr1.some((element) => arr2.includes(element));
 
-  const ImageContainer = () => {
-    return (
-      <ImageListItem>
-        <Link
-          href={itemURL}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          onClick={handleWorkClick}
-        >
-          <img src={workData.url} width={'100%'}></img>
-        </Link>
-
-        <ImageListItemBar
-          sx={{ background: 'rgba(0,0,0,0)' }}
-          actionIcon={
-            <IconButton aria-label="add to favorites" onClick={handleFavorite}>
-              <FavoriteIcon
-                sx={{
-                  color: favorites.includes(workData.id!) ? 'red' : 'white',
-                  stroke: 'black',
-                  strokeWidth: 1,
-                }}
-              />
-            </IconButton>
-          }
-        ></ImageListItemBar>
-      </ImageListItem>
-    );
-  };
-
   const TagContainer = () => {
     return (
       <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -177,7 +147,34 @@ function WorkCard(workData: WorkData) {
     <Card sx={{ width: '200px' }}>
       <CardContent sx={{ padding: 0 }}>
         <Stack direction={'column'}>
-          <ImageContainer></ImageContainer>
+          <ImageListItem>
+            <Link
+              href={itemURL}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              onClick={handleWorkClick}
+            >
+              <img src={workData.url} width={'100%'}></img>
+            </Link>
+
+            <ImageListItemBar
+              sx={{ background: 'rgba(0,0,0,0)' }}
+              actionIcon={
+                <IconButton
+                  aria-label="add to favorites"
+                  onClick={handleFavorite}
+                >
+                  <FavoriteIcon
+                    sx={{
+                      color: favorites.includes(workData.id!) ? 'red' : 'white',
+                      stroke: 'black',
+                      strokeWidth: 1,
+                    }}
+                  />
+                </IconButton>
+              }
+            ></ImageListItemBar>
+          </ImageListItem>
           <Stack
             direction={'row'}
             justifyContent={'space-between'}

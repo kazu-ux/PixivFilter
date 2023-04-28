@@ -28,10 +28,7 @@ const fetchWork = async (url: string) => {
   const response = await fetch(url);
   if (response.ok) {
     try {
-      console.log(await ChromeStorage.getRequestFlag());
-
       const json = await response.json();
-      console.log(json);
       await ChromeStorage.setRequestFlag(false);
       return json;
     } catch (error) {
@@ -39,7 +36,7 @@ const fetchWork = async (url: string) => {
     }
   } else {
     console.log(response.status);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await ChromeStorage.setRequestFlag(false);
 
     return;
