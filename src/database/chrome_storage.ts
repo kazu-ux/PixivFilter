@@ -1,10 +1,25 @@
+const getSettings = async () => {
+  const settings = (await chrome.storage.local.get()) as PFSettings | undefined;
+  return settings;
+};
+
 const setRequestFlag = async (requestFlag: boolean) => {
   await chrome.storage.local.set({ requestFlag });
   return;
 };
 
 const getRequestFlag: () => Promise<boolean> = async () => {
-  return (await chrome.storage.local.get('requestFlag')).requestFlag;
+  const settings = await getSettings();
+  if (!settings) {
+    return false;
+  }
+  return settings?.requestFlag;
+};
+
+// ストレージからNGユーザーを取得する
+const getBlockUser = async () => {
+  const blockUsers = (await getSettings())?.blockUsers;
+  return blockUsers ?? [];
 };
 
 //ユーザーをストレージに保存する
@@ -13,26 +28,12 @@ const setBlockUser = async (userData: UserData) => {
 
   if (!savedUsers) {
     await chrome.storage.local.set({ blockUsers: [userData] });
-    console.log('空っぽ');
     return;
   }
 
   const newUsers = savedUsers.concat(userData);
-
   await chrome.storage.local.set({ blockUsers: newUsers });
   return;
-};
-
-// ストレージからNGユーザーを取得する
-const getBlockUser = async () => {
-  const savedUsers: UserData[] | undefined = (
-    await chrome.storage.local.get('blockUsers')
-  ).blockUsers;
-  if (!savedUsers) {
-    return [];
-  }
-
-  return savedUsers;
 };
 
 // ストレージからユーザーを削除する
@@ -63,7 +64,7 @@ const setWorksData = async (worksData: WorkData[]) => {
 };
 
 const getWorksData: () => Promise<WorkData[]> = async () => {
-  return (await chrome.storage.local.get('worksData')).worksData;
+  return (await getSettings())?.worksData ?? [];
 };
 
 const getWorkTags = async (workId: string): Promise<string[]> => {
@@ -89,10 +90,9 @@ const setBlockTag = async (tag: string) => {
   return;
 };
 
-const getBlockTags = async () => {
-  const savedTags: string[] | undefined = (
-    await chrome.storage.local.get('blockTags')
-  ).blockTags;
+const getBlockTags = async (): Promise<string[]> => {
+  const savedTags: string[] | undefined =
+    (await getSettings())?.blockTags ?? [];
 
   if (!savedTags) return [];
   return savedTags;
