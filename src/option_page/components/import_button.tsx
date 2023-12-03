@@ -1,3 +1,5 @@
+import { ChromeStorage } from '../../database/chrome_storage';
+
 const onClick = async (
   event: React.MouseEvent<HTMLButtonElement, MouseEvent>
 ) => {
@@ -18,10 +20,10 @@ const onClick = async (
     const text = await file.text();
     const blockObject: any = JSON.parse(text);
     if (blockObject.tagName) {
-      chrome.storage.local.set({ blockTags: blockObject.tagName });
+      ChromeStorage.setBlockTag(blockObject.tagName);
     }
     if (blockObject.userKey) {
-      chrome.storage.local.set({ blockUsers: blockObject.userKey });
+      ChromeStorage.setBlockUser(blockObject.userKey);
     }
     if (blockObject.tagName || blockObject.userKey) {
       location.reload();
@@ -33,8 +35,8 @@ const onClick = async (
     if (!blockUsers) return alert('error');
     if (!blockTags) return alert('error');
 
-    chrome.storage.local.set({ blockUsers });
-    chrome.storage.local.set({ blockTags });
+    ChromeStorage.setBlockUser(blockUsers);
+    ChromeStorage.setBlockTag(blockTags);
     location.reload();
   } catch (error) {
     console.log(error);
