@@ -14,6 +14,10 @@ import MigrateStorage from './migrate_storage';
   }
 })();
 
+chrome.action.onClicked.addListener(async (tab) => {
+  chrome.runtime.openOptionsPage();
+});
+
 chrome.runtime.onMessage.addListener((res) => {
   console.log(res);
 });
