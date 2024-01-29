@@ -12,7 +12,7 @@ const manifest = defineManifest({
   icons: { 128: 'public/icons/128.png' },
   action: {},
   options_page: 'src/option_page/option_index.html',
-  permissions: ['storage', 'tabs', 'webRequest', 'scripting'],
+  permissions: ['storage', 'tabs', 'webRequest', 'scripting', 'contextMenus'],
   host_permissions: [
     'https://www.pixiv.net/ajax/top/illust?*',
     'https://www.pixiv.net/ajax/top/manga?*',

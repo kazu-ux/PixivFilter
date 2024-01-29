@@ -18,8 +18,25 @@ chrome.action.onClicked.addListener(async (tab) => {
   chrome.runtime.openOptionsPage();
 });
 
-chrome.runtime.onMessage.addListener((res) => {
-  console.log(res);
+chrome.contextMenus.create({
+  id: 'user',
+  title: 'このユーザーをブロック',
+  contexts: ['link'],
+  targetUrlPatterns: ['https://www.pixiv.net/users/*'],
+});
+
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (!tab?.id) {
+    return;
+  }
+  if (info.menuItemId === 'user') {
+    const userUrl = info.linkUrl;
+    if (!userUrl) {
+      return;
+    }
+
+    chrome.tabs.sendMessage(tab.id, userUrl);
+  }
 });
 
 const fetchWork = async (url: string) => {

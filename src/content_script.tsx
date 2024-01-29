@@ -42,3 +42,18 @@ const config = { childList: true, subtree: true, attributes: true };
 // 監視開始
 observer.observe(target, config);
 // SearchPage();
+
+chrome.runtime.onMessage.addListener((userUrl, sender, sendResponse) => {
+  const pathname = new URL(userUrl).pathname;
+  const userElements = document.querySelectorAll(`a[href="${pathname}"]`);
+  const userName = Array.from(userElements).find((element) => {
+    return element.textContent;
+  })?.textContent;
+  console.log(pathname, userName);
+
+  if (!userName) {
+    return;
+  }
+  const userId = pathname.split('/')[2];
+  console.log(userName, userId);
+});
