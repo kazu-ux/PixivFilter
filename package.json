@@ -9,26 +9,26 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/chrome": "^0.0.195",
+    "@types/chrome": "^0.0.259",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "1.0.13",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "@types/wicg-file-system-access": "^2020.9.5",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
-    "@vitejs/plugin-react": "^2.0.1",
-    "eslint": "^8.22.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-react": "^7.31.0",
-    "prettier": "2.7.1",
-    "typescript": "^4.8.2",
-    "vite": "3.0.9"
+    "@crxjs/vite-plugin": "^2.0.0-beta.23",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@types/wicg-file-system-access": "^2023.10.4",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "@vitejs/plugin-react": "2.2.0",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "3.2.4",
+    "typescript": "^5.3.3",
+    "vite": "3.2.8"
   }
 }
