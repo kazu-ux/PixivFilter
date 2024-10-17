@@ -1,11 +1,11 @@
-import { ChromeStorage } from '../database/chrome_storage';
+import { ChromeStorage } from '../utils/chrome_storage';
 import { WorksStyle } from '../works_style';
 import {
   createUserBlockButton,
   createTagContainer,
   createTagBlockButton,
   createTagToggleButton,
-} from './Elements/create_elements';
+} from './create_elements';
 
 // user指定で作品を非表示にする
 export const hideNGUserWorks = (userId: string) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChromeStorage } from '../../database/chrome_storage';
+import { ChromeStorage } from '../../utils/chrome_storage';
 
 const blockUsersStr = chrome.i18n.getMessage('blockUsers');
 const removeButtonStr = chrome.i18n.getMessage('removeButton');
@@ -60,16 +60,20 @@ export const BlockUser = () => {
   };
 
   return (
-    <div className="ng-user-container">
-      <div className="ng-user-title">
-        {blockUsersStr} <div className="users-count">({userCount})</div>
+    <div className='ng-config-container'>
+      <div className='title-container'>
+        <div className='ng-user-title'>{blockUsersStr}</div>
+        <div className='users-count'>({userCount})</div>
       </div>
-      <select className="user-select" multiple name="userNames">
-        {optionElement}
-      </select>
-      <button className="user-remove-button" name="remove" onClick={onClick}>
-        {removeButtonStr}
-      </button>
+
+      <div className='select-container'>
+        <select className='user-select' multiple name='userNames'>
+          {optionElement}
+        </select>
+        <button className='user-remove-button' name='remove' onClick={onClick}>
+          {removeButtonStr}
+        </button>
+      </div>
     </div>
   );
 };

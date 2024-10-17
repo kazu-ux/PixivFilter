@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChromeStorage } from '../../database/chrome_storage';
+import { ChromeStorage } from '../../utils/chrome_storage';
 
 const blockTagsStr = chrome.i18n.getMessage('blockTags');
 const removeButtonStr = chrome.i18n.getMessage('removeButton');
@@ -55,17 +55,20 @@ export const BlockTag = () => {
   };
 
   return (
-    <div className="ng-tag-container">
-      <div className="ng-tag-title">
-        {blockTagsStr}
-        <div className="tags-count">({tagCount})</div>
+    <div className='ng-config-container'>
+      <div className='title-container'>
+        <div className='ng-tag-title'>{blockTagsStr}</div>
+        <div className='tags-count'>({tagCount})</div>
       </div>
-      <select className="tag-select" multiple name="tagNames">
-        {optionElement}
-      </select>
-      <button className="tag-remove-button" name="remove" onClick={onClick}>
-        {removeButtonStr}
-      </button>
+
+      <div className='select-container'>
+        <select className='tag-select' multiple name='tagNames'>
+          {optionElement}
+        </select>
+        <button className='tag-remove-button' name='remove' onClick={onClick}>
+          {removeButtonStr}
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import { ChromeStorage } from '../../database/chrome_storage';
-import { hideNGTagWorks, hideNGUserWorks } from '../search_page';
+import { ChromeStorage } from '../utils/chrome_storage';
+import { hideNGTagWorks, hideNGUserWorks } from './search_page';
 
 export const createUserBlockButton = () => {
   const addButtonElement = document.createElement('span');
