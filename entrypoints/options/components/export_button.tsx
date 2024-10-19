@@ -1,4 +1,5 @@
-import { ChromeStorage } from '../../database/chrome_storage';
+import React from 'react';
+import { ChromeStorage } from '../../utils/chrome_storage';
 
 const onClick = async (
   event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -43,7 +44,7 @@ const onClick = async (
 
 const ExportBotton = () => {
   return (
-    <button className="export-button" onClick={onClick}>
+    <button className='export-button' onClick={onClick}>
       export
     </button>
   );
