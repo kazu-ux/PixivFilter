@@ -1,3 +1,3 @@
-# Pixiv Filter For WXT
+# Pixiv Filter
 
-Pixiv FilterをWXTに移行したバージョン。
+Pixivで見たくないユーザーやタグの作品を非表示にします。
