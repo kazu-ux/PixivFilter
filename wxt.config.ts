@@ -16,9 +16,9 @@ export default defineConfig({
       'https://www.pixiv.net/ajax/search/novels/*',
     ],
     action: {},
-
-    // @ts-ignore: Valid MV3 key for chrome
-    // optional_host_permissions: ['*://*/*'],
+    web_accessible_resources: [
+      { resources: ['filter.js'], matches: ['https://www.pixiv.net/*'] },
+    ],
   },
 
   // hooks: {
