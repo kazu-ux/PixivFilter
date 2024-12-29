@@ -28,3 +28,7 @@
 li {
   position: relative;
 }
+
+* {
+  min-height: 0px !important;
+}

@@ -39,10 +39,10 @@ interface PixivJson {
   };
 }
 
-const blockUsers = ['とりっきぃ'];
-// const blockTags = ['R-18', 'ゆるゆり', 'とある科学の超電磁砲'];
+const blockUsers: string[] = JSON.parse(
+  localStorage.getItem('blockUsers') || '[]'
+);
 
-// localStorage.setItem('blockTags', JSON.stringify(blockTags));
 const blockTags: string[] = JSON.parse(
   localStorage.getItem('blockTags') || '[]'
 );
