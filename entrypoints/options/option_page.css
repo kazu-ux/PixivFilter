@@ -47,3 +47,10 @@ select {
   flex-direction: row;
   gap: 0.5rem;
 }
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-top: 0.5rem;
+}

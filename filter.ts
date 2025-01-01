@@ -96,12 +96,31 @@ const excludeByPath = (obj: AnyObject, path: string): AnyObject => {
   return result;
 };
 
+const targetUrls = [
+  '/ajax/search/tags/',
+  '/ajax/search/top/',
+  '/ajax/search/artworks/',
+  '/ajax/search/illustrations/',
+  '/ajax/search/manga/',
+  '/ajax/search/novels/',
+  '/ajax/follow_latest/illust',
+  '/ajax/follow_latest/novel',
+  '/ajax/discovery/novels',
+  '/ajax/discovery/artworks',
+  '/ajax/discovery/users',
+];
+
 const _fetch = fetch.bind(null);
 window.fetch = async function (
   input: string | URL | globalThis.Request,
   init?: RequestInit
 ) {
   const response: Response = await _fetch(input, init);
+  console.log(input);
+
+  if (!targetUrls.some((url) => input.toString().includes(url)))
+    return response;
+
   if (response.ok) {
     const works: WorkData[] = [];
 

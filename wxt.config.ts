@@ -14,6 +14,7 @@ export default defineConfig({
       'https://www.pixiv.net/ajax/search/illustrations/*',
       'https://www.pixiv.net/ajax/search/manga/*',
       'https://www.pixiv.net/ajax/search/novels/*',
+      'https://www.pixiv.net/',
     ],
     action: {},
     web_accessible_resources: [

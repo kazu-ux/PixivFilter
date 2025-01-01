@@ -3,6 +3,7 @@ import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactJSXRuntime from 'eslint-plugin-react/configs/jsx-runtime.js';
+import emotionPlugin from 'eslint-plugin-emotion';
 
 export default [
   {
@@ -14,4 +15,5 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   pluginReactJSXRuntime,
+  emotionPlugin,
 ];
