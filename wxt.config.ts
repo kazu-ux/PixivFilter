@@ -8,7 +8,7 @@ export default defineConfig({
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
     version: '1.4.0',
     default_locale: 'en',
-    permissions: ['storage', 'scripting', 'webRequest'],
+    permissions: ['storage', 'scripting', 'webRequest', 'contextMenus'],
     host_permissions: [
       'https://www.pixiv.net/ajax/search/top/*',
       'https://www.pixiv.net/ajax/search/illustrations/*',

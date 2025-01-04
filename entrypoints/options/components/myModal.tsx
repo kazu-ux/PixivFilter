@@ -11,8 +11,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div style={styles.overlay}>
+      <div style={styles.modal}>
         <button onClick={onClose} style={styles.closeButton}>
           ×
         </button>

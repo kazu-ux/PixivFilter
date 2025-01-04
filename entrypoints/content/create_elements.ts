@@ -7,6 +7,7 @@ export const createUserBlockButton = () => {
   addButtonElement.setAttribute('data-type', 'add');
 
   addButtonElement.textContent = '[+]';
+
   addButtonElement.onclick = async (event) => {
     const userElement = (
       event.target as HTMLElement
@@ -34,7 +35,7 @@ export const createTagBlockButton = (tag: string) => {
   spanElementTagNgButton.textContent = '[+]';
   spanElementTagNgButton.onclick = async (event) => {
     console.log(event.target);
-    await ChromeStorage.setBlockTag(tag);
+    await ChromeStorage.addBlockTag(tag);
     hideNGTagWorks(tag);
     return;
   };
