@@ -35,33 +35,42 @@ export default defineContentScript({
       document.documentElement;
     head.insertBefore(script, head.lastChild);
 
+    const getLiElement = (workId: string) => {
+      const aElements = document.querySelectorAll(
+        `[data-gtm-value="${workId}"]`
+      );
+
+      const LiElements = Array.from(aElements).flatMap((element) => {
+        return element.closest('li') ?? [];
+      });
+
+      return LiElements;
+    };
+
     const setTagContainer = async (worksData: WorksData) => {
-      const getLiElement = (workId: string) => {
-        const aElements = document.querySelectorAll(
-          `[data-gtm-value="${workId}"]`
-        );
-
-        const LiElements = Array.from(aElements).flatMap((element) => {
-          return element.closest('li') ?? [];
-        });
-
-        return LiElements;
-      };
       worksData.forEach((workData) => {
         const LiElements = getLiElement(workData.id);
 
         if (LiElements.length === 0) return;
 
         LiElements.forEach((element) => {
-          const tagContainerElement = element
-            .closest('.pf-wrapper')
-            ?.querySelector('.pf-tag-container');
+          const tagContainerElement =
+            element.querySelector('.pf-tag-container');
 
           if (tagContainerElement) return;
-          console.log(tagContainerElement);
-
           element.append(createTagContainer(workData.tags));
         });
+      });
+      return;
+    };
+
+    const setWorkHiddenFlag = async (worksData: WorksData) => {
+      worksData.forEach((workData) => {
+        const LiElements = getLiElement(workData.id);
+
+        if (LiElements.length === 0) return;
+
+        LiElements.forEach((element) => {});
       });
       return;
     };

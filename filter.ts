@@ -150,15 +150,16 @@ window.fetch = async function (...args) {
 
     window.postMessage(filteredArrays, currentUrl);
 
-    // ブロックする作品を除外
-    const filteredData = filterData(data);
-    // console.log({ url: args[0], data });
+    // // ブロックする作品を除外
+    // const filteredData = filterData(data);
+    // // console.log({ url: args[0], data });
 
-    return new Response(JSON.stringify(filteredData), {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
+    // return new Response(JSON.stringify(filteredData), {
+    //   status: response.status,
+    //   statusText: response.statusText,
+    //   headers: response.headers,
+    // });
+    return response;
   } catch (error) {
     console.error('Failed to parse JSON:', error);
     return response;
