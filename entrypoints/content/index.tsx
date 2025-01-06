@@ -1,8 +1,6 @@
-import ReactDOM from 'react-dom/client';
 import { ChromeStorage } from '../utils/chrome_storage';
 
 import './styles/style.css';
-import App from './App';
 import {
   createTagBlockButton,
   createTagContainer,
@@ -15,12 +13,9 @@ export default defineContentScript({
   runAt: 'document_start',
 
   async main(ctx) {
-    const blockTags = await ChromeStorage.getBlockTags();
-    const blockUsers = await ChromeStorage.getBlockUsers();
-
-    // ブラウザのローカルストレージに保存
-    localStorage.setItem('blockTags', JSON.stringify(blockTags));
-    localStorage.setItem('blockUsers', JSON.stringify(blockUsers));
+    // // ブラウザのローカルストレージに保存
+    // localStorage.setItem('blockTags', JSON.stringify(blockTags));
+    // localStorage.setItem('blockUsers', JSON.stringify(blockUsers));
 
     const script = document.createElement('script');
     script.setAttribute('type', 'module');
@@ -35,29 +30,21 @@ export default defineContentScript({
       document.documentElement;
     head.insertBefore(script, head.lastChild);
 
-    const getLiElement = (workId: string) => {
-      const aElements = document.querySelectorAll(
-        `[data-gtm-value="${workId}"]`
-      );
-
-      const LiElements = Array.from(aElements).flatMap((element) => {
-        return element.closest('li') ?? [];
-      });
-
-      return LiElements;
-    };
+    const getAllLiElements = () => document.querySelectorAll('li');
 
     const setTagContainer = async (worksData: WorksData) => {
+      const allLiElements = getAllLiElements();
+      if (allLiElements.length === 0) return;
+
       worksData.forEach((workData) => {
-        const LiElements = getLiElement(workData.id);
-
-        if (LiElements.length === 0) return;
-
-        LiElements.forEach((element) => {
+        allLiElements.forEach((element) => {
+          const workId = element.querySelector('a')?.href.split('/').pop();
           const tagContainerElement =
             element.querySelector('.pf-tag-container');
 
           if (tagContainerElement) return;
+
+          if (workId !== workData.id) return;
           element.append(createTagContainer(workData.tags));
         });
       });
@@ -65,31 +52,63 @@ export default defineContentScript({
     };
 
     const setWorkHiddenFlag = async (worksData: WorksData) => {
-      worksData.forEach((workData) => {
-        const LiElements = getLiElement(workData.id);
-
-        if (LiElements.length === 0) return;
-
-        LiElements.forEach((element) => {});
+      const blockTags = await ChromeStorage.getBlockTags();
+      const blockUsers = await ChromeStorage.getBlockUsers();
+      // ブロックタグとブロックユーザーが含まれている作品のみを抽出
+      const filteredWorksData = worksData.filter((workData) => {
+        return (
+          workData.tags.some((tag) => blockTags.includes(tag)) ||
+          blockUsers.map((user) => user.userId).includes(workData.userId)
+        );
       });
-      return;
+
+      const allLiElements = getAllLiElements();
+      if (allLiElements.length === 0) return console.log('no li');
+      for await (const workData of filteredWorksData) {
+        for await (const element of allLiElements) {
+          const workId = element.querySelector('a')?.href.split('/').pop();
+          if (workId !== workData.id) continue;
+          element.classList.add('pf-hidden');
+        }
+      }
+    };
+
+    const showWorkElements = async () => {
+      const LiElements = document.querySelectorAll('li');
+      if (LiElements.length === 0) return console.log('no li');
+      LiElements.forEach((element) => {
+        if (element.classList.contains('pf-hidden')) {
+          element.style.display = 'none';
+          return;
+        }
+        element.style.display = 'block';
+      });
     };
 
     window.addEventListener('message', async (event) => {
       const message: WorksData = event.data;
-      if (message.length === 0 || event.origin !== 'https://www.pixiv.net')
-        return;
+      if (message.length === 0) return console.log('message is empty');
+      if (event.origin !== 'https://www.pixiv.net')
+        return console.log({
+          message: 'origin is not pixiv',
+          origin: event.origin,
+        });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      await setWorkHiddenFlag(message);
       await setTagContainer(message);
+
+      // await showWorkElements();
+      return;
     });
 
     const interval = setInterval(async () => {
       // 開いているページが検索結果ページかどうかを判定する
-      if (!document.location.href.startsWith('https://www.pixiv.net/tags/'))
+      if (!document.location.href.startsWith('https://www.pixiv.net/tags/')) {
         return;
-
+      }
+      await showWorkElements();
       const targetElements = Array.from(
         document.querySelectorAll<HTMLElement>('[aria-haspopup]')
       ).filter((element) => {
@@ -120,8 +139,7 @@ export default defineContentScript({
 
       const setTagToggleButton = async () => {
         targetElements.forEach(async (element) => {
-          // 小説かどうかを判定する
-
+          // 小説かどうかを判定して、小説の場合はreturn
           const isNovel = element
             .closest('li')
             ?.querySelector('a')
@@ -154,7 +172,7 @@ export default defineContentScript({
       await setUserNGButton();
       await setTagToggleButton();
       // await setBlockButtonTagForNovel();
-    }, 1000);
+    }, 500);
 
     console.log('content script');
   },

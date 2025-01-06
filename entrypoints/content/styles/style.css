@@ -1,6 +1,6 @@
 .pf-tag-toggle-button {
-  /* position: absolute;
-  right: 0px; */
+  position: absolute;
+  right: 0px;
   cursor: pointer;
   user-select: none;
 }
@@ -28,6 +28,7 @@
 
 li {
   position: relative;
+  display: none;
 }
 
 * {

@@ -1,8 +1,6 @@
 import collectArrays from './entrypoints/content/utils/collect_arrays';
 import filterData from './entrypoints/content/utils/filter_json';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 // ブロック対象の作品のパスを探す
 const findPaths = (obj: any, target: any, path: string = ''): string[] => {
   let paths: string[] = [];
@@ -94,7 +92,6 @@ const excludeByPath = (obj: AnyObject, path: string): AnyObject => {
 };
 
 const targetUrls = [
-  // '/ajax/search/tags/',
   '/ajax/search/top/',
   '/ajax/search/artworks/',
   '/ajax/search/illustrations/',
@@ -119,7 +116,7 @@ window.fetch = async function (...args) {
   // リクエストの詳細を表示
   const requestUrl = args[0];
   const requestOptions = args[1] || {};
-  // console.log('URL:', requestUrl);
+  console.log('URL:', requestUrl);
   // console.log('Options:', requestOptions);
 
   // 元の fetch を呼び出し
@@ -139,15 +136,16 @@ window.fetch = async function (...args) {
   try {
     const data = await clonedResponse.json();
 
+    // jsonの値が配列のものを全て抽出し、一元化
     const arrays = collectArrays(data);
-    const filteredArrays: WorkData[] = arrays.filter(
-      (item) =>
-        Object.keys(item).includes('tags') &&
-        !Object.keys(item).includes('textCount')
+    // 配列の中からtagsキーを含むものを抽出
+    const filteredArrays: WorkData[] = arrays.filter((item) =>
+      Object.keys(item).includes('tags')
     );
     const currentUrl = document.location.href;
     console.log(filteredArrays);
 
+    // 表示中のページのコンテンツスクリプトに作品データを送る
     window.postMessage(filteredArrays, currentUrl);
 
     // // ブロックする作品を除外
@@ -165,58 +163,3 @@ window.fetch = async function (...args) {
     return response;
   }
 };
-
-// const _fetch = fetch.bind(null);
-// window.fetch = async function (
-//   input: string | URL | globalThis.Request,
-//   init?: RequestInit
-// ) {
-//   const response: Response = await _fetch(input, init);
-
-//   try {
-//     console.log(await response.clone().json());
-//     return response;
-//   } catch (error) {
-//     console.log(error);
-//     return response;
-//   }
-
-//   if (!targetUrls.some((url) => input.toString().includes(url)))
-//     return response;
-
-//   if (response.ok) {
-//     const works: WorkData[] = [];
-
-//     const data: PixivJson = await response.clone().json();
-
-//     // const allPaths = getObjectPaths(data);
-//     // const tagsPaths = allPaths.filter((path) => path.includes('.tags'));
-
-//     // try {
-//     //   // const blockTag = 'R-18';
-//     //   const filteredPaths = tagsPaths.filter((path) => {
-//     //     const value: string[] = getValueByPath(data, path);
-//     //     // return value.some((tag: string) => tag === blockTag);
-//     //     return value.some((tag: string) => blockTags.includes(tag));
-//     //   });
-//     //   console.log(filteredPaths);
-
-//     //   filteredPaths.forEach((value) => {
-//     //     excludeByPath(data, value.split('.tags')[0]);
-//     //   });
-//     // } catch (error) {
-//     //   console.log(error);
-//     // }
-
-//     // console.log({ allPaths, tagsPaths });
-
-//     const blob = new Blob([JSON.stringify(filterData(data), null, 2)], {
-//       type: 'application/json',
-//     });
-
-//     return new Response(blob, { status: 200, statusText: 'OK' });
-//   } else {
-//     console.log(response.statusText);
-//     return response;
-//   }
-// };
