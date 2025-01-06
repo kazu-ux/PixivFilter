@@ -1,11 +1,11 @@
 const works: WorkData[] = [];
 
-const blockUsers: string[] = JSON.parse(
-  localStorage.getItem('blockUsers') || '[]'
+const blockUsers: UserData[] = JSON.parse(
+  sessionStorage.getItem('pf-blockUsers') || '[]'
 );
 
 const blockTags: string[] = JSON.parse(
-  localStorage.getItem('blockTags') || '[]'
+  sessionStorage.getItem('pf-blockTags') || '[]'
 );
 
 function filterData(data: any): object {
@@ -16,7 +16,7 @@ function filterData(data: any): object {
         item.isAdContainer ||
         !(
           item.tags?.some((tag) => blockTags.includes(tag)) ||
-          blockUsers.includes(item.userId ?? '')
+          blockUsers.map((user) => user.userId).includes(item.userId ?? '')
         )
       );
     });
