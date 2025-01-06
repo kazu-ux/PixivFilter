@@ -116,7 +116,7 @@ window.fetch = async function (...args) {
   // リクエストの詳細を表示
   const requestUrl = args[0];
   const requestOptions = args[1] || {};
-  console.log('URL:', requestUrl);
+  // console.log('URL:', requestUrl);
   // console.log('Options:', requestOptions);
 
   // 元の fetch を呼び出し
@@ -148,16 +148,14 @@ window.fetch = async function (...args) {
     // 表示中のページのコンテンツスクリプトに作品データを送る
     window.postMessage(filteredArrays, currentUrl);
 
-    // // ブロックする作品を除外
-    // const filteredData = filterData(data);
-    // // console.log({ url: args[0], data });
+    // ブロックする作品を除外
+    const filteredData = filterData(data);
 
-    // return new Response(JSON.stringify(filteredData), {
-    //   status: response.status,
-    //   statusText: response.statusText,
-    //   headers: response.headers,
-    // });
-    return response;
+    return new Response(JSON.stringify(filteredData), {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
   } catch (error) {
     console.error('Failed to parse JSON:', error);
     return response;
