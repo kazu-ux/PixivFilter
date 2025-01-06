@@ -13,10 +13,6 @@ export default defineContentScript({
   runAt: 'document_start',
 
   async main(ctx) {
-    // // ブラウザのローカルストレージに保存
-    // localStorage.setItem('blockTags', JSON.stringify(blockTags));
-    // localStorage.setItem('blockUsers', JSON.stringify(blockUsers));
-
     const script = document.createElement('script');
     script.setAttribute('type', 'module');
     script.setAttribute('src', chrome.runtime.getURL('filter.js'));
@@ -30,10 +26,21 @@ export default defineContentScript({
       document.documentElement;
     head.insertBefore(script, head.lastChild);
 
+    const blockTags = await ChromeStorage.getBlockTags();
+    const blockUsers = await ChromeStorage.getBlockUsers();
+
+    // ブラウザのローカルストレージに保存
+    sessionStorage.setItem('pf-blockTags', JSON.stringify(blockTags));
+    sessionStorage.setItem('pf-blockUsers', JSON.stringify(blockUsers));
+
     const getAllLiElements = () => document.querySelectorAll('li');
 
     const setTagContainer = async (worksData: WorksData) => {
+      console.log('setTagContainer');
+
       const allLiElements = getAllLiElements();
+      console.log(allLiElements);
+
       if (allLiElements.length === 0) return;
 
       worksData.forEach((workData) => {
@@ -44,7 +51,7 @@ export default defineContentScript({
 
           if (tagContainerElement) return;
 
-          if (workId !== workData.id) return;
+          // if (workId !== workData.id) return;
           element.append(createTagContainer(workData.tags));
         });
       });
@@ -52,8 +59,6 @@ export default defineContentScript({
     };
 
     const setWorkHiddenFlag = async (worksData: WorksData) => {
-      const blockTags = await ChromeStorage.getBlockTags();
-      const blockUsers = await ChromeStorage.getBlockUsers();
       // ブロックタグとブロックユーザーが含まれている作品のみを抽出
       const filteredWorksData = worksData.filter((workData) => {
         return (
@@ -94,9 +99,14 @@ export default defineContentScript({
           origin: event.origin,
         });
 
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      // messageがarrayかどうかを判定する
+      if (!Array.isArray(message)) {
+        return console.log('message is not array');
+      }
 
-      await setWorkHiddenFlag(message);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // await setWorkHiddenFlag(message);
       await setTagContainer(message);
 
       // await showWorkElements();
@@ -108,7 +118,7 @@ export default defineContentScript({
       if (!document.location.href.startsWith('https://www.pixiv.net/tags/')) {
         return;
       }
-      await showWorkElements();
+      // await showWorkElements();
       const targetElements = Array.from(
         document.querySelectorAll<HTMLElement>('[aria-haspopup]')
       ).filter((element) => {
