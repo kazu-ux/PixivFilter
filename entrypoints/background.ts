@@ -8,22 +8,6 @@ export default defineBackground(() => {
     chrome.runtime.openOptionsPage();
   });
 
-  chrome.contextMenus.create({
-    id: 'blockUserMenu',
-    title: 'ユーザーをブロック',
-    contexts: ['link'], // メニューが表示されるコンテキスト
-  });
-  chrome.contextMenus.create({
-    id: 'blockTagMenu',
-    title: 'タグをブロック',
-    contexts: ['link'], // メニューが表示されるコンテキスト
-  });
-
-  chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === 'blockUserMenu') {
-      console.log(info);
-    }
-  });
   // chrome.runtime.onMessage.addListener((css: string, sender) => {
   //   const tabId = sender.tab?.id;
   //   if (!tabId) return;
