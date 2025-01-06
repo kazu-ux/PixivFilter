@@ -10,7 +10,7 @@
 }
 .pf-user-ng-button {
   position: relative;
-  /* margin-right: 1rem; */
+  margin-right: 1rem;
   /* padding-right: 0.5rem; */
   margin-left: 0.5rem;
   /* right: 1rem; */
@@ -28,7 +28,7 @@
 
 li {
   position: relative;
-  display: none;
+  /* display: none; */
 }
 
 * {
