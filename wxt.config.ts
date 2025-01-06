@@ -4,11 +4,11 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
-    name: 'Pixiv Filter',
+    name: 'Pixiv Filter Beta',
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
     version: '1.4.0',
     default_locale: 'en',
-    permissions: ['storage', 'scripting', 'webRequest', 'contextMenus'],
+    permissions: ['storage'],
     host_permissions: [
       'https://www.pixiv.net/ajax/search/top/*',
       'https://www.pixiv.net/ajax/search/illustrations/*',
