@@ -26,6 +26,20 @@ export default defineContentScript({
       document.documentElement;
     head.insertBefore(script, head.lastChild);
 
+    chrome.storage.onChanged.addListener(async (changes) => {
+      console.log({ changes });
+      if (changes.blockTags) {
+        console.log('changed blockTags');
+        const newValue: string[] = changes.blockTags.newValue;
+        sessionStorage.setItem('pf-blockTags', JSON.stringify(newValue));
+      }
+      if (changes.blockUsers) {
+        console.log('changed blockUsers');
+        const newValue: UserData[] = changes.blockUsers.newValue;
+        sessionStorage.setItem('pf-blockUsers', JSON.stringify(newValue));
+      }
+    });
+
     const blockTags = await ChromeStorage.getBlockTags();
     const blockUsers = await ChromeStorage.getBlockUsers();
 
@@ -50,8 +64,8 @@ export default defineContentScript({
             element.querySelector('.pf-tag-container');
 
           if (tagContainerElement) return;
+          if (workId !== workData.id) return;
 
-          // if (workId !== workData.id) return;
           element.append(createTagContainer(workData.tags));
         });
       });
@@ -175,13 +189,15 @@ export default defineContentScript({
         aElements.forEach((element) => {
           const tag = element.getAttribute('data-gtm-label');
           if (!tag) return;
+          if (element.closest('span')?.querySelector('.pf-tag-ng-button'))
+            return;
           element.closest('span')?.append(createTagBlockButton(tag));
         });
       };
 
       await setUserNGButton();
       await setTagToggleButton();
-      // await setBlockButtonTagForNovel();
+      await setBlockButtonTagForNovel();
     }, 500);
 
     console.log('content script');

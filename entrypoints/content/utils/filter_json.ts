@@ -1,14 +1,13 @@
 const works: WorkData[] = [];
 
-const blockUsers: UserData[] = JSON.parse(
-  sessionStorage.getItem('pf-blockUsers') || '[]'
-);
-
-const blockTags: string[] = JSON.parse(
-  sessionStorage.getItem('pf-blockTags') || '[]'
-);
-
 function filterData(data: any): object {
+  const blockUsers: UserData[] = JSON.parse(
+    sessionStorage.getItem('pf-blockUsers') || '[]'
+  );
+
+  const blockTags: string[] = JSON.parse(
+    sessionStorage.getItem('pf-blockTags') || '[]'
+  );
   if (Array.isArray(data)) {
     // blockUserやblockTagが指定されたものと一致しないオブジェクトのみを抽出
     const filteredData: WorkData[] = data.filter((item: WorkData) => {

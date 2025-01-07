@@ -1,5 +1,6 @@
 import { ChromeStorage } from '../utils/chrome_storage';
-import { hideNGTagWorks, hideNGUserWorks } from './search_page';
+
+import { HideWorks } from './utils/hide_works';
 
 export const createUserBlockButton = () => {
   const addButtonElement = document.createElement('span');
@@ -20,9 +21,7 @@ export const createUserBlockButton = () => {
     if (!userName || !userId) return;
 
     await ChromeStorage.setBlockUser({ userId, userName });
-    hideNGUserWorks(userId);
-    console.log(userId, userName);
-    console.log(userElement);
+    await HideWorks.user(userId);
   };
   return addButtonElement;
 };
@@ -34,10 +33,8 @@ export const createTagBlockButton = (tag: string) => {
   spanElementTagNgButton.setAttribute('data-tag-name', tag);
   spanElementTagNgButton.textContent = '[+]';
   spanElementTagNgButton.onclick = async (event) => {
-    console.log(event.target);
     await ChromeStorage.addBlockTag(tag);
-    hideNGTagWorks(tag);
-    return;
+    await HideWorks.tag(tag);
   };
   return spanElementTagNgButton;
 };
