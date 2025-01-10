@@ -6,7 +6,7 @@ export default defineConfig({
   manifest: {
     name: 'Pixiv Filter Beta',
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
-    version: '1.4.0',
+    version: '1.4.1',
     default_locale: 'en',
     permissions: ['storage'],
     host_permissions: [

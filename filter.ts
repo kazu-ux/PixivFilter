@@ -97,15 +97,6 @@ const targetUrls = [
   '/ajax/search/illustrations/',
   '/ajax/search/manga/',
   '/ajax/search/novels/',
-  '/ajax/follow_latest/illust',
-  '/ajax/follow_latest/novel',
-  '/ajax/discovery/novels',
-  '/ajax/discovery/artworks',
-  '/ajax/discovery/users',
-  '/ajax/user/',
-  '/ajax/top/illust',
-  '/ajax/top/manga',
-  '/ajax/illust/recommend/',
 ];
 
 // 元の fetch を保存
