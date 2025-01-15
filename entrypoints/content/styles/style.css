@@ -31,10 +31,6 @@ li {
   /* display: none; */
 }
 
-* {
-  min-height: 0px !important;
-}
-
 .custom-popup {
   background-color: #fff;
   border: 1px solid #ccc;
