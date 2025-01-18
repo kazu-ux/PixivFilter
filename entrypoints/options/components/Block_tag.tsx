@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import { ChromeStorage } from '../../utils/chrome_storage';
+import { useState } from 'react';
 import Modal from './myModal';
 import { css } from '@emotion/react';
-import { CandidateRepository } from '../repositories/candidate_repository';
+import { useChromeStorage } from '../hooks/use_chrome_storage';
 
 const blockTagsStr = chrome.i18n.getMessage('blockTags');
 const removeButtonStr = chrome.i18n.getMessage('removeButton');
@@ -14,34 +13,18 @@ export const BlockTag = () => {
   const closeModal = () => setModalOpen(false);
 
   const [inputValue, setInputValue] = useState('');
+  const { value: blockTags, setValue: setBlockTags } = useChromeStorage<
+    string[]
+  >('blockTags', []);
 
-  console.log('blockTag');
-  const [tagCount, setTagCount] = useState(0);
-  const [optionElement, setOptionElement] = useState<JSX.Element>();
-
-  const toOptionElements = (tags: string[]) => {
-    const optionElements = tags.flatMap((tag, index) => {
-      const optionElement = (
-        <option value={tag} key={index}>
-          {tag}
-        </option>
-      );
-      return optionElement;
-    });
-    return <>{optionElements}</>;
-  };
-
-  useEffect(() => {
-    ChromeStorage.getBlockTags().then((res) => {
-      setTagCount(res.length);
-      setOptionElement(toOptionElements(res));
-    });
-  }, []);
+  const [isHidden, setIsHidden] = useState(true);
 
   const onClick = async () => {
-    const tagOptions = (
-      document.querySelector('select.tag-select') as HTMLSelectElement
-    ).options;
+    const select = document.querySelector(
+      'select.tag-select'
+    ) as HTMLSelectElement;
+    const tagOptions = select.options;
+    const allTags = Array.from(tagOptions).map((option) => option.value);
     const selectedTags = Array.from(tagOptions)
       .map((option) => {
         if (option.selected) {
@@ -52,26 +35,35 @@ export const BlockTag = () => {
           return tagName;
         }
       })
-      .filter(Boolean)
-      .filter((item): item is NonNullable<typeof item> => item !== null);
-    console.log(selectedTags);
+      .filter(Boolean);
+    // .filter((item): item is NonNullable<typeof item> => item !== null);
+
     if (!selectedTags.includes) return;
 
-    const savedTags = await ChromeStorage.removeBlockTags(selectedTags);
-    setTagCount(savedTags.length);
-    setOptionElement(toOptionElements(savedTags));
+    // 2つの配列の差分を抽出
+    const diffTags = allTags.filter((tag) => !selectedTags.includes(tag));
+    console.log(diffTags);
+
+    setBlockTags(diffTags);
+    select.selectedIndex = -1;
   };
 
   return (
     <div className='ng-config-container'>
       <div className='title-container'>
         <div className='ng-tag-title'>{blockTagsStr}</div>
-        <div className='tags-count'>({tagCount})</div>
+        <div className='tags-count'>({blockTags.length})</div>
       </div>
 
       <div className='select-container'>
         <select className='tag-select' multiple name='tagNames'>
-          {optionElement}
+          {blockTags.map((tag, index) => {
+            return (
+              <option value={tag} key={index}>
+                {tag}
+              </option>
+            );
+          })}
         </select>
         <div css={buttonContainer}>
           <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -82,21 +74,29 @@ export const BlockTag = () => {
                 e.preventDefault();
                 console.log(inputValue);
 
-                ChromeStorage.addBlockTag(inputValue).then(() => {
-                  closeModal();
-                  // setInputValue('');
-                });
+                // すでに登録されている場合は追加しない
+                if (blockTags.includes(inputValue)) return;
+
+                setBlockTags([...blockTags, inputValue]);
+                setInputValue('');
+                closeModal();
               }}
             >
+              <div>タグ名を入力してください（完全一致）</div>
               <input
                 type='text'
                 name='keyword'
                 className='input'
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setIsHidden(!blockTags.includes(value));
+                  setInputValue(value);
+                }}
                 autoFocus
               />
-              <button type='submit'>Close</button>
+              <button type='submit'>追加</button>
+              <div hidden={isHidden}>すでに登録されています</div>
             </form>
           </Modal>
 

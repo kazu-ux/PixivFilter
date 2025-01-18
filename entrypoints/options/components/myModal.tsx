@@ -10,8 +10,16 @@ type ModalProps = {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') onClose();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target === document.querySelector('.modal_overlay')) onClose();
+  });
+
   return ReactDOM.createPortal(
-    <div style={styles.overlay}>
+    <div style={styles.overlay} className='modal_overlay'>
       <div style={styles.modal}>
         <button onClick={onClose} style={styles.closeButton}>
           ×
