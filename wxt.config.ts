@@ -9,13 +9,13 @@ export default defineConfig({
     version: '1.4.2',
     default_locale: 'en',
     permissions: ['storage'],
-    host_permissions: [
-      'https://www.pixiv.net/ajax/search/top/*',
-      'https://www.pixiv.net/ajax/search/illustrations/*',
-      'https://www.pixiv.net/ajax/search/manga/*',
-      'https://www.pixiv.net/ajax/search/novels/*',
-      'https://www.pixiv.net/',
-    ],
+    // host_permissions: [
+    //   'https://www.pixiv.net/ajax/search/top/*',
+    //   'https://www.pixiv.net/ajax/search/illustrations/*',
+    //   'https://www.pixiv.net/ajax/search/manga/*',
+    //   'https://www.pixiv.net/ajax/search/novels/*',
+    //   'https://www.pixiv.net/',
+    // ],
     action: {},
     web_accessible_resources: [
       { resources: ['filter.js'], matches: ['https://www.pixiv.net/*'] },

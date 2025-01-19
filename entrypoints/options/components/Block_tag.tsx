@@ -42,8 +42,6 @@ export const BlockTag = () => {
 
     // 2つの配列の差分を抽出
     const diffTags = allTags.filter((tag) => !selectedTags.includes(tag));
-    console.log(diffTags);
-
     setBlockTags(diffTags);
     select.selectedIndex = -1;
   };
