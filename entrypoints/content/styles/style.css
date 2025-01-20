@@ -10,9 +10,10 @@
 }
 .pf-user-ng-button {
   position: relative;
-  margin-right: 0.5rem;
-  margin-left: 1.5rem;
-  right: 1rem;
+  margin-right: 1rem;
+  /* padding-right: 0.5rem; */
+  margin-left: 0.5rem;
+  /* right: 1rem; */
   cursor: pointer;
 }
 
@@ -27,4 +28,29 @@
 
 li {
   position: relative;
+  /* display: none; */
+}
+
+.custom-popup {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none; /* ポップアップ上でマウス操作が発生しないように */
+}
+
+.pf-wrapper {
+  min-width: 0px;
+  /* width: 100%; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+li.pf-hidden {
+  display: none;
 }

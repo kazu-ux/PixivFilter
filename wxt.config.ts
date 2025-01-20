@@ -4,21 +4,22 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
-    name: 'Pixiv Filter',
+    name: 'Pixiv Filter Beta',
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
-    version: '1.3.1',
+    version: '1.4.2',
     default_locale: 'en',
-    permissions: ['storage', 'scripting', 'webRequest'],
-    host_permissions: [
-      'https://www.pixiv.net/ajax/search/top/*',
-      'https://www.pixiv.net/ajax/search/illustrations/*',
-      'https://www.pixiv.net/ajax/search/manga/*',
-      'https://www.pixiv.net/ajax/search/novels/*',
-    ],
+    permissions: ['storage'],
+    // host_permissions: [
+    //   'https://www.pixiv.net/ajax/search/top/*',
+    //   'https://www.pixiv.net/ajax/search/illustrations/*',
+    //   'https://www.pixiv.net/ajax/search/manga/*',
+    //   'https://www.pixiv.net/ajax/search/novels/*',
+    //   'https://www.pixiv.net/',
+    // ],
     action: {},
-
-    // @ts-ignore: Valid MV3 key for chrome
-    // optional_host_permissions: ['*://*/*'],
+    web_accessible_resources: [
+      { resources: ['filter.js'], matches: ['https://www.pixiv.net/*'] },
+    ],
   },
 
   // hooks: {

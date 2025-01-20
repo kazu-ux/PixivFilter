@@ -66,7 +66,7 @@ const getWorksData: () => Promise<WorksData> = async () => {
   return (await chrome.storage.local.get('worksData')).worksData;
 };
 
-const setBlockTag = async (tag: string) => {
+const addBlockTag = async (tag: string) => {
   const savedTags = await ChromeStorage.getBlockTags();
   console.log(savedTags);
 
@@ -119,7 +119,7 @@ export const ChromeStorage = {
   removeBlockUser,
   setWorksData,
   getWorksData,
-  setBlockTag,
+  addBlockTag,
   getBlockTags,
   removeBlockTags,
 };
