@@ -1,8 +1,11 @@
 import * as esbuild from 'esbuild';
 
 const ctx = await esbuild.context({
-  entryPoints: ['filter.ts'],
-  outdir: '.output/chrome-mv3',
+  entryPoints: {
+    'chrome-mv3/filter': 'filter.ts',
+    'firefox-mv2/filter': 'filter.ts',
+  },
+  outdir: '.output',
   bundle: true,
   minify: true,
   target: 'esnext',

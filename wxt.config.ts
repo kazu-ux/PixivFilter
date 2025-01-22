@@ -4,9 +4,9 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
-    name: 'Pixiv Filter Beta',
+    name: 'Pixiv Filter',
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
-    version: '1.4.2',
+    version: '1.4.3',
     default_locale: 'en',
     permissions: ['storage'],
     // host_permissions: [
@@ -22,24 +22,33 @@ export default defineConfig({
     ],
   },
 
-  // hooks: {
-  //   'build:manifestGenerated': (wxt, manifest) => {
-  //     if (wxt.config.command === 'serve') {
-  //       // During development, content script is not listed in manifest, causing
-  //       // "webext-dynamic-content-scripts" to throw an error. So we need to
-  //       // add it manually.
-  //       manifest.content_scripts ??= [];
-  //       manifest.content_scripts.push({
-  //         matches: ['*://*.wxt.dev/*'],
-  //         js: ['content-scripts/content.js'],
-  //         // If the script has CSS, add it here.
-  //       });
-  //     }
-  //   },
-  // },
+  hooks: {
+    'build:manifestGenerated': (wxt, manifest) => {
+      const browserType = wxt.config.browser;
+      console.log(browserType);
 
-  // runner: {
-  //   chromiumArgs: ['--devtools'],
-  //   startUrls: ['https://www.pixiv.net/tags/%E9%A2%A8%E6%99%AF'],
-  // },
+      wxt.config.runnerConfig.config.startUrls =
+        browserType === 'firefox'
+          ? ['about:debugging#/runtime/this-firefox']
+          : [];
+
+      // console.log(wxt.config.browser);
+      // if (wxt.config.command === 'serve') {
+      //   // During development, content script is not listed in manifest, causing
+      //   // "webext-dynamic-content-scripts" to throw an error. So we need to
+      //   // add it manually.
+      //   manifest.content_scripts ??= [];
+      //   manifest.content_scripts.push({
+      //     matches: ['*://*.wxt.dev/*'],
+      //     js: ['content-scripts/content.js'],
+      //     // If the script has CSS, add it here.
+      //   });
+      // }
+    },
+  },
+
+  runner: {
+    chromiumArgs: ['--devtools'],
+    // startUrls: ['https://www.pixiv.net/tags/%E9%A2%A8%E6%99%AF'],
+  },
 });

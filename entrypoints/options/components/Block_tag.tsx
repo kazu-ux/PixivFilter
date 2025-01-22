@@ -35,8 +35,8 @@ export const BlockTag = () => {
           return tagName;
         }
       })
-      .filter(Boolean);
-    // .filter((item): item is NonNullable<typeof item> => item !== null);
+      .filter(Boolean)
+      .filter((item): item is NonNullable<typeof item> => item !== null); // undefined を除く
 
     if (!selectedTags.includes) return;
 
