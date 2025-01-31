@@ -8,6 +8,7 @@
 .pf-users-container {
   width: 100%;
 }
+
 .pf-user-ng-button {
   position: relative;
   margin-right: 1rem;
@@ -20,10 +21,6 @@
 .pf-tag-ng-button {
   margin-left: 0.5rem;
   cursor: pointer;
-}
-
-.hide-pf-tag-container {
-  display: none;
 }
 
 li {
@@ -49,8 +46,4 @@ li {
   display: flex;
   flex-direction: row;
   align-items: center;
-}
-
-li.pf-hidden {
-  display: none;
 }

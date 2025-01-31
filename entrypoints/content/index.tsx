@@ -72,38 +72,6 @@ export default defineContentScript({
       return;
     };
 
-    const setWorkHiddenFlag = async (worksData: WorksData) => {
-      // ブロックタグとブロックユーザーが含まれている作品のみを抽出
-      const filteredWorksData = worksData.filter((workData) => {
-        return (
-          workData.tags.some((tag) => blockTags.includes(tag)) ||
-          blockUsers.map((user) => user.userId).includes(workData.userId)
-        );
-      });
-
-      const allLiElements = getAllLiElements();
-      if (allLiElements.length === 0) return console.log('no li');
-      for await (const workData of filteredWorksData) {
-        for await (const element of allLiElements) {
-          const workId = element.querySelector('a')?.href.split('/').pop();
-          if (workId !== workData.id) continue;
-          element.classList.add('pf-hidden');
-        }
-      }
-    };
-
-    const showWorkElements = async () => {
-      const LiElements = document.querySelectorAll('li');
-      if (LiElements.length === 0) return console.log('no li');
-      LiElements.forEach((element) => {
-        if (element.classList.contains('pf-hidden')) {
-          element.style.display = 'none';
-          return;
-        }
-        element.style.display = 'block';
-      });
-    };
-
     window.addEventListener('message', async (event) => {
       const message: WorksData = event.data;
       if (message.length === 0) return console.log('message is empty');
@@ -129,7 +97,7 @@ export default defineContentScript({
 
     const interval = setInterval(async () => {
       // 開いているページが検索結果ページかどうかを判定する
-      if (!document.location.href.startsWith('https://www.pixiv.net/tags/')) {
+      if (!document.location.href.includes('/tags/')) {
         return;
       }
       // await showWorkElements();

@@ -114,7 +114,7 @@ window.fetch = async function (...args) {
   const response = await originalFetch.apply(this, args);
 
   // 開いているページが検索結果ページかどうかを判定する
-  if (!location.pathname.startsWith('/tags/')) return response;
+  if (!location.href.includes('/tags/')) return response;
 
   // 対象の URL をチェック
   if (!targetUrls.some((url) => requestUrl.toString().includes(url)))

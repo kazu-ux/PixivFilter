@@ -10,5 +10,14 @@
   },
   "removeButton": {
     "message": "削除"
+  },
+  "addButton": {
+    "message": "追加"
+  },
+  "addDescription": {
+    "message": "タグ名を入力してください（完全一致）"
+  },
+  "uniqueError": {
+    "message": "すでに登録されています"
   }
 }
