@@ -10,10 +10,14 @@ export default [
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
     settings: { react: { version: 'detect' } },
   },
+  // Global language options
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  // Core JavaScript & TypeScript configurations
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  // React configurations
   pluginReact.configs.flat.recommended,
   pluginReactJSXRuntime,
+  // Styling configurations
   emotionPlugin,
 ];

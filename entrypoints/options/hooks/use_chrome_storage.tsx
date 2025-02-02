@@ -13,14 +13,16 @@ export function useChromeStorage<T>(
   initialValue: T,
   type: StorageType = 'local'
 ) {
+  const browserType = import.meta.env.BROWSER;
+
   const [value, setValue] = useState<T>(initialValue);
   const storageArea = chrome.storage[type];
 
   // Load the value from Chrome Storage
   useEffect(() => {
     storageArea.get(key, (result) => {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+      if (browser.runtime.lastError) {
+        console.error(browser.runtime.lastError);
         return;
       }
       if (result[key] !== undefined) {
@@ -29,24 +31,24 @@ export function useChromeStorage<T>(
     });
   }, [key, storageArea]);
 
-  // Update the value in Chrome Storage
+  // Update the value in browser Storage
   const updateValue = useCallback(
     (newValue: T) => {
       setValue(newValue);
       storageArea.set({ [key]: newValue }, () => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
+        if (browser.runtime.lastError) {
+          console.error(browser.runtime.lastError);
         }
       });
     },
     [key, storageArea]
   );
 
-  // Remove the value from Chrome Storage
+  // Remove the value from browser Storage
   const removeValue = useCallback(() => {
     storageArea.remove(key, () => {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+      if (browser.runtime.lastError) {
+        console.error(browser.runtime.lastError);
         return;
       }
       setValue(initialValue);

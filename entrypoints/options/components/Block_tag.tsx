@@ -5,6 +5,9 @@ import { useChromeStorage } from '../hooks/use_chrome_storage';
 
 const blockTagsStr = chrome.i18n.getMessage('blockTags');
 const removeButtonStr = chrome.i18n.getMessage('removeButton');
+const addButtonStr = chrome.i18n.getMessage('addButton');
+const addDescriptionStr = chrome.i18n.getMessage('addDescription');
+const uniqueErrorStr = chrome.i18n.getMessage('uniqueError');
 
 export const BlockTag = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -35,8 +38,8 @@ export const BlockTag = () => {
           return tagName;
         }
       })
-      .filter(Boolean);
-    // .filter((item): item is NonNullable<typeof item> => item !== null);
+      .filter(Boolean)
+      .filter((item): item is NonNullable<typeof item> => item !== null); // undefined を除く
 
     if (!selectedTags.includes) return;
 
@@ -80,7 +83,7 @@ export const BlockTag = () => {
                 closeModal();
               }}
             >
-              <div>タグ名を入力してください（完全一致）</div>
+              <div>{addDescriptionStr}</div>
               <input
                 type='text'
                 name='keyword'
@@ -94,12 +97,12 @@ export const BlockTag = () => {
                 autoFocus
               />
               <button type='submit'>追加</button>
-              <div hidden={isHidden}>すでに登録されています</div>
+              <div hidden={isHidden}>{uniqueErrorStr}</div>
             </form>
           </Modal>
 
           <button className='tag-add-button' name='add' onClick={openModal}>
-            追加
+            {addButtonStr}
           </button>
 
           <button className='tag-remove-button' name='remove' onClick={onClick}>

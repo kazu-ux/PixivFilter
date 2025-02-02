@@ -10,5 +10,14 @@
   },
   "removeButton": {
     "message": "Remove"
+  },
+  "addButton": {
+    "message": "Add"
+  },
+  "addDescription": {
+    "message": "Please enter a tag name.(Exact match)"
+  },
+  "uniqueError": {
+    "message": "Already registered."
   }
 }
