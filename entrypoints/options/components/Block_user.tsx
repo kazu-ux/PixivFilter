@@ -1,5 +1,3 @@
-import React, { JSX, useEffect, useState } from 'react';
-import { ChromeStorage } from '../../utils/chrome_storage';
 import { useChromeStorage } from '../hooks/use_chrome_storage';
 
 const blockUsersStr = chrome.i18n.getMessage('blockUsers');
@@ -8,10 +6,10 @@ const removeButtonStr = chrome.i18n.getMessage('removeButton');
 export const BlockUser = () => {
   console.log('blockUser');
   const { value: blockUsers, setValue: setBlockUsers } = useChromeStorage<
-    UserData[]
+    BlockUser[]
   >('blockUsers', []);
 
-  const onClick = async () => {
+  const onRemoveClick = async () => {
     const userOptions =
       document.querySelector<HTMLSelectElement>('select.user-select')?.options;
     if (!userOptions) return;
@@ -58,9 +56,15 @@ export const BlockUser = () => {
             );
           })}
         </select>
-        <button className='user-remove-button' name='remove' onClick={onClick}>
-          {removeButtonStr}
-        </button>
+        <div className='button-container'>
+          <button
+            className='user-remove-button'
+            name='remove'
+            onClick={onRemoveClick}
+          >
+            {removeButtonStr}
+          </button>
+        </div>
       </div>
     </div>
   );
