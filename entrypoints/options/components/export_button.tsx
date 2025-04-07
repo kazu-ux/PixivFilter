@@ -39,6 +39,8 @@ const onClick = async (
     await writeFile(handle, JSON.stringify({ blockUsers, blockTags }));
     console.log(blockUsers);
   } catch (error) {
+    if (!(error instanceof TypeError)) return;
+
     function downloadFile(
       content: BlobPart,
       fileName: string,
