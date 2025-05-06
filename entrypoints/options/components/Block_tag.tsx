@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Modal from './myModal';
-import { css } from '@emotion/react';
+import styles from './Block_tag.module.css';
 import { useChromeStorage } from '../hooks/use_chrome_storage';
 
 const blockTagsStr = chrome.i18n.getMessage('blockTags');
@@ -66,7 +66,7 @@ export const BlockTag = () => {
             );
           })}
         </select>
-        <div css={buttonContainer}>
+        <div className={styles.buttonContainer}>
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <form
               action=''
@@ -113,10 +113,3 @@ export const BlockTag = () => {
     </div>
   );
 };
-
-const buttonContainer = css`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding-top: 0.5rem;
-`;
