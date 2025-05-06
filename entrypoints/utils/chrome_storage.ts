@@ -7,8 +7,16 @@ const getRequestFlag: () => Promise<boolean> = async () => {
   return (await chrome.storage.local.get('requestFlag')).requestFlag;
 };
 
+const setConfig = async (config: Config) => {
+  await chrome.storage.local.set({
+    blockUsers: config.blockUsers,
+    blockTags: config.blockTags,
+  });
+  return;
+};
+
 //ユーザーをストレージに保存する
-const setBlockUser = async (userData: UserData) => {
+const setBlockUser = async (userData: BlockUser) => {
   const savedUsers = await ChromeStorage.getBlockUsers();
 
   if (!savedUsers) {
@@ -25,7 +33,7 @@ const setBlockUser = async (userData: UserData) => {
 
 // ストレージからNGユーザーを取得する
 const getBlockUsers = async () => {
-  const savedUsers: UserData[] | undefined = (
+  const savedUsers: BlockUser[] | undefined = (
     await chrome.storage.local.get('blockUsers')
   ).blockUsers;
   if (!savedUsers) {
@@ -36,7 +44,7 @@ const getBlockUsers = async () => {
 };
 
 // ストレージからユーザーを削除する
-const removeBlockUser = async (Users: UserData[]) => {
+const removeBlockUser = async (Users: BlockUser[]) => {
   const userIds: string[] = Users.map((user) => user.userId);
 
   const sevedUsers = await ChromeStorage.getBlockUsers();
@@ -112,13 +120,14 @@ const removeBlockTags = async (blockTags: string[]) => {
 };
 
 export const ChromeStorage = {
-  setRequestFlag,
-  getRequestFlag,
+  // setRequestFlag,
+  // getRequestFlag,
+  setConfig,
   getBlockUsers,
   setBlockUser,
   removeBlockUser,
-  setWorksData,
-  getWorksData,
+  // setWorksData,
+  // getWorksData,
   addBlockTag,
   getBlockTags,
   removeBlockTags,

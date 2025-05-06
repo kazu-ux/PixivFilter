@@ -1,7 +1,7 @@
 const works: WorkData[] = [];
 
 function filterData(data: any): object {
-  const blockUsers: UserData[] = JSON.parse(
+  const blockUsers: BlockUser[] = JSON.parse(
     sessionStorage.getItem('pf-blockUsers') || '[]'
   );
 

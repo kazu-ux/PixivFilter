@@ -1,4 +1,3 @@
-type UserData = { userId: string; userName: string };
 type RequestFlag = { requestFlag: boolean };
 
 type WorksData = Array<{

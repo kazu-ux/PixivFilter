@@ -35,7 +35,7 @@ export default defineContentScript({
       }
       if (changes.blockUsers) {
         console.log('changed blockUsers');
-        const newValue: UserData[] = changes.blockUsers.newValue;
+        const newValue: BlockUser[] = changes.blockUsers.newValue;
         sessionStorage.setItem('pf-blockUsers', JSON.stringify(newValue));
       }
     });
