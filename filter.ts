@@ -97,6 +97,15 @@ const targetUrls = [
   '/ajax/search/illustrations/',
   '/ajax/search/manga/',
   '/ajax/search/novels/',
+  // '/ajax/follow_latest/illust',
+  // '/ajax/follow_latest/novel',
+  '/ajax/discovery/novels',
+  '/ajax/discovery/artworks',
+  // '/ajax/discovery/users',
+  // '/ajax/user/',
+  // '/ajax/top/illust',
+  // '/ajax/top/manga',
+  // '/ajax/illust/',
 ];
 
 // 元の fetch を保存
@@ -107,6 +116,8 @@ window.fetch = async function (...args) {
   // リクエストの詳細を表示
   const requestUrl = args[0];
   const requestOptions = args[1] || {};
+
+  console.log('Request:', requestUrl);
   // console.log('URL:', requestUrl);
   // console.log('Options:', requestOptions);
 
@@ -114,7 +125,7 @@ window.fetch = async function (...args) {
   const response = await originalFetch.apply(this, args);
 
   // 開いているページが検索結果ページかどうかを判定する
-  if (!location.href.includes('/tags/')) return response;
+  // if (!location.href.includes('/tags/')) return response;
 
   // 対象の URL をチェック
   if (!targetUrls.some((url) => requestUrl.toString().includes(url)))
