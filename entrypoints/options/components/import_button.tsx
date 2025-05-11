@@ -1,5 +1,6 @@
 import { ChromeStorage } from '@/entrypoints/utils/chrome_storage';
 import React from 'react';
+import { importStr } from '../locales/locales';
 
 const ExportBotton = () => {
   const [active, setActive] = React.useState(true);
@@ -83,7 +84,7 @@ const ExportBotton = () => {
 
   return (
     <button className='import-button' onClick={onClick} disabled={!active}>
-      {active ? 'import' : 'loading...'}
+      {active ? importStr : 'loading...'}
     </button>
   );
 };
