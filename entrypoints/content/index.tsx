@@ -95,17 +95,19 @@ export default defineContentScript({
       return;
     });
 
+    const targetUrls = ['/tags/', '/discovery', '/artworks/'];
+
     const interval = setInterval(async () => {
-      // 開いているページが検索結果ページかどうかを判定する
-      if (!document.location.href.includes('/tags/')) {
-        return;
-      }
-      // await showWorkElements();
+      // 開いているページが対象ページかどうかを判定する
+      if (!targetUrls.some((url) => location.href.includes(url))) return;
+
       const targetElements = Array.from(
         document.querySelectorAll<HTMLElement>('[aria-haspopup]')
-      ).filter((element) => {
-        return element.outerHTML.includes('/users/');
-      });
+      )
+        .filter((element) => {
+          return element.outerHTML.includes('/users/');
+        })
+        .filter((element) => (element as HTMLElement).closest('ul'));
 
       targetElements.forEach((element) => {
         const wrapperElement = element.closest('.pf-wrapper');
