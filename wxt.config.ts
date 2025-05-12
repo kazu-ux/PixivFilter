@@ -6,16 +6,17 @@ export default defineConfig({
   manifest: {
     name: 'Pixiv Filter',
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
-    version: '1.4.4',
+    version: '1.5.0',
     default_locale: 'en',
     permissions: ['storage'],
-    // host_permissions: [
-    //   'https://www.pixiv.net/ajax/search/top/*',
-    //   'https://www.pixiv.net/ajax/search/illustrations/*',
-    //   'https://www.pixiv.net/ajax/search/manga/*',
-    //   'https://www.pixiv.net/ajax/search/novels/*',
-    //   'https://www.pixiv.net/',
-    // ],
+    host_permissions: [
+      // 'https://www.pixiv.net/ajax/search/top/*',
+      // 'https://www.pixiv.net/ajax/search/illustrations/*',
+      // 'https://www.pixiv.net/ajax/search/manga/*',
+      // 'https://www.pixiv.net/ajax/search/novels/*',
+      // 'https://www.pixiv.net/',
+      // 'https://i.pximg.net/',
+    ],
     action: {},
     web_accessible_resources: [
       { resources: ['filter.js'], matches: ['https://www.pixiv.net/*'] },

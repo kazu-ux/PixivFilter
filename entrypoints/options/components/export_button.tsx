@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChromeStorage } from '../../utils/chrome_storage';
+import { exportStr } from '../locales/locales';
 
 const onClick = async (
   event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -87,7 +88,7 @@ const onClick = async (
 const ExportBotton = () => {
   return (
     <button className='export-button' onClick={onClick}>
-      export
+      {exportStr}
     </button>
   );
 };
