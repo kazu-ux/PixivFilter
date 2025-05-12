@@ -105,7 +105,7 @@ const targetUrls = [
   // '/ajax/user/',
   // '/ajax/top/illust',
   // '/ajax/top/manga',
-  // '/ajax/illust/',
+  '/ajax/illust/',
 ];
 
 // 元の fetch を保存
