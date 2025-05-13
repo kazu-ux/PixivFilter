@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import Modal from './myModal';
-import { css } from '@emotion/react';
+import styles from './Block_tag.module.css';
 import { useChromeStorage } from '../hooks/use_chrome_storage';
-
-const blockTagsStr = chrome.i18n.getMessage('blockTags');
-const removeButtonStr = chrome.i18n.getMessage('removeButton');
-const addButtonStr = chrome.i18n.getMessage('addButton');
-const addDescriptionStr = chrome.i18n.getMessage('addDescription');
-const uniqueErrorStr = chrome.i18n.getMessage('uniqueError');
+import {
+  blockTagsStr,
+  addDescriptionStr,
+  uniqueErrorStr,
+  addButtonStr,
+  removeButtonStr,
+} from '../locales/locales';
 
 export const BlockTag = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const [isModalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
@@ -21,6 +24,12 @@ export const BlockTag = () => {
   >('blockTags', []);
 
   const [isHidden, setIsHidden] = useState(true);
+
+  useEffect(() => {
+    if (isModalOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isModalOpen]);
 
   const onClick = async () => {
     const select = document.querySelector(
@@ -66,7 +75,7 @@ export const BlockTag = () => {
             );
           })}
         </select>
-        <div css={buttonContainer}>
+        <div className={styles.buttonContainer}>
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <form
               action=''
@@ -85,6 +94,7 @@ export const BlockTag = () => {
             >
               <div>{addDescriptionStr}</div>
               <input
+                ref={inputRef}
                 type='text'
                 name='keyword'
                 className='input'
@@ -94,9 +104,8 @@ export const BlockTag = () => {
                   setIsHidden(!blockTags.includes(value));
                   setInputValue(value);
                 }}
-                autoFocus
               />
-              <button type='submit'>追加</button>
+              <button type='submit'>{addButtonStr}</button>
               <div hidden={isHidden}>{uniqueErrorStr}</div>
             </form>
           </Modal>
@@ -113,10 +122,3 @@ export const BlockTag = () => {
     </div>
   );
 };
-
-const buttonContainer = css`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding-top: 0.5rem;
-`;

@@ -14,8 +14,17 @@
   "addButton": {
     "message": "追加"
   },
-  "addDescription": {
+  "addTagDescription": {
     "message": "タグ名を入力してください（完全一致）"
+  },
+  "addUserDescription": {
+    "message": "ユーザーIDまたはユーザーページURLを入力してください（完全一致）"
+  },
+  "export": {
+    "message": "エクスポート"
+  },
+  "import": {
+    "message": "インポート"
   },
   "uniqueError": {
     "message": "すでに登録されています"

@@ -1,6 +1,7 @@
 .pf-tag-toggle-button {
   position: absolute;
   right: 0px;
+  /* margin-left: 0.5rem; */
   cursor: pointer;
   user-select: none;
 }
@@ -41,8 +42,9 @@ li {
 }
 
 .pf-wrapper {
+  position: relative;
   min-width: 0px;
-  /* width: 100%; */
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;

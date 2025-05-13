@@ -14,8 +14,17 @@
   "addButton": {
     "message": "Add"
   },
-  "addDescription": {
+  "addTagDescription": {
     "message": "Please enter a tag name.(Exact match)"
+  },
+  "addUserDescription": {
+    "message": "Please enter a user ID or user page URL.(Exact match)"
+  },
+  "export": {
+    "message": "Export"
+  },
+  "import": {
+    "message": "Import"
   },
   "uniqueError": {
     "message": "Already registered."

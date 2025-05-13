@@ -16,12 +16,10 @@
     "esbuild": "node esbuild.config.mjs"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@emotion/eslint-plugin": "^11.12.0",
     "@eslint/js": "^9.25.1",
     "@types/chrome": "^0.0.317",
     "@types/react": "^19.1.2",
@@ -35,13 +33,5 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1",
     "wxt": "^0.20.6"
-  },
-  "pnpm": {
-    "overrides": {
-      "micromatch@<4.0.8": ">=4.0.8",
-      "rollup@>=4.0.0 <4.22.4": ">=4.22.4",
-      "cross-spawn@>=7.0.0 <7.0.5": ">=7.0.5",
-      "nanoid@<3.3.8": ">=3.3.8"
-    }
   }
 }
