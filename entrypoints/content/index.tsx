@@ -95,7 +95,7 @@ export default defineContentScript({
       return;
     });
 
-    const targetUrls = ['/tags/', '/discovery', '/artworks/'];
+    const targetUrls = ['/tags/'];
 
     const interval = setInterval(async () => {
       // 開いているページが対象ページかどうかを判定する

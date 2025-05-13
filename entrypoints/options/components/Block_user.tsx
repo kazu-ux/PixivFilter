@@ -114,7 +114,7 @@ export const BlockUser = () => {
 
     setBlockUsers([
       ...blockUsers,
-      { userName: json.props.pageProps.meta.ogp.title, userId: q!.toString() },
+      { userName: json.props.pageProps.meta.ogp.title, userId },
     ]);
 
     setIsLoading(false);

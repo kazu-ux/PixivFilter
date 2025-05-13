@@ -99,8 +99,8 @@ const targetUrls = [
   '/ajax/search/novels/',
   // '/ajax/follow_latest/illust',
   // '/ajax/follow_latest/novel',
-  '/ajax/discovery/novels',
-  '/ajax/discovery/artworks',
+  // '/ajax/discovery/novels',
+  // '/ajax/discovery/artworks',
   // '/ajax/discovery/users',
   // '/ajax/user/',
   // '/ajax/top/illust',
@@ -116,10 +116,6 @@ window.fetch = async function (...args) {
   // リクエストの詳細を表示
   const requestUrl = args[0];
   const requestOptions = args[1] || {};
-
-  console.log('Request:', requestUrl);
-  // console.log('URL:', requestUrl);
-  // console.log('Options:', requestOptions);
 
   // 元の fetch を呼び出し
   const response = await originalFetch.apply(this, args);
