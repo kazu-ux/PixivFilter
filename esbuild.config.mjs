@@ -5,6 +5,8 @@ const ctx = await esbuild.context({
     'chrome-mv3/filter': 'filter.ts',
     'chrome-mv3-dev/filter': 'filter.ts',
     'firefox-mv2/filter': 'filter.ts',
+    'firefox-mv2-dev/filter': 'filter.ts',
+    'brave-mv3-dev/filter': 'filter.ts',
   },
   outdir: '.output',
   bundle: true,

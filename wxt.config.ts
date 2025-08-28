@@ -6,7 +6,6 @@ export default defineConfig({
   manifest: {
     name: 'Pixiv Filter',
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
-    version: '1.5.0',
     default_locale: 'en',
     permissions: ['storage'],
     host_permissions: [
@@ -49,7 +48,6 @@ export default defineConfig({
   },
 
   webExt: {
-    chromiumArgs: ['--devtools'],
-    // startUrls: ['https://www.pixiv.net/tags/%E9%A2%A8%E6%99%AF'],
+    chromiumArgs: ['https://www.pixiv.net/tags/%E9%A2%A8%E6%99%AF'],
   },
 });
