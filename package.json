@@ -39,7 +39,8 @@
   "pnpm": {
     "overrides": {
       "node-forge": "^1.3.2",
-      "vite": "^7.1.11"
+      "vite": "^7.1.11",
+      "js-yaml": "^4.1.1"
     }
   }
 }
