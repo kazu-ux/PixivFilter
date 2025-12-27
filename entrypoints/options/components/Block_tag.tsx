@@ -16,7 +16,11 @@ export const BlockTag = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    setInputValue('');
+    setIsHidden(true);
+  };
 
   const [inputValue, setInputValue] = useState('');
   const { value: blockTags, setValue: setBlockTags } = useChromeStorage<
