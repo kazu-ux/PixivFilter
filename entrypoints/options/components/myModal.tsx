@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 type ModalProps = {
@@ -8,15 +8,29 @@ type ModalProps = {
 };
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).classList.contains('modal_overlay')) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleMouseDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') onClose();
-  });
-
-  document.addEventListener('click', (e) => {
-    if (e.target === document.querySelector('.modal_overlay')) onClose();
-  });
 
   return ReactDOM.createPortal(
     <div style={styles.overlay} className='modal_overlay'>

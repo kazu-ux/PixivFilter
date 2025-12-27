@@ -22,7 +22,11 @@ export const BlockUser = () => {
   }, [isModalOpen]);
 
   const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    if (inputRef.current) inputRef.current.value = '';
+    setIsErrorShow(false);
+  };
 
   const [isErrorShow, setIsErrorShow] = useState(false);
 
