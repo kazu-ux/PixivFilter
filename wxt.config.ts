@@ -8,14 +8,7 @@ export default defineConfig({
     description: 'PixivでNG登録したユーザーやタグの作品を非表示にします。',
     default_locale: 'en',
     permissions: ['storage'],
-    host_permissions: [
-      // 'https://www.pixiv.net/ajax/search/top/*',
-      // 'https://www.pixiv.net/ajax/search/illustrations/*',
-      // 'https://www.pixiv.net/ajax/search/manga/*',
-      // 'https://www.pixiv.net/ajax/search/novels/*',
-      // 'https://www.pixiv.net/',
-      // 'https://i.pximg.net/',
-    ],
+    host_permissions: [],
     action: {},
     web_accessible_resources: [
       { resources: ['filter.js'], matches: ['https://www.pixiv.net/*'] },
@@ -32,18 +25,10 @@ export default defineConfig({
           ? ['about:debugging#/runtime/this-firefox']
           : [];
 
-      // console.log(wxt.config.browser);
-      // if (wxt.config.command === 'serve') {
-      //   // During development, content script is not listed in manifest, causing
-      //   // "webext-dynamic-content-scripts" to throw an error. So we need to
-      //   // add it manually.
-      //   manifest.content_scripts ??= [];
-      //   manifest.content_scripts.push({
-      //     matches: ['*://*.wxt.dev/*'],
-      //     js: ['content-scripts/content.js'],
-      //     // If the script has CSS, add it here.
-      //   });
-      // }
+      // 開発モードの場合は名前を変更する
+      if (wxt.config.command === 'serve' || wxt.config.mode === 'development') {
+        manifest.name = 'Pixiv Filter dev';
+      }
     },
   },
 
