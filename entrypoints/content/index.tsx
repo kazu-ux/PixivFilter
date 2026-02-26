@@ -30,12 +30,12 @@ export default defineContentScript({
       console.log({ changes });
       if (changes.blockTags) {
         console.log('changed blockTags');
-        const newValue: string[] = changes.blockTags.newValue;
+        const newValue = changes.blockTags.newValue as string[];
         sessionStorage.setItem('pf-blockTags', JSON.stringify(newValue));
       }
       if (changes.blockUsers) {
         console.log('changed blockUsers');
-        const newValue: BlockUser[] = changes.blockUsers.newValue;
+        const newValue = changes.blockUsers.newValue as BlockUser[];
         sessionStorage.setItem('pf-blockUsers', JSON.stringify(newValue));
       }
     });
