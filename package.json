@@ -2,7 +2,7 @@
   "name": "pixiv-filter-for-wxt",
   "description": "PixivでNG登録したユーザーやタグの作品を非表示にします。",
   "private": true,
-  "version": "1.6.2",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"pnpm wxt\" \"pnpm esbuild\"",
