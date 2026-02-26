@@ -1,16 +1,15 @@
 export class HideWorks {
-  static async user(userId: string) {
-    const works: NodeListOf<HTMLElement> = document.querySelectorAll(
-      `[data-gtm-value="${userId}"]`
-    );
+  private static getCardContainer(element: HTMLElement): HTMLElement | null {
+    return element.closest('li') ?? element.closest('[class*="col-span"]');
+  }
 
-    await Promise.all(
-      Array.from(works).map((element) => {
-        const liElement = element.closest('li');
-        if (!liElement) return;
-        liElement.style.display = 'none';
-      })
+  static async user(userId: string) {
+    const cards = document.querySelectorAll<HTMLElement>(
+      `[data-pf-user-id="${userId}"]`
     );
+    cards.forEach((card) => {
+      card.style.display = 'none';
+    });
   }
 
   static async tag(tagName: string) {
@@ -20,9 +19,9 @@ export class HideWorks {
 
     await Promise.all(
       Array.from(works).map((element) => {
-        const liElement = element.closest('li');
-        if (!liElement) return;
-        liElement.style.display = 'none';
+        const card = HideWorks.getCardContainer(element);
+        if (!card) return;
+        card.style.display = 'none';
       })
     );
   }

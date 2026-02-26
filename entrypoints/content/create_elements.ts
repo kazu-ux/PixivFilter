@@ -68,9 +68,11 @@ export const createTagToggleButton = async () => {
   toggleButtonElement.className = 'pf-tag-toggle-button';
   toggleButtonElement.textContent = '▼';
   toggleButtonElement.onclick = (event) => {
-    const selectedTagContainer = (event.target as HTMLElement)
-      .closest('li')
-      ?.querySelector<HTMLElement>('.pf-tag-container');
+    const target = event.target as HTMLElement;
+    const card =
+      target.closest('li') ?? target.closest('[class*="col-span"]');
+    const selectedTagContainer =
+      card?.querySelector<HTMLElement>('.pf-tag-container');
 
     if (!selectedTagContainer) return;
     if (toggleButtonElement.textContent === '▼') {

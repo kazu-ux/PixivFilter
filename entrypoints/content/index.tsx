@@ -47,29 +47,40 @@ export default defineContentScript({
     sessionStorage.setItem('pf-blockTags', JSON.stringify(blockTags));
     sessionStorage.setItem('pf-blockUsers', JSON.stringify(blockUsers));
 
-    const getAllLiElements = () => document.querySelectorAll('li');
+    const getCardContainer = (element: HTMLElement): Element | null => {
+      return element.closest('li') ?? element.closest('[class*="col-span"]');
+    };
+
+    const WORK_TAGS_CACHE_KEY = 'pf-work-tags';
+
+    const cacheWorkTags = (worksData: WorksData) => {
+      const cache = JSON.parse(
+        sessionStorage.getItem(WORK_TAGS_CACHE_KEY) ?? '{}'
+      ) as Record<string, string[]>;
+      worksData.forEach((workData) => {
+        if (workData.tags?.length) {
+          cache[workData.id] = workData.tags;
+        }
+      });
+      sessionStorage.setItem(WORK_TAGS_CACHE_KEY, JSON.stringify(cache));
+    };
 
     const setTagContainer = async (worksData: WorksData) => {
       console.log('setTagContainer');
-
-      const allLiElements = getAllLiElements();
-      console.log(allLiElements);
-
-      if (allLiElements.length === 0) return;
+      cacheWorkTags(worksData);
 
       worksData.forEach((workData) => {
-        allLiElements.forEach((element) => {
-          const workId = element.querySelector('a')?.href.split('/').pop();
-          const tagContainerElement =
-            element.querySelector('.pf-tag-container');
+        const artworkLink = document.querySelector<HTMLElement>(
+          `a[data-gtm-value="${workData.id}"][href*="/artworks/"]`
+        );
+        if (!artworkLink) return;
 
-          if (tagContainerElement) return;
-          if (workId !== workData.id) return;
+        const cardContainer = getCardContainer(artworkLink);
+        if (!cardContainer) return;
+        if (cardContainer.querySelector('.pf-tag-container')) return;
 
-          element.append(createTagContainer(workData.tags));
-        });
+        cardContainer.append(createTagContainer(workData.tags));
       });
-      return;
     };
 
     window.addEventListener('message', async (event) => {
@@ -103,18 +114,28 @@ export default defineContentScript({
 
       const targetElements = Array.from(
         document.querySelectorAll<HTMLElement>('[aria-haspopup]')
-      )
-        .filter((element) => {
-          return element.outerHTML.includes('/users/');
-        })
-        .filter((element) => (element as HTMLElement).closest('ul'));
+      ).filter((element) => {
+        return element.outerHTML.includes('/users/');
+      });
 
       targetElements.forEach((element) => {
         const wrapperElement = element.closest('.pf-wrapper');
         if (wrapperElement) return;
+
+        // カードコンテナにユーザーIDを付与して、即時非表示を可能にする
+        const userId = element
+          .querySelector('[data-gtm-value][href*="/users/"]')
+          ?.getAttribute('data-gtm-value');
+        if (userId) {
+          const card =
+            element.closest('li') ??
+            element.closest('[class*="col-span"]');
+          card?.setAttribute('data-pf-user-id', userId);
+        }
+
         // ラッパーを作成
         const wrapper = document.createElement('div');
-        wrapper.className = 'pf-wrapper'; // 必要に応じてクラス名を付ける
+        wrapper.className = 'pf-wrapper';
 
         // 元の要素をラッパーに追加
         element.parentNode?.insertBefore(wrapper, element);
@@ -134,11 +155,9 @@ export default defineContentScript({
       const setTagToggleButton = async () => {
         targetElements.forEach(async (element) => {
           // 小説かどうかを判定して、小説の場合はreturn
-          const isNovel = element
-            .closest('li')
-            ?.querySelector('a')
-            ?.getAttribute('href')
-            ?.startsWith('/novel/');
+          const card =
+            element.closest('li') ?? element.closest('[class*="col-span"]');
+          const isNovel = !!card?.querySelector('a[href*="/novel/"]');
           if (isNovel) return;
 
           const tagToggleButtonElement = element
@@ -165,9 +184,63 @@ export default defineContentScript({
         });
       };
 
+      const hideBlockedWorks = () => {
+        const blockUsers = JSON.parse(
+          sessionStorage.getItem('pf-blockUsers') ?? '[]'
+        ) as BlockUser[];
+        const blockTags = JSON.parse(
+          sessionStorage.getItem('pf-blockTags') ?? '[]'
+        ) as string[];
+
+        // ブロックユーザーの作品を非表示
+        blockUsers.forEach(({ userId }) => {
+          document
+            .querySelectorAll<HTMLElement>(`[data-pf-user-id="${userId}"]`)
+            .forEach((card) => {
+              card.style.display = 'none';
+            });
+        });
+
+        // ブロックタグの作品を非表示（タグコンテナが存在する場合）
+        blockTags.forEach((tag) => {
+          document
+            .querySelectorAll<HTMLElement>(`[data-tag-name="${tag}"]`)
+            .forEach((button) => {
+              const card = getCardContainer(button);
+              if (card instanceof HTMLElement) card.style.display = 'none';
+            });
+        });
+      };
+
+      const applyTagContainerFromCache = () => {
+        const cache = JSON.parse(
+          sessionStorage.getItem(WORK_TAGS_CACHE_KEY) ?? '{}'
+        ) as Record<string, string[]>;
+
+        document
+          .querySelectorAll<HTMLElement>(
+            'a[data-gtm-value][href*="/artworks/"]'
+          )
+          .forEach((link) => {
+            const workId = link.getAttribute('data-gtm-value');
+            if (!workId) return;
+
+            const cardContainer = getCardContainer(link);
+            if (!cardContainer) return;
+            if (cardContainer.querySelector('.pf-tag-container')) return;
+
+            const tags = cache[workId];
+            if (!tags?.length) return;
+
+            cardContainer.append(createTagContainer(tags));
+          });
+      };
+
       await setUserNGButton();
       await setTagToggleButton();
       await setBlockButtonTagForNovel();
+      applyTagContainerFromCache();
+      hideBlockedWorks();
     }, 500);
 
     console.log('content script');
