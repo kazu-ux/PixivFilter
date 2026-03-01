@@ -55,7 +55,7 @@ export default defineContentScript({
 
     const cacheWorkTags = (worksData: WorksData) => {
       const cache = JSON.parse(
-        sessionStorage.getItem(WORK_TAGS_CACHE_KEY) ?? '{}'
+        sessionStorage.getItem(WORK_TAGS_CACHE_KEY) ?? '{}',
       ) as Record<string, string[]>;
       worksData.forEach((workData) => {
         if (workData.tags?.length) {
@@ -71,7 +71,7 @@ export default defineContentScript({
 
       worksData.forEach((workData) => {
         const artworkLink = document.querySelector<HTMLElement>(
-          `a[data-gtm-value="${workData.id}"][href*="/artworks/"]`
+          `a[data-gtm-value="${workData.id}"][href*="/artworks/"]`,
         );
         if (!artworkLink) return;
 
@@ -113,25 +113,29 @@ export default defineContentScript({
       if (!targetUrls.some((url) => location.href.includes(url))) return;
 
       const targetElements = Array.from(
-        document.querySelectorAll<HTMLElement>('[aria-haspopup]')
+        document.querySelectorAll<HTMLElement>('[aria-haspopup]'),
       ).filter((element) => {
         return element.outerHTML.includes('/users/');
       });
 
       targetElements.forEach((element) => {
         const wrapperElement = element.closest('.pf-wrapper');
-        if (wrapperElement) return;
 
         // カードコンテナにユーザーIDを付与して、即時非表示を可能にする
-        const userId = element
-          .querySelector('[data-gtm-value][href*="/users/"]')
-          ?.getAttribute('data-gtm-value');
-        if (userId) {
-          const card =
-            element.closest('li') ??
-            element.closest('[class*="col-span"]');
-          card?.setAttribute('data-pf-user-id', userId);
+        // React hydration完了後に data-gtm-value が追加される場合があるため、
+        // ラッパー作成済みでも data-pf-user-id が未設定なら再試行する
+        const card =
+          element.closest('li') ?? element.closest('[class*="col-span"]');
+        if (card && !card.hasAttribute('data-pf-user-id')) {
+          const userId = element
+            .querySelector('[data-gtm-value][href*="/users/"]')
+            ?.getAttribute('data-gtm-value');
+          if (userId) {
+            card.setAttribute('data-pf-user-id', userId);
+          }
         }
+
+        if (wrapperElement) return;
 
         // ラッパーを作成
         const wrapper = document.createElement('div');
@@ -172,7 +176,7 @@ export default defineContentScript({
 
       const setBlockButtonTagForNovel = () => {
         const aElements = document.querySelectorAll(
-          '.gtm-novel-searchpage-result-tag'
+          '.gtm-novel-searchpage-result-tag',
         );
 
         aElements.forEach((element) => {
@@ -186,10 +190,10 @@ export default defineContentScript({
 
       const hideBlockedWorks = () => {
         const blockUsers = JSON.parse(
-          sessionStorage.getItem('pf-blockUsers') ?? '[]'
+          sessionStorage.getItem('pf-blockUsers') ?? '[]',
         ) as BlockUser[];
         const blockTags = JSON.parse(
-          sessionStorage.getItem('pf-blockTags') ?? '[]'
+          sessionStorage.getItem('pf-blockTags') ?? '[]',
         ) as string[];
 
         // ブロックユーザーの作品を非表示
@@ -214,12 +218,12 @@ export default defineContentScript({
 
       const applyTagContainerFromCache = () => {
         const cache = JSON.parse(
-          sessionStorage.getItem(WORK_TAGS_CACHE_KEY) ?? '{}'
+          sessionStorage.getItem(WORK_TAGS_CACHE_KEY) ?? '{}',
         ) as Record<string, string[]>;
 
         document
           .querySelectorAll<HTMLElement>(
-            'a[data-gtm-value][href*="/artworks/"]'
+            'a[data-gtm-value][href*="/artworks/"]',
           )
           .forEach((link) => {
             const workId = link.getAttribute('data-gtm-value');
