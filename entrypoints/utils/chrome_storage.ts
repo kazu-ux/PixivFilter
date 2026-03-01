@@ -4,7 +4,7 @@ const setRequestFlag = async (requestFlag: boolean) => {
 };
 
 const getRequestFlag: () => Promise<boolean> = async () => {
-  return (await chrome.storage.local.get('requestFlag')).requestFlag;
+  return (await chrome.storage.local.get('requestFlag')).requestFlag as boolean;
 };
 
 const setConfig = async (config: Config) => {
@@ -33,9 +33,9 @@ const setBlockUser = async (userData: BlockUser) => {
 
 // ストレージからNGユーザーを取得する
 const getBlockUsers = async () => {
-  const savedUsers: BlockUser[] | undefined = (
+  const savedUsers = (
     await chrome.storage.local.get('blockUsers')
-  ).blockUsers;
+  ).blockUsers as BlockUser[] | undefined;
   if (!savedUsers) {
     return [];
   }
@@ -71,7 +71,7 @@ const setWorksData = async (worksData: WorksData) => {
 };
 
 const getWorksData: () => Promise<WorksData> = async () => {
-  return (await chrome.storage.local.get('worksData')).worksData;
+  return (await chrome.storage.local.get('worksData')).worksData as WorksData;
 };
 
 const addBlockTag = async (tag: string) => {
@@ -92,9 +92,9 @@ const addBlockTag = async (tag: string) => {
 };
 
 const getBlockTags = async () => {
-  const savedTags: string[] | undefined = (
+  const savedTags = (
     await chrome.storage.local.get('blockTags')
-  ).blockTags;
+  ).blockTags as string[] | undefined;
 
   if (!savedTags) return [];
   return savedTags;
