@@ -5,7 +5,7 @@
   "version": "1.7.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"pnpm wxt\" \"pnpm esbuild\"",
+    "dev": "pnpm wxt",
     "dev:firefox": "wxt -b firefox",
     "dev:brave": "wxt -b brave",
     "build": "wxt build",
@@ -14,7 +14,9 @@
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare",
-    "esbuild": "node esbuild.config.mjs"
+    "esbuild": "node esbuild.config.mjs",
+    "test": "pnpm build && playwright test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "react": "^19.2.4",
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.58.2",
     "@types/chrome": "^0.1.37",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
