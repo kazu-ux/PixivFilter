@@ -64,17 +64,4 @@ const ctx = await esbuild.context({
 
 // 初回ビルド実行
 await ctx.rebuild();
-
-// ファイル監視を開始
-await ctx.watch();
-
-// 定期的にファイル存在チェック
-setInterval(() => {
-  const missing = checkOutputFiles();
-  if (missing.length > 0) {
-    console.log('Missing files detected, rebuilding...');
-    ctx.rebuild().catch(console.error);
-  }
-}, 5000); // 5秒ごとにチェック
-
-console.log('Watching for missing files...');
+await ctx.dispose();
