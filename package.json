@@ -41,14 +41,15 @@
   },
   "pnpm": {
     "overrides": {
-      "vite": "^7.1.11",
+      "vite": ">=7.3.2",
       "js-yaml": "^4.1.1",
       "picomatch": ">=4.0.4",
       "node-forge": ">=1.4.0",
       "minimatch": ">=3.1.4",
       "flatted": ">=3.4.2",
       "rollup": ">=4.59.0",
-      "brace-expansion": ">=5.0.5"
+      "brace-expansion": ">=5.0.5",
+      "defu": ">=6.1.5"
     }
   }
 }
