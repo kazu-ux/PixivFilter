@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { useEffect, type ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 
 type ModalProps = {

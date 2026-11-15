@@ -2,6 +2,8 @@
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "allowUmdGlobalAccess": true,
+    "types": ["chrome", "wicg-file-system-access"]
   }
 }

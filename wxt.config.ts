@@ -44,9 +44,8 @@ export default defineConfig({
     },
     'build:manifestGenerated': (wxt, manifest) => {
       const browserType = wxt.config.browser;
-      console.log(browserType);
 
-      wxt.config.runnerConfig.config.startUrls =
+      wxt.config.webExt.config.startUrls =
         browserType === 'firefox'
           ? ['about:debugging#/runtime/this-firefox']
           : [];
