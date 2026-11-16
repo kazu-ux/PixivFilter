@@ -53,7 +53,6 @@ const ExportBotton = () => {
       inputFileElement.click();
 
       inputFileElement.addEventListener('cancel', () => {
-        console.log('cancel');
         setActive(true);
       });
       inputFileElement.addEventListener('change', async () => {

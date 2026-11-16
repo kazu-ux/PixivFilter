@@ -30,7 +30,6 @@ export const BlockUser = () => {
 
   const [isErrorShow, setIsErrorShow] = useState(false);
 
-  console.log('blockUser');
   const { value: blockUsers, setValue: setBlockUsers } = useChromeStorage<
     BlockUser[]
   >('blockUsers', []);
@@ -52,8 +51,6 @@ export const BlockUser = () => {
       })
       .filter(Boolean)
       .filter((item): item is NonNullable<typeof item> => item !== null);
-    console.log(selectedUsers);
-
     if (!selectedUsers.includes) return;
 
     const diffUsers = blockUsers.filter(
@@ -66,7 +63,6 @@ export const BlockUser = () => {
   };
 
   const onSubmit = async (e: React.FormEvent) => {
-    setIsLoading(true);
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
@@ -78,6 +74,13 @@ export const BlockUser = () => {
       alert('不正な値です。\nInvalid value.');
       return;
     }
+
+    if (blockUsers.some((user) => user.userId === userId)) {
+      setIsErrorShow(true);
+      return;
+    }
+
+    setIsLoading(true);
 
     // Pixivサーバーに負荷をかけないため3秒待機
     await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -98,31 +101,38 @@ export const BlockUser = () => {
     }
 
     const url = `https://www.pixiv.net/users/${userId}`;
-    const request = await fetch(url, {
-      method: 'GET',
-      referrer: 'https://www.pixiv.net/',
-    });
+    try {
+      const request = await fetch(url, {
+        method: 'GET',
+        referrer: 'https://www.pixiv.net/',
+      });
 
-    if (!request.ok) {
+      if (!request.ok) {
+        throw new Error('Pixiv user request failed');
+      }
+
+      const response = await request.text();
+      const parser = new DOMParser();
+      const document = parser.parseFromString(response, 'text/html');
+      const html = document.querySelector('#__NEXT_DATA__');
+      const json = JSON.parse(html?.textContent || '') as PixivUserJson;
+      const userName = json.props.pageProps.meta.ogp.title;
+
+      if (!userName) throw new Error('Pixiv user name was missing');
+
+      setBlockUsers([
+        ...blockUsers,
+        { userName, userId },
+      ]);
+      closeModal();
+    } catch {
       setIsLoading(false);
       alert(
         'ユーザー名が取得できませんでした。\nThe username could not be retrieved.'
       );
-      return;
+    } finally {
+      setIsLoading(false);
     }
-    const response = await request.text();
-    const parser = new DOMParser();
-    const document = parser.parseFromString(response, 'text/html');
-    const html = document.querySelector('#__NEXT_DATA__');
-    const json = JSON.parse(html?.textContent || '') as PixivUserJson;
-
-    setBlockUsers([
-      ...blockUsers,
-      { userName: json.props.pageProps.meta.ogp.title, userId },
-    ]);
-
-    setIsLoading(false);
-    closeModal();
   };
 
   return (

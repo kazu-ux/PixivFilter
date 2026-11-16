@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Modal from './myModal';
 import styles from './Block_tag.module.css';
 import { useChromeStorage } from '../hooks/use_chrome_storage';
@@ -47,7 +47,6 @@ export const BlockTag = () => {
           const tagName = option.textContent;
           if (!tagName) return;
 
-          console.log(tagName);
           return tagName;
         }
       })
@@ -86,8 +85,6 @@ export const BlockTag = () => {
               method='get'
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log(inputValue);
-
                 // すでに登録されている場合は追加しない
                 if (blockTags.includes(inputValue)) return;
 

@@ -2,11 +2,7 @@ import React from 'react';
 import { ChromeStorage } from '../../utils/chrome_storage';
 import { exportStr } from '../locales/locales';
 
-const onClick = async (
-  event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-) => {
-  console.log(event);
-
+const onClick = async () => {
   // 書き込む関数
   const writeFile = async (
     handle: FileSystemFileHandle,
@@ -38,7 +34,6 @@ const onClick = async (
     });
 
     await writeFile(handle, JSON.stringify({ blockUsers, blockTags }));
-    console.log(blockUsers);
   } catch (error) {
     if (!(error instanceof TypeError)) return;
 
@@ -72,7 +67,6 @@ const onClick = async (
         // }
       }, 100);
 
-      console.log(`ファイル "${fileName}" のダウンロードを開始しました。`);
     }
 
     downloadFile(
@@ -81,7 +75,6 @@ const onClick = async (
       'application/json'
     );
 
-    console.log(error);
   }
 };
 
